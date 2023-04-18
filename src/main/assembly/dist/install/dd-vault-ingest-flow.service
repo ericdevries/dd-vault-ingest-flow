@@ -1,0 +1,13 @@
+[Unit]
+Description=Dd Vault Ingest Flow Service
+
+[Service]
+ExecStart=/opt/dans.knaw.nl/dd-vault-ingest-flow/bin/dd-vault-ingest-flow server /etc/opt/dans.knaw.nl/dd-vault-ingest-flow/config.yml
+# Java returns 143 even if the SIGTERM was handled correctly.
+SuccessExitStatus=143
+
+User=dd-vault-ingest-flow
+Group=dd-vault-ingest-flow
+
+[Install]
+WantedBy=multi-user.target

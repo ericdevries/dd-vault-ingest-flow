@@ -1,0 +1,39 @@
+#
+# dd-vault-ingest-flow configuration file
+#
+server:
+  applicationContextPath: /
+  adminContextPath: /
+  applicationConnectors:
+    - type: http
+      port: 20360
+  adminConnectors:
+    - type: http
+      port: 20361
+
+health:
+  delayedShutdownHandlerEnabled: false
+  initialOverallState: false
+  healthChecks:
+    - name: DansBagValidator
+      critical: true
+      initialState: false
+      schedule:
+        checkInterval: 60s
+
+ingestFlow:
+    autoIngest:
+        # todo: how to check if an update is authorized?
+        inbox: /var/opt/dans.knaw.nl/tmp/auto-ingest/inbox
+        outbox: /var/opt/dans.knaw.nl/tmp/auto-ingest/outbox
+
+#
+# See https://www.dropwizard.io/en/latest/manual/configuration.html#logging
+#
+logging:
+  level: INFO
+  appenders:
+    - type: file
+      archive: false
+      timeZone: system
+      currentLogFilename: /var/opt/dans.knaw.nl/log/dd-vault-ingest-flow/dd-vault-ingest-flow.log
