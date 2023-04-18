@@ -11,11 +11,11 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-This service is part of the DANS Vault Service. It is responsible for processing deposits, converting them to [RDA compliant bags] and sending
-them to the DANS Data Vault. This service resembles [dd-ingest-flow] in that it processes deposits and that these deposits eventually end up in the
-Vault. However, this service differs from dd-ingest-flow in that it does not create a Dataverse dataset version for each deposit, relying on Dataverse
-to automatically export the dataset version to and RDA compliant bag. Instead, this service creates the RDA compliant bag directly from the deposit.
-That said, the resulting bag is still designed to closely resemble the Dataverse bag.
+This service is part of the DANS Vault Service. It is responsible for processing deposits, converting them to [RDA compliant bags]{:target=_blank}
+and sending them to the DANS Data Vault. This service resembles [dd-ingest-flow]{:target=_blank} in that it processes deposits and that these deposits
+eventually end up in the Vault. However, this service differs from dd-ingest-flow in that it does not create a Dataverse dataset version for each deposit,
+relying on Dataverse to automatically export the dataset version to and RDA compliant bag. Instead, this service creates the RDA compliant bag directly from the
+deposit. That said, the resulting bag is still designed to closely resemble the Dataverse bag.
 
 ### Ingest areas
 
@@ -99,6 +99,8 @@ Alternatively, to build the tarball execute:
 [RDA compliant bags]: https://www.rd-alliance.org/system/files/Research%20Data%20Repository%20Interoperability%20WG%20-%20Final%20Recommendations_reviewed_0.pdf
 
 [dd-sword2]: https://dans-knaw.github.io/dd-sword2/
+
+[dd-ingest-flow]: https://dans-knaw.github.io/dd-ingest-flow/
 
 [deposit directory]: {{ deposit_directory }}
 
