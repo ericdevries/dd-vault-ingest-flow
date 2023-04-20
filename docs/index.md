@@ -38,14 +38,24 @@ deposits the program will first order them by the timestamp in the `Created` ele
 
 The processing of a deposit consists of the following steps:
 
+##### Basic scenario
+
 1. Check that the deposit is a valid [deposit directory]{:target=_blank}.
 2. Check that the bag in the deposit is a valid v1 [DANS bag]{:target=_blank}.
-3. Create a new, zipped RDA compliant bag from the deposit.
-4. Move the deposit to the `outbox/processed` directory.
+3. Generate an NBN persistent identifier for the dataset and use that for the `dansNbn` field in the vault metadata.
+4. Create a new, zipped RDA compliant bag from the deposit.
+5. Register the bag in the dd-vault-catalog with minimal metadata: bag ID, NBN, and swordToken.
+6. Move the deposit to the `outbox/processed` directory and change its state to `RECEIVED`.
+
+###### Update scenario
+
+2a Part of the validation will be to check that the deposit is an update to an existing dataset by checking that the `Is-Version-Of` field in the `bag-info.txt`
+file of the deposit matches the `swordToken` of a dataset in the vault catalog.
+
+3a Instead of generating a new NBN, the Vault Catalog will be queried for the NBN of the dataset that is being updated.
 
 <!-- todo:  
 - link to metadata mapping spreadsheet
-- how to validate that an update-deposit targets and existing dataset?
 - how to validate that a user account is authorized to update a dataset?
 -->
 
