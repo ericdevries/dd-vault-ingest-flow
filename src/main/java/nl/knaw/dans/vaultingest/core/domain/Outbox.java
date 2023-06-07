@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest;
+package nl.knaw.dans.vaultingest.core.domain;
 
-public class DummyTest {
-    // Stub for the moment
+import java.io.IOException;
+import java.nio.file.Path;
+
+public interface Outbox {
+
+    void moveDeposit(Deposit deposit) throws IOException;
+
+    void move(Path path, Deposit.State state) throws IOException;
 }
