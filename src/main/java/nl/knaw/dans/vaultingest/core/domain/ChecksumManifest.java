@@ -15,19 +15,14 @@
  */
 package nl.knaw.dans.vaultingest.core.domain;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.nio.file.Path;
 import java.util.Map;
 
-@Getter
+@Value
 @Builder
-@ToString
-@EqualsAndHashCode
 public class ChecksumManifest {
-    private final Path path;
-    private final Map<String, ChecksumManifestEntry> entries;
+    Path path;
+    Map<String, ChecksumManifestEntry> entries;
 }

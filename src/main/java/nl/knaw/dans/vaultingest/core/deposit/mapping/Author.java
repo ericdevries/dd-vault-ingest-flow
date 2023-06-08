@@ -41,7 +41,7 @@ public class Author extends Base {
             .isni(getISNI(node))
             .orcid(getORCID(node))
             .role(getFirstValue(node, "dcx-dai:role"))
-            .organization(getFirstValue(node, "dcx-dai:organization/dcx-dai:name"))
+            .affiliation(getFirstValue(node, "dcx-dai:organization/dcx-dai:name"))
             .build();
     }
 }

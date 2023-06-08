@@ -15,8 +15,19 @@
  */
 package nl.knaw.dans.vaultingest.core.validator;
 
-import java.nio.file.Path;
+import nl.knaw.dans.validatedansbag.api.ValidateCommand;
 
-public interface BagValidator {
-    void validate(Path bagDir) throws InvalidBagException;
+import javax.ws.rs.client.Client;
+import java.net.URI;
+
+public class MigrationDepositValidator extends AbstractDepositValidator {
+
+    public MigrationDepositValidator(Client httpClient, URI serviceUri) {
+        super(httpClient, serviceUri);
+    }
+
+    @Override
+    protected ValidateCommand.PackageTypeEnum getPackageType() {
+        return ValidateCommand.PackageTypeEnum.MIGRATION;
+    }
 }

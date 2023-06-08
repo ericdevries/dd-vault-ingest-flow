@@ -15,19 +15,14 @@
  */
 package nl.knaw.dans.vaultingest.core.validator;
 
-import nl.knaw.dans.validatedansbag.api.ValidateCommand;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.client.Client;
-import java.net.URI;
+import java.nio.file.Path;
 
-public class CommonBagValidator extends AbstractBagValidator {
-
-    public CommonBagValidator(Client httpClient, URI serviceUri) {
-        super(httpClient, serviceUri);
-    }
-
+@Slf4j
+public class VoidDepositValidator implements DepositValidator {
     @Override
-    protected ValidateCommand.PackageTypeEnum getPackageType() {
-        return ValidateCommand.PackageTypeEnum.DEPOSIT;
+    public void validate(Path depositDir) throws InvalidDepositException {
+        log.info("Validating bag on path {}, and it will succeed", depositDir);
     }
 }

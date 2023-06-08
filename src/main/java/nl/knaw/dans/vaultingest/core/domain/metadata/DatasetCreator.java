@@ -15,16 +15,14 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
-import lombok.Setter;
+import lombok.Value;
+import nl.knaw.dans.vaultingest.core.domain.ids.Identifier;
 
-@Data
+@Value
 @Builder
-@Setter(AccessLevel.NONE)
 public class DatasetCreator implements DatasetRelation {
-    private String name;
+    String name;
 
     @Override
     public String getDisplayName() {
@@ -37,12 +35,7 @@ public class DatasetCreator implements DatasetRelation {
     }
 
     @Override
-    public String getIdentifierScheme() {
-        return null;
-    }
-
-    @Override
-    public String getIdentifier() {
+    public Identifier getIdentifier() {
         return null;
     }
 }

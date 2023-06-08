@@ -15,41 +15,126 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag;
 
-import nl.knaw.dans.vaultingest.core.deposit.CommonDepositManager;
+import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.DataciteConverter;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
-import nl.knaw.dans.vaultingest.core.utilities.EchoDatasetContactResolver;
-import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
+import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.w3c.dom.Document;
 
 import java.nio.file.Path;
-import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DataciteConverterIntegrationTest {
 
     @Test
-    void convert() throws Exception {
-        var s = getClass().getResource("/input/6a6632f1-91d2-49ba-8449-a8d2b539267a/");
-        assert s != null;
+    void identifier() throws Exception {
+        var doc = loadResource();
 
-        var xmlReader = Mockito.spy(new XmlReaderImpl());
+        assertThat(XPathEvaluator.strings(doc, "//datacite:identifier")
+            .collect(Collectors.toList()))
+            .containsOnly("10.5072/DAR/A7AXZP");
+    }
 
-        var testXmlPath = Path.of(Objects.requireNonNull(getClass().getResource("/xml/example-ddm.xml")).getPath());
-        var testXml = xmlReader.readXmlFile(testXmlPath);
+    @Test
+    void creators() throws Exception {
+        var doc = loadResource();
 
-        var depositDir = Path.of(s.toURI());
-        var toMockPath = depositDir.resolve("valid-bag/metadata/dataset.xml");
+        assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:creatorName")
+            .collect(Collectors.toList()))
+            .containsOnly("Unformatted Creator", "I Lastname", "Creator Organization");
 
-        // insert a different dataset.xml into the deposit
-        Mockito.doReturn(testXml).when(xmlReader).readXmlFile(toMockPath);
+        assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:affiliation")
+            .collect(Collectors.toList()))
+            .containsOnly("(Example Org)");
 
-        var deposit = new CommonDepositManager(xmlReader, new EchoDatasetContactResolver(), new TestLanguageResolver()).loadDeposit(depositDir);
-        var converter = new DataciteConverter();
-        var output = converter.convert(deposit);
-        var serializer = new DataciteSerializer();
+        assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:nameIdentifier")
+            .collect(Collectors.toList()))
+            .containsOnly("0000-1111-2222-3333", "123456789");
 
-        System.out.println("OUTPUT: " + serializer.serialize(output));
+        assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:nameIdentifier/@nameIdentifierScheme")
+            .collect(Collectors.toList()))
+            .containsOnly("ORCID", "VIAF");
+    }
+
+    @Test
+    void titles() throws Exception {
+        var doc = loadResource();
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:titles/datacite:title")
+            .collect(Collectors.toList()))
+            .containsOnly("A bag containing examples for each mapping rule");
+    }
+
+    @Test
+    void resourceType() throws Exception {
+        var doc = loadResource();
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:resourceType/@resourceTypeGeneral")
+            .collect(Collectors.toList()))
+            .containsOnly("Dataset");
+    }
+
+    @Test
+    void publisher() throws Exception {
+        var doc = loadResource();
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:publisher")
+            .collect(Collectors.toList()))
+            .containsOnly("DANS");
+    }
+
+
+    @Test
+    void publicationYear() throws Exception {
+        var doc = loadResource();
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:publicationYear")
+            .collect(Collectors.toList()))
+            .containsOnly("2015");
+    }
+
+    @Test
+    void descriptions() throws Exception {
+        var doc = loadResource();
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:descriptions/datacite:description")
+            .collect(Collectors.toList()))
+            .containsOnly("This bags contains one or more examples of each mapping rule.; A second description; some date; some acceptance date; some copyright date; some submission date; some modified date; some issuing date; some validation date; some coverage description; Even more descriptions");
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:descriptions/datacite:description/@descriptionType")
+            .collect(Collectors.toList()))
+            .containsOnly("Abstract");
+    }
+
+    @Test
+    void contributors() throws Exception {
+        var doc = loadResource();
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/datacite:contributorName")
+            .collect(Collectors.toList()))
+            .containsOnly("user001");
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/datacite:affiliation")
+            .collect(Collectors.toList()))
+            .containsOnly("(user001 university)");
+
+        assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/@contributorType")
+            .collect(Collectors.toList()))
+            .containsOnly("ContactPerson");
+    }
+
+    // serialize to XML, then convert to Node, so we can use XPath to test the output
+    private Document loadResource() throws Exception {
+        var depositManager = new SimpleCommonDepositManager();
+        var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag"));
+
+        var resource = new DataciteConverter().convert(deposit);
+        var xmlString = new DataciteSerializer().serialize(resource);
+
+        return new XmlReaderImpl().readXmlString(xmlString);
     }
 }

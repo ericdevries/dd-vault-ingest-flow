@@ -15,34 +15,30 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
-import lombok.Setter;
-import nl.knaw.dans.vaultingest.core.domain.ids.BaseId;
+import lombok.Value;
 import nl.knaw.dans.vaultingest.core.domain.ids.DAI;
 import nl.knaw.dans.vaultingest.core.domain.ids.ISNI;
+import nl.knaw.dans.vaultingest.core.domain.ids.Identifier;
 import nl.knaw.dans.vaultingest.core.domain.ids.ORCID;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Data
+@Value
 @Builder
-@Setter(AccessLevel.NONE)
 public class DatasetAuthor implements DatasetRelation {
-    private String name;
-    private String titles;
-    private String initials;
-    private String insertions;
-    private String surname;
-    private DAI dai;
-    private ISNI isni;
-    private ORCID orcid;
-    private String role;
-    private String organization;
-    private String affiliation;
+    String name;
+    String titles;
+    String initials;
+    String insertions;
+    String surname;
+    DAI dai;
+    ISNI isni;
+    ORCID orcid;
+    String role;
+    String affiliation;
 
     public String getDisplayName() {
         // initials + insertions + surname
@@ -52,6 +48,22 @@ public class DatasetAuthor implements DatasetRelation {
                 this.getSurname()
             ).filter(StringUtils::isNotBlank)
             .collect(Collectors.joining(" "));
+    }
+
+    public String getContributorName() {
+        // titles + initials + insertions + surname
+        var name = Stream.of(
+                this.getInitials(),
+                this.getInsertions(),
+                this.getSurname()
+            ).filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
+
+        if (StringUtils.isNotBlank(this.getAffiliation())) {
+            name += " (" + this.getAffiliation() + ")";
+        }
+
+        return name;
     }
 
     public String getRightsHolderDisplayName() {
@@ -64,42 +76,22 @@ public class DatasetAuthor implements DatasetRelation {
             ).filter(StringUtils::isNotBlank)
             .collect(Collectors.joining(" "));
 
-        if (StringUtils.isNotBlank(this.getOrganization())) {
-            name += " (" + this.getOrganization() + ")";
+        if (StringUtils.isNotBlank(this.getAffiliation())) {
+            name += " (" + this.getAffiliation() + ")";
         }
 
         return name;
     }
 
-    public String getIdentifierScheme() {
-        var identifier = this.getIdentifierObject();
-
-        if (identifier == null) {
-            return null;
-        }
-
-        return identifier.getScheme();
-    }
-
-    public String getIdentifier() {
-        var identifier = this.getIdentifierObject();
-
-        if (identifier == null) {
-            return null;
-        }
-
-        return identifier.getValue();
-    }
-
-    private BaseId getIdentifierObject() {
-        var schemes = new BaseId[] {
+    public Identifier getIdentifier() {
+        var schemes = new Identifier[]{
             this.orcid,
             this.isni,
             this.dai,
         };
 
         // return first match
-        for (var scheme: schemes) {
+        for (var scheme : schemes) {
             if (scheme != null) {
                 return scheme;
             }

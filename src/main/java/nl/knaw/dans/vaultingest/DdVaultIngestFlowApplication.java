@@ -32,7 +32,7 @@ import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.output.ZipBagOutputWriterFactory;
-import nl.knaw.dans.vaultingest.core.validator.VoidBagValidator;
+import nl.knaw.dans.vaultingest.core.validator.VoidDepositValidator;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogDeposit;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
@@ -72,7 +72,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
                 configuration.getIngestFlow().getLanguages().getIso6392()
         );
         var xmlReader = new XmlReaderImpl();
-        var depositValidator = new VoidBagValidator();
+        var depositValidator = new VoidDepositValidator();
         //        var depositValidator = new CommonDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getBaseUrl());
         var depositFactory = new CommonDepositManager(
                 xmlReader,

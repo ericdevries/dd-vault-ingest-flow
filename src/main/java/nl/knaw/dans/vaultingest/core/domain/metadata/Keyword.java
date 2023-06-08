@@ -15,17 +15,12 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
+@Value
 @Builder
-@ToString
-@EqualsAndHashCode
 public class Keyword {
-    private final String text;
-    private final String vocabulary;
-    private final String vocabularyUri;
+    String text;
+    String vocabulary;
+    String vocabularyUri;
 }

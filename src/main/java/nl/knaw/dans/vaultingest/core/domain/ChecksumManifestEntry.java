@@ -15,16 +15,11 @@
  */
 package nl.knaw.dans.vaultingest.core.domain;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
+@Value
 @Builder
-@ToString
-@EqualsAndHashCode
 public class ChecksumManifestEntry {
-    private final String algorithm;
-    private final String checksum;
+    String algorithm;
+    String checksum;
 }

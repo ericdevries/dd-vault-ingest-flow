@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.ids;
 
-public class ISNI extends BaseId {
+public class ISNI extends Identifier {
     public ISNI(String value) {
         super(value);
     }
@@ -23,6 +23,12 @@ public class ISNI extends BaseId {
     @Override
     public String getScheme() {
         return "DAI";
+    }
+
+    @Override
+    public String getSchemeURI() {
+        // TODO verify
+        return "https://isni.org/";
     }
 
     @Override

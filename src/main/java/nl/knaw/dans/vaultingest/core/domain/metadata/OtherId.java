@@ -16,13 +16,13 @@
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class OtherId {
-    private String agency;
-    private String value;
+    String agency;
+    String value;
 
     public String getFullName() {
         if (agency == null) {

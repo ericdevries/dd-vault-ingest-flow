@@ -87,7 +87,7 @@ class CommonDepositTest {
             );
 
         assertThat(authors)
-            .extracting("identifierScheme")
+            .map(m -> m.getIdentifier() == null ? null : m.getIdentifier().getScheme())
             .containsOnly(
                 null,
                 "ORCID",
@@ -95,7 +95,7 @@ class CommonDepositTest {
             );
 
         assertThat(authors)
-            .extracting("identifier")
+            .map(m -> m.getIdentifier() == null ? null : m.getIdentifier().getValue())
             .containsOnly(
                 null,
                 "0000-1111-2222-3333",

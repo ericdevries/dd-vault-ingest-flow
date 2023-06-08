@@ -15,14 +15,10 @@
  */
 package nl.knaw.dans.vaultingest.core.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Value;
 
-@Getter
-@AllArgsConstructor
-@ToString
+@Value
 public class KeyValuePair {
-    private final String key;
-    private final String value;
+    String key;
+    String value;
 }

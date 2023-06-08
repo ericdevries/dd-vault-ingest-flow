@@ -35,7 +35,7 @@ public class Authors {
         var model = resource.getModel();
         var result = new ArrayList<Statement>();
 
-        for (var author: authors) {
+        for (var author : authors) {
             var authorElement = model.createResource();
             authorElement.addProperty(DVCitation.authorName, author.getDisplayName());
 
@@ -43,12 +43,16 @@ public class Authors {
                 authorElement.addProperty(DVCitation.authorAffiliation, author.getAffiliation());
             }
 
-            if (author.getIdentifierScheme() != null) {
-                authorElement.addProperty(Datacite.agentIdentifierScheme, author.getIdentifierScheme());
-            }
+            var identifier = author.getIdentifier();
 
-            if (author.getIdentifier() != null) {
-                authorElement.addProperty(Datacite.agentIdentifier, author.getIdentifier());
+            if (identifier != null) {
+                if (identifier.getScheme() != null) {
+                    authorElement.addProperty(Datacite.agentIdentifierScheme, identifier.getScheme());
+                }
+
+                if (identifier.getValue() != null) {
+                    authorElement.addProperty(Datacite.agentIdentifier, identifier.getValue());
+                }
             }
 
             result.add(model.createStatement(

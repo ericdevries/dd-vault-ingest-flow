@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.ids;
 
-public class VIAF extends BaseId {
+public class VIAF extends Identifier {
 
     public VIAF(String id) {
         super(id);
@@ -24,6 +24,12 @@ public class VIAF extends BaseId {
     @Override
     public String getScheme() {
         return "VIAF";
+    }
+
+    @Override
+    public String getSchemeURI() {
+        // TODO verify
+        return "https://viaf.org/";
     }
 
     @Override

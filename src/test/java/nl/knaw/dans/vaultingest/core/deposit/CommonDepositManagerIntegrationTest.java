@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
-import nl.knaw.dans.vaultingest.core.utilities.EchoDatasetContactResolver;
+import nl.knaw.dans.vaultingest.core.utilities.TestDatasetContactResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class CommonDepositManagerIntegrationTest {
     void loadDeposit() throws Exception {
         var factory = new CommonDepositManager(
             new XmlReaderImpl(),
-            new EchoDatasetContactResolver(),
+            new TestDatasetContactResolver(),
             new TestLanguageResolver()
         );
 

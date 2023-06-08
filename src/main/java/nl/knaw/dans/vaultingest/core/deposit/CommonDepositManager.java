@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.OriginalFilepaths;
-import nl.knaw.dans.vaultingest.core.validator.InvalidBagException;
+import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -44,7 +44,7 @@ public class CommonDepositManager extends AbstractDepositManager {
     }
 
     @Override
-    public Deposit loadDeposit(Path path) throws InvalidBagException {
+    public Deposit loadDeposit(Path path) throws InvalidDepositException {
         try {
             var bagDir = getBagDir(path);
 
@@ -95,7 +95,7 @@ public class CommonDepositManager extends AbstractDepositManager {
         var properties = commonDeposit.getProperties();
 
         try {
-            properties.getBuilder().save();
+            saveDepositProperties(properties);
         }
         catch (ConfigurationException e) {
             log.error("Error saving deposit properties: depositId={}", deposit.getId(), e);
@@ -116,7 +116,6 @@ public class CommonDepositManager extends AbstractDepositManager {
             log.error("Error updating deposit state: path={}, state={}, message={}", path, state, message, e);
             throw new RuntimeException(e);
         }
-
     }
 
     List<DepositFile> getDepositFiles(Path bagDir, Bag bag, Document ddm, Document filesXml, OriginalFilepaths originalFilepaths) {

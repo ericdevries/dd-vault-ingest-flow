@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.utilities;
+package nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary;
 
-import nl.knaw.dans.vaultingest.core.deposit.DatasetContactResolver;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 
-public class EchoDatasetContactResolver implements DatasetContactResolver {
-    @Override
-    public DatasetContact resolve(String userId) {
-        if (userId == null) {
-            return null;
-        }
-
-        return DatasetContact.builder()
-            .name(userId)
-            .affiliation(userId + " university")
-            .email(userId + "@test.com")
-            .build();
+public class PROV {
+    public static final String NS = "https://www.w3.org/prov-o/#";
+    private static final Model m = ModelFactory.createDefaultModel();
+    public static final Resource NAMESPACE = m.createResource(NS);
+    public static final Property wasDerivedFrom = m.createProperty(NS, "wasDerivedFrom");
+    public static String getURI() {
+        return NS;
     }
 }

@@ -15,13 +15,13 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
+import nl.knaw.dans.vaultingest.core.domain.ids.Identifier;
+
 public interface DatasetRelation {
 
     String getDisplayName();
 
     String getAffiliation();
 
-    String getIdentifierScheme();
-
-    String getIdentifier();
+    Identifier getIdentifier();
 }

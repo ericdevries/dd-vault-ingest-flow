@@ -114,7 +114,4 @@ public abstract class AbstractDepositManager implements DepositManager {
         return manifests;
     }
 
-    public void saveDeposit(Path path) {
-
-    }
 }

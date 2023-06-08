@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.validator;
+package nl.knaw.dans.vaultingest.core.rdabag.mappers;
 
-import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.DansRights;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
-import java.nio.file.Path;
+public class DansPersonalDataPresent {
 
-@Slf4j
-public class VoidBagValidator implements BagValidator {
-    @Override
-    public void validate(Path bagDir) throws InvalidBagException {
-        log.info("Validating bag on path {}, and it will succeed", bagDir);
+    public static Statement toDansPersonalDataPresent(Resource resource, boolean isPersonalDataPresent) {
+        var model = resource.getModel();
+
+        return model.createStatement(
+            resource,
+            DansRights.dansPersonalDataPresent,
+            isPersonalDataPresent ? "Yes" : "No"
+        );
     }
 }

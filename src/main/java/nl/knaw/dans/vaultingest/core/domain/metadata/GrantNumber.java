@@ -15,16 +15,11 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
+@Value
 @Builder
-@EqualsAndHashCode
-@ToString
 public class GrantNumber {
-    private final String agency;
-    private final String value;
+    String agency;
+    String value;
 }

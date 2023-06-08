@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.validator;
+package nl.knaw.dans.vaultingest.core.utilities;
 
-public class InvalidBagException extends Exception {
+import nl.knaw.dans.vaultingest.core.deposit.DatasetContactResolver;
+import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
 
-    public InvalidBagException(String msg) {
-        super(msg);
-    }
+public class TestDatasetContactResolver implements DatasetContactResolver {
+    @Override
+    public DatasetContact resolve(String userId) {
+        if (userId == null) {
+            return null;
+        }
 
-    public InvalidBagException(String msg, Throwable cause) {
-        super(msg, cause);
+        return DatasetContact.builder()
+            .name(userId)
+            .affiliation(userId + " university")
+            .email(userId + "@dans.knaw.nl")
+            .build();
     }
 }

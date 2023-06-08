@@ -15,6 +15,8 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
+import lombok.ToString;
+import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import nl.knaw.dans.vaultingest.core.deposit.mapping.Author;
 import nl.knaw.dans.vaultingest.core.deposit.mapping.CollectionDates;
@@ -59,6 +61,7 @@ import java.util.Collection;
 import java.util.List;
 
 @SuperBuilder
+@ToString
 class CommonDeposit implements Deposit {
 
     // for the migration deposit

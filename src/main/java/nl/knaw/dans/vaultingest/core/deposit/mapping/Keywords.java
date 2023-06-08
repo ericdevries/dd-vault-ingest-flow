@@ -33,8 +33,6 @@ public class Keywords {
     final public static String SCHEME_AAT = "Art and Architecture Thesaurus";
     final public static String SCHEME_URI_AAT = "http://vocab.getty.edu/aat/";
 
-    private static final Map<String, String> narcisToSubject = new HashMap<>();
-
     public static List<Keyword> getKeywords(Document document) {
         var results = new ArrayList<Keyword>();
         results.addAll(getKeywordsWithoutScheme(document));

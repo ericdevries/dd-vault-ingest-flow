@@ -15,19 +15,14 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
+@Value
 @Builder
-@EqualsAndHashCode
-@ToString
 public class Distributor {
-    private final String name;
-    private final String affiliation;
-    private final String abbreviation;
-    private final String url;
-    private final String logoUrl;
+    String name;
+    String affiliation;
+    String abbreviation;
+    String url;
+    String logoUrl;
 }

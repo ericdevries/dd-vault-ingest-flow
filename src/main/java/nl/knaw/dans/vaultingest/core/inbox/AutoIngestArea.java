@@ -33,7 +33,8 @@ public class AutoIngestArea {
         ExecutorService executorService,
         IngestAreaDirectoryWatcher ingestAreaDirectoryWatcher,
         DepositToBagProcess depositToBagProcess,
-        Outbox outbox) {
+        Outbox outbox
+    ) {
         this.executorService = executorService;
         this.ingestAreaDirectoryWatcher = ingestAreaDirectoryWatcher;
         this.depositToBagProcess = depositToBagProcess;
@@ -41,7 +42,6 @@ public class AutoIngestArea {
     }
 
     public void start() throws IOException {
-        log.info("Creating directories in outbox; path = {}", outbox);
         ingestAreaDirectoryWatcher.start((path) -> {
             log.info("New item in inbox; path = {}", path);
 

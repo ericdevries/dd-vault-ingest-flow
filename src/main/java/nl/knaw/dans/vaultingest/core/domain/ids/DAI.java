@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.ids;
 
-public class DAI extends BaseId {
+public class DAI extends Identifier {
 
     public DAI(String value) {
         super(value);
@@ -25,4 +25,12 @@ public class DAI extends BaseId {
     public String getScheme() {
         return "DAI";
     }
+
+    @Override
+    public String getSchemeURI() {
+        // TODO verify
+        return "https://dai.nl/";
+    }
+
+
 }

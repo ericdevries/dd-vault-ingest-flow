@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.ids;
 
-public class LCNA extends BaseId {
+public class LCNA extends Identifier {
 
     public LCNA(String id) {
         super(id);
@@ -24,5 +24,11 @@ public class LCNA extends BaseId {
     @Override
     public String getScheme() {
         return "LCNA";
+    }
+
+    @Override
+    public String getSchemeURI() {
+        // TODO verify
+        return "https://id.loc.gov/authorities/names/";
     }
 }
