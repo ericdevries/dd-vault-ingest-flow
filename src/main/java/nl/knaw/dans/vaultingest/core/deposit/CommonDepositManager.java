@@ -108,7 +108,7 @@ public class CommonDepositManager extends AbstractDepositManager {
         try {
             var depositProperties = getDepositProperties(path);
             depositProperties.setProperty("state.label", state.name());
-            depositProperties.setProperty("state.message", message);
+            depositProperties.setProperty("state.description", message);
 
             saveDepositProperties(depositProperties);
         }

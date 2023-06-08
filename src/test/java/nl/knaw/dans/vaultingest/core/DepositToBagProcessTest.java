@@ -15,16 +15,18 @@
  */
 package nl.knaw.dans.vaultingest.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.utilities.TestDeposit;
-import nl.knaw.dans.vaultingest.core.utilities.TestDepositFile;
 import nl.knaw.dans.vaultingest.core.domain.ids.DAI;
 import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetAuthor;
 import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
+import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
 import nl.knaw.dans.vaultingest.core.utilities.InMemoryOutputWriter;
 import nl.knaw.dans.vaultingest.core.utilities.NullBagOutputWriter;
+import nl.knaw.dans.vaultingest.core.utilities.TestDeposit;
+import nl.knaw.dans.vaultingest.core.utilities.TestDepositFile;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
@@ -44,13 +46,13 @@ class DepositToBagProcessTest {
 
     @Test
     void process() throws Exception {
-        var rdaBagWriter = new RdaBagWriter();
+        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
         var output = new InMemoryOutputWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
         var depositToBagProcess = new DepositToBagProcess(
-            rdaBagWriter,
+            () -> rdaBagWriter,
             deposit -> output,
             vaultCatalogService,
             depositManager,
@@ -133,7 +135,7 @@ class DepositToBagProcessTest {
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var depositToBagProcess = new DepositToBagProcess(
-            rdaBagWriter,
+            () -> rdaBagWriter,
             d -> new NullBagOutputWriter(),
             vaultCatalogService,
             depositManager, depositValidator, new IdMinter());
@@ -158,7 +160,7 @@ class DepositToBagProcessTest {
             ))
             .build();
 
-        var rdaBagWriter = Mockito.mock(RdaBagWriter.class);
+        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
 
         Mockito.doReturn(Optional.empty())
@@ -168,7 +170,7 @@ class DepositToBagProcessTest {
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var depositToBagProcess = new DepositToBagProcess(
-            rdaBagWriter,
+            () -> rdaBagWriter,
             d -> new NullBagOutputWriter(),
             vaultCatalogService,
             depositManager, depositValidator, new IdMinter());

@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
@@ -44,24 +43,43 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RdaBagWriter {
 
-    // TODO make injected
-    private final DataciteSerializer dataciteSerializer = new DataciteSerializer();
-    private final PidMappingSerializer pidMappingSerializer = new PidMappingSerializer();
-    private final OaiOreSerializer oaiOreSerializer = new OaiOreSerializer(new ObjectMapper());
-    private final OriginalMetadataSerializer originalMetadataSerializer = new OriginalMetadataSerializer();
+    private final DataciteSerializer dataciteSerializer;
+    private final PidMappingSerializer pidMappingSerializer;
+    private final OaiOreSerializer oaiOreSerializer;
+    private final OriginalMetadataSerializer originalMetadataSerializer;
 
-    private final DataciteConverter dataciteConverter = new DataciteConverter();
-    private final PidMappingConverter pidMappingConverter = new PidMappingConverter();
-    private final OaiOreConverter oaiOreConverter = new OaiOreConverter();
+    private final DataciteConverter dataciteConverter;
+    private final PidMappingConverter pidMappingConverter;
+    private final OaiOreConverter oaiOreConverter;
 
-    private final Map<Path, Map<ManifestAlgorithm, String>> checksums = new HashMap<>();
+    private final Map<Path, Map<ManifestAlgorithm, String>> checksums;
     private final List<ManifestAlgorithm> requiredAlgorithms = List.of(ManifestAlgorithm.SHA1, ManifestAlgorithm.MD5);
+
+    RdaBagWriter(
+        DataciteSerializer dataciteSerializer,
+        PidMappingSerializer pidMappingSerializer,
+        OaiOreSerializer oaiOreSerializer,
+        OriginalMetadataSerializer originalMetadataSerializer,
+        DataciteConverter dataciteConverter,
+        PidMappingConverter pidMappingConverter,
+        OaiOreConverter oaiOreConverter
+    ) {
+        this.dataciteSerializer = dataciteSerializer;
+        this.pidMappingSerializer = pidMappingSerializer;
+        this.oaiOreSerializer = oaiOreSerializer;
+        this.originalMetadataSerializer = originalMetadataSerializer;
+        this.dataciteConverter = dataciteConverter;
+        this.pidMappingConverter = pidMappingConverter;
+        this.oaiOreConverter = oaiOreConverter;
+
+        this.checksums = new HashMap<>();
+    }
 
     public void write(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
 
         var dataPath = Path.of("data");
 
-        for (var file: deposit.getPayloadFiles()) {
+        for (var file : deposit.getPayloadFiles()) {
             log.info("Writing payload file {}", file);
             writePayloadFile(file, dataPath, outputWriter);
         }
@@ -81,7 +99,7 @@ public class RdaBagWriter {
         log.info("Writing bagit.txt");
         writeBagitFile(deposit, outputWriter);
 
-        for (var metadataFile: deposit.getMetadataFiles()) {
+        for (var metadataFile : deposit.getMetadataFiles()) {
             log.info("Writing {}", metadataFile);
             writeMetadataFile(deposit, metadataFile, outputWriter);
         }
@@ -105,7 +123,7 @@ public class RdaBagWriter {
         log.debug("Checksums already present: {}", existingChecksums);
 
         try (var inputStream = file.openInputStream();
-            var digestInputStream = new MultiDigestInputStream(inputStream, checksumsToCalculate)) {
+             var digestInputStream = new MultiDigestInputStream(inputStream, checksumsToCalculate)) {
 
             log.info("Writing payload file {} to output", targetPath);
             outputWriter.writeBagItem(digestInputStream, targetPath);
@@ -127,10 +145,10 @@ public class RdaBagWriter {
     private void writeTagManifest(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
         // get the metadata, which is everything EXCEPT the data/** and tagmanifest-* files
         // but the deposit does not know about these files, only this class knows
-        for (var algorithm: requiredAlgorithms) {
+        for (var algorithm : requiredAlgorithms) {
             var outputString = new StringBuilder();
 
-            for (var entry: checksums.entrySet()) {
+            for (var entry : checksums.entrySet()) {
                 if (entry.getKey().startsWith("data/") || entry.getKey().startsWith("tagmanifest-")) {
                     continue;
                 }
@@ -152,7 +170,7 @@ public class RdaBagWriter {
         var files = deposit.getPayloadFiles();
         var checksumMap = new HashMap<DepositFile, Map<ManifestAlgorithm, String>>();
 
-        for (var file: files) {
+        for (var file : files) {
             var output = (OutputStream) NullOutputStream.NULL_OUTPUT_STREAM;
 
             try (var input = new MultiDigestInputStream(file.openInputStream(), requiredAlgorithms)) {
@@ -161,11 +179,11 @@ public class RdaBagWriter {
             }
         }
 
-        for (var algorithm: requiredAlgorithms) {
+        for (var algorithm : requiredAlgorithms) {
             var outputFile = String.format("manifest-%s.txt", algorithm.getName());
             var outputString = new StringBuilder();
 
-            for (var file: files) {
+            for (var file : files) {
                 var checksum = checksumMap.get(file).get(algorithm);
                 outputString.append(String.format("%s  %s\n", checksum, dataPath.resolve(file.getPath())));
             }

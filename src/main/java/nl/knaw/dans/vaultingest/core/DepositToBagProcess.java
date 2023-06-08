@@ -20,6 +20,7 @@ import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.Outbox;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
+import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriterFactory;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
@@ -40,14 +41,14 @@ public class DepositToBagProcess {
     private final IdMinter idMinter;
 
     public DepositToBagProcess(
-        RdaBagWriter rdaBagWriter,
+        RdaBagWriterFactory rdaBagWriterFactory,
         BagOutputWriterFactory bagOutputWriterFactory,
         VaultCatalogService vaultCatalogService,
         DepositManager depositManager,
         DepositValidator depositValidator,
         IdMinter idMinter
     ) {
-        this.rdaBagWriter = rdaBagWriter;
+        this.rdaBagWriter = rdaBagWriterFactory.createRdaBagWriter();
         this.bagOutputWriterFactory = bagOutputWriterFactory;
         this.vaultCatalogService = vaultCatalogService;
         this.depositManager = depositManager;
