@@ -141,14 +141,16 @@ public class OaiOreConverter {
 
         model.add(type);
 
-        for (var file: deposit.getPayloadFiles()) {
-            var fileResource = createAggregatedResource(model, file);
+        if (deposit.getPayloadFiles() != null) {
+            for (var file : deposit.getPayloadFiles()) {
+                var fileResource = createAggregatedResource(model, file);
 
-            model.add(model.createStatement(
-                resource,
-                ORE.aggregates,
-                fileResource
-            ));
+                model.add(model.createStatement(
+                    resource,
+                    ORE.aggregates,
+                    fileResource
+                ));
+            }
         }
 
         return resource;

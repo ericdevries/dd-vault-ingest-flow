@@ -18,6 +18,7 @@ package nl.knaw.dans.vaultingest.core.domain;
 import java.io.IOException;
 import java.nio.file.Path;
 
+// TODO really don't like how this looks, fix it somehow
 public interface Outbox {
 
     void moveDeposit(Deposit deposit) throws IOException;

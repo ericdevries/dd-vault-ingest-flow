@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.domain;
+package nl.knaw.dans.vaultingest.core.utilities;
 
 import lombok.Builder;
 import lombok.Data;
+import nl.knaw.dans.vaultingest.core.domain.DepositFile;
+import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

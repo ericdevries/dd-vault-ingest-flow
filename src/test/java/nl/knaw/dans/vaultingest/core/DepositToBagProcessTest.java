@@ -15,56 +15,48 @@
  */
 package nl.knaw.dans.vaultingest.core;
 
-import nl.knaw.dans.vaultingest.core.deposit.CommonDepositManager;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.TestDeposit;
-import nl.knaw.dans.vaultingest.core.domain.TestDepositFile;
+import nl.knaw.dans.vaultingest.core.utilities.TestDeposit;
+import nl.knaw.dans.vaultingest.core.utilities.TestDepositFile;
 import nl.knaw.dans.vaultingest.core.domain.ids.DAI;
 import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetAuthor;
 import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
-import nl.knaw.dans.vaultingest.core.rdabag.output.ZipBagOutputWriter;
-import nl.knaw.dans.vaultingest.core.utilities.TestDatasetContactResolver;
+import nl.knaw.dans.vaultingest.core.utilities.InMemoryOutputWriter;
 import nl.knaw.dans.vaultingest.core.utilities.NullBagOutputWriter;
-import nl.knaw.dans.vaultingest.core.utilities.StdoutBagOutputWriter;
-import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DepositToBagProcessTest {
 
     @Test
     void process() throws Exception {
         var rdaBagWriter = new RdaBagWriter();
+        var output = new InMemoryOutputWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
-        var depositToBagProcess = new DepositToBagProcess(rdaBagWriter,
-            deposit -> new StdoutBagOutputWriter(),
-            vaultCatalogService, depositManager, depositValidator, new IdMinter());
-
-        var s = getClass().getResource("/input/6a6632f1-91d2-49ba-8449-a8d2b539267a/valid-bag");
-        assert s != null;
-        var bagDir = Path.of(s.getPath());
-
-        try (var files = Files.walk(bagDir)) {
-            files.filter(Files::isRegularFile).forEach(System.out::println);
-        }
+        var depositToBagProcess = new DepositToBagProcess(
+            rdaBagWriter,
+            deposit -> output,
+            vaultCatalogService,
+            depositManager,
+            depositValidator,
+            new IdMinter()
+        );
 
         var deposit = TestDeposit.builder()
             .id(UUID.randomUUID().toString())
@@ -86,12 +78,12 @@ class DepositToBagProcessTest {
             .rightsHolder(List.of("John Rights"))
             .payloadFiles(List.of(
                 TestDepositFile.builder()
-                    .path(Path.of("data/file1.txt"))
+                    .path(Path.of("file1.txt"))
                     .checksums(Map.of())
                     .id(UUID.randomUUID().toString())
                     .build(),
                 TestDepositFile.builder()
-                    .path(Path.of("data/file2.txt"))
+                    .path(Path.of("file2.txt"))
                     .checksums(Map.of())
                     .id(UUID.randomUUID().toString())
                     .build()
@@ -100,47 +92,26 @@ class DepositToBagProcessTest {
 
         depositToBagProcess.processDeposit(deposit);
 
-        System.out.println(deposit);
-    }
-
-    @Test
-    void process_with_originalFilePathMappings() throws Exception {
-        var rdaBagWriter = new RdaBagWriter();
-        var xmlReader = new XmlReaderImpl();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
-        var depositManager = Mockito.mock(DepositManager.class);
-        var depositValidator = Mockito.mock(DepositValidator.class);
-        var depositToBagProcess = new DepositToBagProcess(rdaBagWriter,
-            deposit -> new StdoutBagOutputWriter(),
-            vaultCatalogService, depositManager, depositValidator, new IdMinter());
-
-        var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
-        assert s != null;
-
-        var bagDir = Path.of(s.getPath());
-
-        var deposit = new CommonDepositManager(xmlReader, new TestDatasetContactResolver(), new TestLanguageResolver()).loadDeposit(bagDir);
-
-        depositToBagProcess.processDeposit(deposit);
-    }
-
-    @Test
-    void process_with_originalFilePathMappings_to_zip() throws Exception {
-        var xmlReader = new XmlReaderImpl();
-        var rdaBagWriter = new RdaBagWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
-        var depositManager = Mockito.mock(DepositManager.class);
-        var depositValidator = Mockito.mock(DepositValidator.class);
-
-        var output = new ZipBagOutputWriter(Path.of("/tmp/bag123.zip"));
-        var depositToBagProcess = new DepositToBagProcess(rdaBagWriter, (path) -> output, vaultCatalogService, depositManager, depositValidator, new IdMinter());
-        var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
-        assert s != null;
-
-        var bagDir = Path.of(s.getPath());
-        var deposit = new CommonDepositManager(xmlReader, new TestDatasetContactResolver(), new TestLanguageResolver()).loadDeposit(bagDir);
-
-        depositToBagProcess.processDeposit(deposit);
+        assertTrue(output.isClosed());
+        assertThat(output.getData().keySet())
+            .map(Path::toString)
+            .containsOnly(
+                "bag-info.txt",
+                "bagit.txt",
+                "manifest-sha1.txt",
+                "manifest-md5.txt",
+                "tagmanifest-sha1.txt",
+                "tagmanifest-md5.txt",
+                "data/file1.txt",
+                "data/file2.txt",
+                "metadata/dataset.xml",
+                "metadata/files.xml",
+                "metadata/oai-ore.rdf",
+                "metadata/oai-ore.jsonld",
+                "original-metadata.zip",
+                "metadata/pid-mapping.txt",
+                "metadata/datacite.xml"
+            );
     }
 
     @Test

@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.domain;
+package nl.knaw.dans.vaultingest.core.utilities;
 
 import lombok.Builder;
 import lombok.Data;
+import nl.knaw.dans.vaultingest.core.domain.Deposit;
+import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.metadata.CollectionDate;
 import nl.knaw.dans.vaultingest.core.domain.metadata.Contributor;
 import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
@@ -80,7 +82,7 @@ public class TestDeposit implements Deposit {
     }
 
     @Override
-    public Collection<Path> getMetadataFiles() throws IOException {
+    public Collection<Path> getMetadataFiles() {
         return List.of(
             Path.of("bag-info.txt"),
             Path.of("bagit.txt"),

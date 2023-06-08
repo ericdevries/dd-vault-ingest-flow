@@ -118,23 +118,4 @@ public class CommonDepositManager extends AbstractDepositManager {
         }
     }
 
-    List<DepositFile> getDepositFiles(Path bagDir, Bag bag, Document ddm, Document filesXml, OriginalFilepaths originalFilepaths) {
-        var manifests = getPrecomputedChecksums(bagDir, bag);
-
-        return XPathEvaluator.nodes(filesXml, "/files:files/files:file")
-            .map(node -> {
-                var filePath = node.getAttributes().getNamedItem("filepath").getTextContent();
-                var physicalPath = bagDir.resolve(originalFilepaths.getPhysicalPath(Path.of(filePath)));
-                var checksums = manifests.get(bagDir.relativize(physicalPath));
-
-                return CommonDepositFile.builder()
-                    .id(UUID.randomUUID().toString())
-                    .physicalPath(physicalPath)
-                    .filesXmlNode(node)
-                    .ddmNode(ddm)
-                    .checksums(checksums)
-                    .build();
-            })
-            .collect(Collectors.toList());
-    }
 }

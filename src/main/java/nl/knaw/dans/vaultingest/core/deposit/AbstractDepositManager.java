@@ -18,8 +18,10 @@ package nl.knaw.dans.vaultingest.core.deposit;
 import gov.loc.repository.bagit.domain.Bag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
 import nl.knaw.dans.vaultingest.core.domain.OriginalFilepaths;
+import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -36,7 +38,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -93,11 +98,11 @@ public abstract class AbstractDepositManager implements DepositManager {
     protected Map<Path, Map<ManifestAlgorithm, String>> getPrecomputedChecksums(Path bagDir, Bag bag) {
         var manifests = new HashMap<Path, Map<ManifestAlgorithm, String>>();
 
-        for (var manifest: bag.getPayLoadManifests()) {
+        for (var manifest : bag.getPayLoadManifests()) {
             try {
                 var alg = ManifestAlgorithm.from(manifest.getAlgorithm().getMessageDigestName());
 
-                for (var entry: manifest.getFileToChecksumMap().entrySet()) {
+                for (var entry : manifest.getFileToChecksumMap().entrySet()) {
                     var relativePath = bagDir.relativize(entry.getKey());
                     var checksum = entry.getValue();
 
@@ -112,6 +117,26 @@ public abstract class AbstractDepositManager implements DepositManager {
         }
 
         return manifests;
+    }
+
+    protected List<DepositFile> getDepositFiles(Path bagDir, Bag bag, Document ddm, Document filesXml, OriginalFilepaths originalFilepaths) {
+        var manifests = getPrecomputedChecksums(bagDir, bag);
+
+        return XPathEvaluator.nodes(filesXml, "/files:files/files:file")
+            .map(node -> {
+                var filePath = node.getAttributes().getNamedItem("filepath").getTextContent();
+                var physicalPath = bagDir.resolve(originalFilepaths.getPhysicalPath(Path.of(filePath)));
+                var checksums = manifests.get(bagDir.relativize(physicalPath));
+
+                return CommonDepositFile.builder()
+                    .id(UUID.randomUUID().toString())
+                    .physicalPath(physicalPath)
+                    .filesXmlNode(node)
+                    .ddmNode(ddm)
+                    .checksums(checksums)
+                    .build();
+            })
+            .collect(Collectors.toList());
     }
 
 }
