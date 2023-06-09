@@ -84,7 +84,7 @@ class CommonDeposit implements Deposit {
 
     @Override
     public String getDepositorId() {
-        return null;
+        return this.properties.getDepositorId();
     }
 
     @Override

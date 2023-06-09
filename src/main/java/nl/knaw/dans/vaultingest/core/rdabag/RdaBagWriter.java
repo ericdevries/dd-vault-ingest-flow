@@ -72,11 +72,8 @@ public class RdaBagWriter {
     }
 
     public void write(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
-        var dataPath = Path.of("data");
-        var files = buildPayloadFileMap(deposit, dataPath);
-
         log.info("Writing payload files");
-        writePayloadFiles(files, outputWriter);
+        writePayloadFiles(deposit, outputWriter);
 
         log.info("Writing metadata/datacite.xml");
         writeDatacite(deposit, outputWriter);
@@ -98,34 +95,26 @@ public class RdaBagWriter {
             writeMetadataFile(deposit, metadataFile, outputWriter);
         }
 
-        writeManifests(files, outputWriter);
+        writeManifests(deposit, outputWriter);
 
         // must be last, because all other files must have been written to
         writeTagManifest(deposit, outputWriter);
     }
 
-    Map<DepositFile, Path> buildPayloadFileMap(Deposit deposit, Path dataPath) {
+    Map<DepositFile, Path> buildPayloadFileMap(Deposit deposit) {
         var result = new HashMap<DepositFile, Path>();
 
         for (var file : deposit.getPayloadFiles()) {
-            var targetPath = dataPath.resolve(file.getPath());
-
-            if (file.getPath().equals(Path.of("original-metadata.zip"))) {
-                targetPath = file.getPath();
-            }
-
-            log.trace("Deposit file with name {} will be written to {}", file.getPath(), targetPath);
-            result.put(file, targetPath);
+            log.trace("Deposit file with name {} will be written to {}", file.getPath());
+            result.put(file, file.getPath());
         }
 
         return result;
     }
 
-    private void writePayloadFiles(Map<DepositFile, Path> files, BagOutputWriter outputWriter) throws IOException {
-        for (var entry : files.entrySet()) {
-            var file = entry.getKey();
-            var targetPath = entry.getValue();
-
+    private void writePayloadFiles(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
+        for (var file : deposit.getPayloadFiles()) {
+            var targetPath = file.getPath();
             var existingChecksums = file.getChecksums();
             var checksumsToCalculate = requiredAlgorithms.stream()
                 .filter(algorithm -> !existingChecksums.containsKey(algorithm))
@@ -150,15 +139,15 @@ public class RdaBagWriter {
         }
     }
 
-
     private void writeTagManifest(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
         // get the metadata, which is everything EXCEPT the data/** and tagmanifest-* files
         // but the deposit does not know about these files, only this class knows
         for (var algorithm : requiredAlgorithms) {
             var outputString = new StringBuilder();
+            var payloadPaths = deposit.getPayloadFiles().stream().map(DepositFile::getPath).collect(Collectors.toSet());
 
             for (var entry : checksums.entrySet()) {
-                if (entry.getKey().startsWith("data/") || entry.getKey().startsWith("tagmanifest-")) {
+                if (payloadPaths.contains(entry.getKey()) || entry.getKey().startsWith("tagmanifest-")) {
                     continue;
                 }
 
@@ -174,11 +163,11 @@ public class RdaBagWriter {
 
     }
 
-    private void writeManifests(Map<DepositFile, Path> files, BagOutputWriter outputWriter) throws IOException {
+    private void writeManifests(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
         // iterate all files in rda bag and get checksum sha1
         var checksumMap = new HashMap<DepositFile, Map<ManifestAlgorithm, String>>();
 
-        for (var file : files.keySet()) {
+        for (var file : deposit.getPayloadFiles()) {
             var output = (OutputStream) NullOutputStream.NULL_OUTPUT_STREAM;
 
             try (var input = new MultiDigestInputStream(file.openInputStream(), requiredAlgorithms)) {
@@ -191,11 +180,9 @@ public class RdaBagWriter {
             var outputFile = String.format("manifest-%s.txt", algorithm.getName());
             var outputString = new StringBuilder();
 
-            for (var entry : files.entrySet()) {
-                var file = entry.getKey();
-                var path = entry.getValue();
+            for (var file : deposit.getPayloadFiles()) {
                 var checksum = checksumMap.get(file).get(algorithm);
-                outputString.append(String.format("%s  %s\n", checksum, path));
+                outputString.append(String.format("%s  %s\n", checksum, file.getPath()));
             }
 
             checksummedWriteToOutput(outputString.toString(), Path.of(outputFile), outputWriter);

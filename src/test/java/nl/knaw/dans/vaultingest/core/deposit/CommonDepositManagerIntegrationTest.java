@@ -66,10 +66,10 @@ class CommonDepositManagerIntegrationTest {
         // check that the file paths are the original ones, not the renamed ones
         assertThat(files).extracting("path").map(Object::toString)
             .containsOnly(
-                "random images/image01.png",
-                "random images/image02.jpeg",
-                "random images/image03.jpeg",
-                "a/deeper/path/With some file.txt",
+                "data/random images/image01.png",
+                "data/random images/image02.jpeg",
+                "data/random images/image03.jpeg",
+                "data/a/deeper/path/With some file.txt",
                 "original-metadata.zip"
             );
 

@@ -32,7 +32,7 @@ class CommonDepositFileTest {
             .filesXmlNode(getFilesXmlNode("data/only/valid/characters.txt"))
             .build();
 
-        assertEquals(Path.of("only/valid/"), depositFile.getDirectoryLabel());
+        assertEquals(Path.of("data/only/valid/"), depositFile.getDirectoryLabel());
     }
 
     @Test
@@ -41,7 +41,7 @@ class CommonDepositFileTest {
             .filesXmlNode(getFilesXmlNode("data/&invalid**/(characters)))/characters.txt"))
             .build();
 
-        assertEquals(Path.of("_invalid__/_characters___/"), depositFile.getDirectoryLabel());
+        assertEquals(Path.of("data/_invalid__/_characters___/"), depositFile.getDirectoryLabel());
     }
 
     @Test
@@ -68,7 +68,7 @@ class CommonDepositFileTest {
             .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
             .build();
 
-        assertEquals(Path.of("invalid/characters/here_________.txt"), depositFile.getPath());
+        assertEquals(Path.of("data/invalid/characters/here_________.txt"), depositFile.getPath());
     }
 
     @Test

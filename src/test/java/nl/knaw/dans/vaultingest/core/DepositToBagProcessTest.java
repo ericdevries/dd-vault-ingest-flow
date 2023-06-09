@@ -80,12 +80,12 @@ class DepositToBagProcessTest {
             .rightsHolder(List.of("John Rights"))
             .payloadFiles(List.of(
                 TestDepositFile.builder()
-                    .path(Path.of("file1.txt"))
+                    .path(Path.of("data/file1.txt"))
                     .checksums(Map.of())
                     .id(UUID.randomUUID().toString())
                     .build(),
                 TestDepositFile.builder()
-                    .path(Path.of("file2.txt"))
+                    .path(Path.of("data/file2.txt"))
                     .checksums(Map.of())
                     .id(UUID.randomUUID().toString())
                     .build()

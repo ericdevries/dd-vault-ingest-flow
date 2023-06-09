@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RdaBagWriterIntegrationTest {
@@ -84,6 +85,15 @@ public class RdaBagWriterIntegrationTest {
             // the oai-ore rdf file should have a reference to this file too
             var oaiOreRdf = data.get(Path.of("metadata/oai-ore.rdf"));
             assertTrue(oaiOreRdf.contains("<schema:name>original-metadata.zip</schema:name>"));
+
+            // the tagmanifest files should NOT contain a reference
+            var tagmanifestPaths = Arrays.stream(data.get(Path.of("tagmanifest-md5.txt")).split("\n"))
+                .map(line -> line.split("\\s+"))
+                .filter(line -> line.length == 2)
+                .map(line -> line[1])
+                .collect(Collectors.toList());
+
+            assertFalse(tagmanifestPaths.contains("original-metadata.zip"));
         }
     }
 }

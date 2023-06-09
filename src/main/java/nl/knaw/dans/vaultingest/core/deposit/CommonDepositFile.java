@@ -35,12 +35,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/*
-TODO:
-- add accessrights logic
-- add checksum logic
-
- */
 @ToString
 @EqualsAndHashCode
 @Builder
@@ -183,7 +177,7 @@ class CommonDepositFile implements DepositFile {
     }
 
     private Path getFilePath() {
-        return Path.of(getFilePathAttribute().substring("data/".length()));
+        return Path.of(getFilePathAttribute());//.substring("data/".length()));
     }
 
     private String getAccessibleToRights() {
