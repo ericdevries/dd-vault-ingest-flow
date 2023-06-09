@@ -16,17 +16,13 @@
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Value;
 
-@Getter
+@Value
 @Builder
-@EqualsAndHashCode
-@ToString
 public class Publication {
-    private final String citation;
-    private final String idType;
-    private final String idNumber;
-    private final String url;
+    String citation;
+    String idType;
+    String idNumber;
+    String url;
 }

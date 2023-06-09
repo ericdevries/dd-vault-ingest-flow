@@ -17,11 +17,9 @@ package nl.knaw.dans.vaultingest.core.rdabag.converter;
 
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
-import nl.knaw.dans.vaultingest.domain.Affiliation;
-import nl.knaw.dans.vaultingest.domain.DescriptionType;
-import nl.knaw.dans.vaultingest.domain.Resource;
-import nl.knaw.dans.vaultingest.domain.ResourceType;
+import nl.knaw.dans.vaultingest.domain.*;
 
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
 public class DataciteConverter {
@@ -38,8 +36,21 @@ public class DataciteConverter {
         resource.setIdentifier(getIdentifier(deposit));
         resource.setPublisher(getPublisher());
         resource.setDescriptions(getDescriptions(deposit));
+        resource.setPublicationYear(getPublicationYear(deposit));
+        resource.setContributors(getContributors(deposit));
 
         return resource;
+    }
+
+    private String getPublicationYear(Deposit deposit) {
+        // TODO verify what date to use; I assumed distribution date
+        try {
+            var date = new SimpleDateFormat("yyyy-MM-dd").parse(deposit.getDistributionDate());
+            return new SimpleDateFormat("yyyy").format(date);
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     private Resource.Titles geTitles(Deposit deposit) {
@@ -68,10 +79,22 @@ public class DataciteConverter {
                     name.setValue(a.getDisplayName());
                     creator.setCreatorName(name);
 
-                    var affiliation = new Affiliation();
-                    affiliation.setValue(a.getAffiliation());
+                    if (a.getAffiliation() != null) {
+                        var affiliation = new Affiliation();
+                        affiliation.setValue("(" + a.getAffiliation() + ")");
+                        creator.getAffiliation().add(affiliation);
+                    }
 
-                    creator.getAffiliation().add(affiliation);
+                    var nameIdentifier = a.getIdentifier();
+
+                    if (nameIdentifier != null) {
+                        var identifier = new NameIdentifier();
+                        identifier.setValue(nameIdentifier.getValue());
+                        identifier.setNameIdentifierScheme(nameIdentifier.getScheme());
+                        identifier.setSchemeURI(nameIdentifier.getSchemeURI());
+
+                        creator.getNameIdentifier().add(identifier);
+                    }
 
                     return creator;
                 })
@@ -84,7 +107,7 @@ public class DataciteConverter {
     }
 
     private Resource.Identifier getIdentifier(Deposit deposit) {
-        var id = deposit.getId().substring(deposit.getId().indexOf(':') + 1);
+        var id = deposit.getDoi().substring(deposit.getDoi().indexOf(':') + 1);
         var identifier = new Resource.Identifier();
         identifier.setIdentifierType("DOI");
         identifier.setValue(id);
@@ -113,5 +136,29 @@ public class DataciteConverter {
         }
 
         return descriptions;
+    }
+
+    private Resource.Contributors getContributors(Deposit deposit) {
+        var contributors = new Resource.Contributors();
+
+        var contact = deposit.getContact();
+
+        if (contact != null) {
+            var contributor = new Resource.Contributors.Contributor();
+            var name = new Resource.Contributors.Contributor.ContributorName();
+            name.setValue(contact.getName());
+            contributor.setContributorName(name);
+
+            if (contact.getAffiliation() != null) {
+                var affiliation = new Affiliation();
+                affiliation.setValue("(" + contact.getAffiliation() + ")");
+                contributor.getAffiliation().add(affiliation);
+            }
+
+            contributor.setContributorType(ContributorType.CONTACT_PERSON);
+            contributors.getContributor().add(contributor);
+        }
+
+        return contributors;
     }
 }

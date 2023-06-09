@@ -39,8 +39,8 @@ public class IngestAreaDirectoryWatcher {
     void start(IngestAreaItemCreated callback) {
         log.debug("Starting listener; path = {}", directory);
         var filter = FileFilterUtils.and(
-            FileFilterUtils.directoryFileFilter(),
-            FileFilterUtils.asFileFilter(f -> f.getParentFile().equals(directory.toFile()))
+                FileFilterUtils.directoryFileFilter(),
+                FileFilterUtils.asFileFilter(f -> f.getParentFile().equals(directory.toFile()))
         );
 
         var observer = new FileAlterationObserver(directory.toFile(), filter);

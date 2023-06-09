@@ -15,15 +15,11 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
-import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.reader.BagReader;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.DepositFile;
-import nl.knaw.dans.vaultingest.core.domain.OriginalFilepaths;
-import nl.knaw.dans.vaultingest.core.validator.BagValidator;
-import nl.knaw.dans.vaultingest.core.validator.InvalidBagException;
-import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
+import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
+import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -32,28 +28,25 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class MigrationDepositManager extends AbstractDepositManager {
     private final DatasetContactResolver datasetContactResolver;
     private final LanguageResolver languageResolver;
-    private final BagValidator bagValidator;
+    private final DepositValidator depositValidator;
 
-    public MigrationDepositManager(XmlReader xmlReader, DatasetContactResolver datasetContactResolver, LanguageResolver languageResolver, BagValidator bagValidator) {
+    public MigrationDepositManager(XmlReader xmlReader, DatasetContactResolver datasetContactResolver, LanguageResolver languageResolver, DepositValidator depositValidator) {
         super(xmlReader);
         this.datasetContactResolver = datasetContactResolver;
         this.languageResolver = languageResolver;
-        this.bagValidator = bagValidator;
+        this.depositValidator = depositValidator;
     }
 
-    public Deposit loadDeposit(Path path) throws InvalidBagException {
+    public Deposit loadDeposit(Path path) throws InvalidDepositException {
         try {
             var bagDir = getBagDir(path);
 
-            bagValidator.validate(bagDir);
+            depositValidator.validate(bagDir);
 
             var bag = new BagReader().read(bagDir);
             var ddm = readXmlFile(bagDir.resolve(Path.of("metadata", "dataset.xml")));
@@ -79,7 +72,7 @@ public class MigrationDepositManager extends AbstractDepositManager {
                 .build();
 
         }
-        catch (InvalidBagException e) {
+        catch (InvalidDepositException e) {
             log.error("Invalid deposit: path={}", path, e);
             throw e;
         }
@@ -106,25 +99,5 @@ public class MigrationDepositManager extends AbstractDepositManager {
         catch (FileNotFoundException e) {
             return null;
         }
-    }
-
-    List<DepositFile> getDepositFiles(Path bagDir, Bag bag, Document ddm, Document filesXml, OriginalFilepaths originalFilepaths) {
-        var manifests = getPrecomputedChecksums(bagDir, bag);
-
-        return XPathEvaluator.nodes(filesXml, "/files:files/files:file")
-            .map(node -> {
-                var filePath = node.getAttributes().getNamedItem("filepath").getTextContent();
-                var physicalPath = bagDir.resolve(originalFilepaths.getPhysicalPath(Path.of(filePath)));
-                var checksums = manifests.get(bagDir.relativize(physicalPath));
-
-                return CommonDepositFile.builder()
-                    .id(UUID.randomUUID().toString())
-                    .physicalPath(physicalPath)
-                    .filesXmlNode(node)
-                    .ddmNode(ddm)
-                    .checksums(checksums)
-                    .build();
-            })
-            .collect(Collectors.toList());
     }
 }

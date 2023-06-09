@@ -15,13 +15,14 @@
  */
 package nl.knaw.dans.vaultingest.core.validator;
 
-public class InvalidBagException extends Exception {
+import lombok.extern.slf4j.Slf4j;
 
-    public InvalidBagException(String msg) {
-        super(msg);
-    }
+import java.nio.file.Path;
 
-    public InvalidBagException(String msg, Throwable cause) {
-        super(msg, cause);
+@Slf4j
+public class VoidDepositValidator implements DepositValidator {
+    @Override
+    public void validate(Path depositDir) {
+        log.info("Validating bag on path {}, and it will succeed", depositDir);
     }
 }

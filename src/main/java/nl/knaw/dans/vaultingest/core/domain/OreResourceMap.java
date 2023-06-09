@@ -15,34 +15,21 @@
  */
 package nl.knaw.dans.vaultingest.core.domain;
 
-import lombok.AllArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Statement;
 
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-// TODO should not be in domain (or should it?)
-@AllArgsConstructor
 @Slf4j
+@Value
 public class OreResourceMap {
-    private final Model model;
+    Model model;
 
-    public Model getModel() {
-        // TODO check this isnt too slow to do on every get
-        // and that it is stable
-        var namespaces = this.getUsedNamespaces();
-
-        for (var namespace: namespaces.entrySet()) {
-            model.setNsPrefix(namespace.getKey(), namespace.getValue());
-        }
-
-        return model;
-    }
-
-    public Map<String, String> getUsedNamespaces() {
+    public Set<String> getUsedNamespaces() {
         var predicateNamespaces = this.model.listStatements()
             .toList().stream()
             .map(Statement::getPredicate)
@@ -51,9 +38,6 @@ public class OreResourceMap {
 
         log.trace("predicateNamespaces: {}", predicateNamespaces);
 
-        return OreNamespaces.getNamespaces().entrySet()
-            .stream().filter(entry -> predicateNamespaces.contains(entry.getValue()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return predicateNamespaces;
     }
-
 }

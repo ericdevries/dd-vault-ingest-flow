@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.domain;
+package nl.knaw.dans.vaultingest.core.utilities;
 
 import lombok.Builder;
 import lombok.Data;
-import nl.knaw.dans.vaultingest.core.domain.metadata.CollectionDate;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Contributor;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetRelation;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Distributor;
-import nl.knaw.dans.vaultingest.core.domain.metadata.GrantNumber;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Keyword;
-import nl.knaw.dans.vaultingest.core.domain.metadata.OtherId;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Publication;
-import nl.knaw.dans.vaultingest.core.domain.metadata.SeriesElement;
+import nl.knaw.dans.vaultingest.core.domain.Deposit;
+import nl.knaw.dans.vaultingest.core.domain.DepositFile;
+import nl.knaw.dans.vaultingest.core.domain.metadata.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -80,7 +71,7 @@ public class TestDeposit implements Deposit {
     }
 
     @Override
-    public Collection<Path> getMetadataFiles() throws IOException {
+    public Collection<Path> getMetadataFiles() {
         return List.of(
             Path.of("bag-info.txt"),
             Path.of("bagit.txt"),

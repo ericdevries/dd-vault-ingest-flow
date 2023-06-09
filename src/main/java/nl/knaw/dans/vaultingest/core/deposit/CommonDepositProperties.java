@@ -21,6 +21,10 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 class CommonDepositProperties {
+    private final String STATE_LABEL = "state.label";
+    private final String STATE_DESCRIPTION = "state.description";
+    private final String IDENTIFIER_DOI = "identifier.doi";
+    private final String DEPOSITOR_ID = "depositor.userId";
     private final Configuration configuration;
     private final FileBasedConfigurationBuilder<FileBasedConfiguration> builder;
 
@@ -29,15 +33,39 @@ class CommonDepositProperties {
         this.builder = builder;
     }
 
-    public <T> T getProperty(Class<T> cls, String name) {
-        return configuration.get(cls, name);
+    public String getStateLabel() {
+        return configuration.getString(STATE_LABEL);
     }
 
-    public void setProperty(String name, Object value) {
-        configuration.setProperty(name, value);
+    public void setStateLabel(String stateLabel) {
+        configuration.setProperty(STATE_LABEL, stateLabel);
     }
 
-    public FileBasedConfigurationBuilder<FileBasedConfiguration> getBuilder() {
-        return builder;
+    public String getStateDescription() {
+        return configuration.getString(STATE_DESCRIPTION);
+    }
+
+    public void setStateDescription(String stateDescription) {
+        configuration.setProperty(STATE_DESCRIPTION, stateDescription);
+    }
+
+    public String getIdentifierDoi() {
+        return configuration.getString(IDENTIFIER_DOI);
+    }
+
+    public void setIdentifierDoi(String identifierDoi) {
+        configuration.setProperty(IDENTIFIER_DOI, identifierDoi);
+    }
+
+    public String getDepositorId() {
+        return configuration.getString(DEPOSITOR_ID);
+    }
+
+    public void setDepositorId(String depositorId) {
+        configuration.setProperty(DEPOSITOR_ID, depositorId);
+    }
+
+    public void save() throws ConfigurationException {
+        builder.save();
     }
 }

@@ -20,9 +20,7 @@ import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Keywords {
@@ -32,8 +30,6 @@ public class Keywords {
 
     final public static String SCHEME_AAT = "Art and Architecture Thesaurus";
     final public static String SCHEME_URI_AAT = "http://vocab.getty.edu/aat/";
-
-    private static final Map<String, String> narcisToSubject = new HashMap<>();
 
     public static List<Keyword> getKeywords(Document document) {
         var results = new ArrayList<Keyword>();

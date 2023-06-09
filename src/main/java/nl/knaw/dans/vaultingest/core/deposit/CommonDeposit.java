@@ -15,40 +15,15 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Author;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.CollectionDates;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Contributors;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Creator;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Descriptions;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.DistributionDate;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Distributors;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.GrantNumbers;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Keywords;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Languages;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Organizations;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.OtherIds;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.PersonalData;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.ProductionDate;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Publications;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.RightsHolders;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Series;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Sources;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Subjects;
-import nl.knaw.dans.vaultingest.core.deposit.mapping.Title;
+import nl.knaw.dans.vaultingest.core.deposit.mapping.*;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
-import nl.knaw.dans.vaultingest.core.domain.metadata.CollectionDate;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Contributor;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetRelation;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Distributor;
-import nl.knaw.dans.vaultingest.core.domain.metadata.GrantNumber;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Keyword;
-import nl.knaw.dans.vaultingest.core.domain.metadata.OtherId;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Publication;
-import nl.knaw.dans.vaultingest.core.domain.metadata.SeriesElement;
+import nl.knaw.dans.vaultingest.core.domain.metadata.*;
+import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
+import nl.knaw.dans.vaultingest.core.xml.XmlNamespaces;
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -57,8 +32,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuperBuilder
+@ToString
 class CommonDeposit implements Deposit {
 
     // for the migration deposit
@@ -71,6 +48,7 @@ class CommonDeposit implements Deposit {
     private final LanguageResolver languageResolver;
     private final List<DepositFile> depositFiles;
     private final Path path;
+    private String nbn;
 
     @Override
     public String getId() {
@@ -79,17 +57,31 @@ class CommonDeposit implements Deposit {
 
     @Override
     public String getDoi() {
-        return this.getProperty("identifier.doi");
+        var prefix = ddm.lookupPrefix(XmlNamespaces.NAMESPACE_ID_TYPE);
+        var expr = String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix);
+        var dois = XPathEvaluator.strings(ddm, expr).collect(Collectors.toList());
+
+        if (dois.size() != 1) {
+            throw new IllegalStateException("There should be exactly one DOI in the DDM, but found " + dois.size() + " DOIs");
+        }
+
+        var doi = dois.get(0);
+
+        if (StringUtils.isBlank(doi)) {
+            throw new IllegalStateException("DOI is blank in the DDM");
+        }
+
+        return doi;
     }
 
     @Override
     public String getNbn() {
-        return this.getProperty("identifier.urn");
+        return this.nbn;
     }
 
     @Override
     public void setNbn(String nbn) {
-        this.setProperty("identifier.urn", nbn);
+        this.nbn = nbn;
     }
 
     @Override
@@ -111,18 +103,18 @@ class CommonDeposit implements Deposit {
 
     @Override
     public String getDepositorId() {
-        return null;
+        return this.properties.getDepositorId();
     }
 
-    @Override
     public State getState() {
-        return this.getProperty("state.label") != null ? State.valueOf(this.getProperty("state.label")) : null;
+        var label = this.properties.getStateLabel();
+        return label != null ? State.valueOf(label) : null;
     }
 
     @Override
     public void setState(State state, String message) {
-        setProperty("state.label", state.name());
-        setProperty("state.description", message);
+        this.properties.setStateLabel(state.name());
+        this.properties.setStateDescription(message);
     }
 
     @Override
@@ -223,7 +215,9 @@ class CommonDeposit implements Deposit {
 
     @Override
     public DatasetContact getContact() {
-        return datasetContactResolver.resolve(this.getProperty("depositor.userId"));
+        return datasetContactResolver.resolve(
+            this.properties.getDepositorId()
+        );
     }
 
     @Override
@@ -253,14 +247,6 @@ class CommonDeposit implements Deposit {
 
     private List<String> getMetadataValue(String key) {
         return bag.getMetadataValue(key);
-    }
-
-    protected String getProperty(String name) {
-        return this.properties.getProperty(String.class, name);
-    }
-
-    protected void setProperty(String name, String value) {
-        this.properties.setProperty(name, value);
     }
 
     Path getPath() {

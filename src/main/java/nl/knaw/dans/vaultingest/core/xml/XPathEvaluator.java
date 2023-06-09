@@ -54,6 +54,7 @@ public final class XPathEvaluator implements XmlNamespaces {
             namespaceMap.put("damd", NAMESPACE_DAMD);
             namespaceMap.put("agreements", NAMESPACE_AGREEMENTS);
             namespaceMap.put("afm", NAMESPACE_AFM);
+            namespaceMap.put("datacite", NAMESPACE_DATACITE);
 
             xpath.setNamespaceContext(new NamespaceContext() {
 
@@ -98,6 +99,7 @@ public final class XPathEvaluator implements XmlNamespaces {
     }
 
     private static synchronized Object evaluateXpath(Node node, String expr) throws XPathExpressionException {
+//        getXpath().
         return getXpath().compile(expr).evaluate(node, XPathConstants.NODESET);
     }
 

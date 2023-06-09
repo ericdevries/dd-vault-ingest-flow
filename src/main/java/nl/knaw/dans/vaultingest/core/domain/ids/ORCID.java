@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.domain.ids;
 
-public class ORCID extends BaseId {
+public class ORCID extends Identifier {
 
     public ORCID(String id) {
         super(id);
@@ -24,6 +24,12 @@ public class ORCID extends BaseId {
     @Override
     public String getScheme() {
         return "ORCID";
+    }
+
+    @Override
+    public String getSchemeURI() {
+        // TODO verify
+        return "https://orcid.org/";
     }
 
     @Override

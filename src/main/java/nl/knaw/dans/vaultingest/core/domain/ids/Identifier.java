@@ -19,12 +19,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
-public abstract class BaseId {
+public abstract class Identifier {
     private final String id;
     private final Pattern pattern = Pattern
         .compile("https?://.*/([-0-9]+[0-9Xx])$");
 
-    protected BaseId(String id) {
+    protected Identifier(String id) {
         this.id = id;
     }
 
@@ -52,6 +52,8 @@ public abstract class BaseId {
     }
 
     public abstract String getScheme();
+
+    public abstract String getSchemeURI();
 
     public String getValue() {
         return id;

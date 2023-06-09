@@ -15,17 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.domain;
 
-import nl.knaw.dans.vaultingest.core.domain.metadata.CollectionDate;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Contributor;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetRelation;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Distributor;
-import nl.knaw.dans.vaultingest.core.domain.metadata.GrantNumber;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Keyword;
-import nl.knaw.dans.vaultingest.core.domain.metadata.OtherId;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Publication;
-import nl.knaw.dans.vaultingest.core.domain.metadata.SeriesElement;
+import nl.knaw.dans.vaultingest.core.domain.metadata.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,8 +38,6 @@ public interface Deposit {
     String getSwordToken();
 
     String getDepositorId();
-
-    State getState();
 
     void setState(State state, String message);
 
@@ -100,10 +88,14 @@ public interface Deposit {
     InputStream inputStreamForMetadataFile(Path path);
 
     enum State {
-        // TODO get all states
         PUBLISHED,
         ACCEPTED,
         REJECTED,
         FAILED,
+        DRAFT,
+        FINALIZING,
+        INVALID,
+        SUBMITTED,
+        UPLOADED
     }
 }

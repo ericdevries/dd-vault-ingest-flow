@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.validator;
+package nl.knaw.dans.vaultingest.config.validator;
 
-import nl.knaw.dans.validatedansbag.api.ValidateCommand;
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.ws.rs.client.Client;
-import java.net.URI;
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = FileMustExistValidator.class)
+public @interface FileMustExist {
 
-public class MigrationBagValidator extends AbstractBagValidator {
+    String message() default "File '{path}' does not exist but is required";
 
-    public MigrationBagValidator(Client httpClient, URI serviceUri) {
-        super(httpClient, serviceUri);
-    }
+    Class<?>[] groups() default {};
 
-    @Override
-    protected ValidateCommand.PackageTypeEnum getPackageType() {
-        return ValidateCommand.PackageTypeEnum.MIGRATION;
-    }
+    Class<? extends Payload>[] payload() default {};
 }

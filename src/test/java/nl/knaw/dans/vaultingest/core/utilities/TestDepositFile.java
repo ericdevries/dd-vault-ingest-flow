@@ -13,21 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.domain;
+package nl.knaw.dans.vaultingest.core.utilities;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
+import nl.knaw.dans.vaultingest.core.domain.DepositFile;
+import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Map;
 
-@Getter
+@Data
 @Builder
-@ToString
-@EqualsAndHashCode
-public class ChecksumManifest {
+public class TestDepositFile implements DepositFile {
+    private final String id;
+    private final boolean restricted;
     private final Path path;
-    private final Map<String, ChecksumManifestEntry> entries;
+    private final String description;
+    private final Map<ManifestAlgorithm, String> checksums;
+
+    @Override
+    public Path getDirectoryLabel() {
+        return path.getParent();
+    }
+
+    @Override
+    public InputStream openInputStream() {
+        return new ByteArrayInputStream(("input for file " + id).getBytes());
+    }
 }

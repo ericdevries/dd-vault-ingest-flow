@@ -15,9 +15,9 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.mappers;
 
-import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.DansRel;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.DCTerms;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +38,7 @@ public class Subjects {
             // they should be the original values like D52000
             result.add(model.createStatement(
                 resource,
-                DansRel.dansAudience,
+                DCTerms.subject,
                 subject
             ));
         }

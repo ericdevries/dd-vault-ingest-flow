@@ -31,11 +31,7 @@ public class Contributors extends Base {
                     "dcx-dai:author[dcx-dai:role != 'RightsHolder']")
             .map(item -> {
                 var author = Author.parseAuthor(item);
-                var name = author.getDisplayName();
-
-                if (author.getOrganization() != null) {
-                    name = name + " (" + author.getOrganization() + ")";
-                }
+                var name = author.getContributorName();
 
                 return Contributor.builder()
                     .type(author.getRole())

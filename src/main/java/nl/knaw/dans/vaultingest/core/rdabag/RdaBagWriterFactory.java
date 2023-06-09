@@ -13,22 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.utilities;
+package nl.knaw.dans.vaultingest.core.rdabag;
 
-import nl.knaw.dans.vaultingest.core.deposit.DatasetContactResolver;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
-
-public class EchoDatasetContactResolver implements DatasetContactResolver {
-    @Override
-    public DatasetContact resolve(String userId) {
-        if (userId == null) {
-            return null;
-        }
-
-        return DatasetContact.builder()
-            .name(userId)
-            .affiliation(userId + " university")
-            .email(userId + "@test.com")
-            .build();
-    }
+public interface RdaBagWriterFactory {
+    RdaBagWriter createRdaBagWriter();
 }

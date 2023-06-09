@@ -15,22 +15,14 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
-import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.reader.BagReader;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.DepositFile;
-import nl.knaw.dans.vaultingest.core.domain.OriginalFilepaths;
-import nl.knaw.dans.vaultingest.core.validator.InvalidBagException;
-import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
+import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.w3c.dom.Document;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class CommonDepositManager extends AbstractDepositManager {
@@ -44,7 +36,7 @@ public class CommonDepositManager extends AbstractDepositManager {
     }
 
     @Override
-    public Deposit loadDeposit(Path path) throws InvalidBagException {
+    public Deposit loadDeposit(Path path) throws InvalidDepositException {
         try {
             var bagDir = getBagDir(path);
 
@@ -95,7 +87,7 @@ public class CommonDepositManager extends AbstractDepositManager {
         var properties = commonDeposit.getProperties();
 
         try {
-            properties.getBuilder().save();
+            properties.save();
         }
         catch (ConfigurationException e) {
             log.error("Error saving deposit properties: depositId={}", deposit.getId(), e);
@@ -107,35 +99,15 @@ public class CommonDepositManager extends AbstractDepositManager {
     public void updateDepositState(Path path, Deposit.State state, String message) {
         try {
             var depositProperties = getDepositProperties(path);
-            depositProperties.setProperty("state.label", state.name());
-            depositProperties.setProperty("state.message", message);
+            depositProperties.setStateLabel(state.name());
+            depositProperties.setStateDescription(message);
 
-            saveDepositProperties(depositProperties);
+            depositProperties.save();
         }
         catch (ConfigurationException e) {
             log.error("Error updating deposit state: path={}, state={}, message={}", path, state, message, e);
             throw new RuntimeException(e);
         }
-
     }
 
-    List<DepositFile> getDepositFiles(Path bagDir, Bag bag, Document ddm, Document filesXml, OriginalFilepaths originalFilepaths) {
-        var manifests = getPrecomputedChecksums(bagDir, bag);
-
-        return XPathEvaluator.nodes(filesXml, "/files:files/files:file")
-            .map(node -> {
-                var filePath = node.getAttributes().getNamedItem("filepath").getTextContent();
-                var physicalPath = bagDir.resolve(originalFilepaths.getPhysicalPath(Path.of(filePath)));
-                var checksums = manifests.get(bagDir.relativize(physicalPath));
-
-                return CommonDepositFile.builder()
-                    .id(UUID.randomUUID().toString())
-                    .physicalPath(physicalPath)
-                    .filesXmlNode(node)
-                    .ddmNode(ddm)
-                    .checksums(checksums)
-                    .build();
-            })
-            .collect(Collectors.toList());
-    }
 }

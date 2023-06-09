@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.domain;
+package nl.knaw.dans.vaultingest.core.utilities;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import nl.knaw.dans.vaultingest.core.deposit.DatasetContactResolver;
+import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
 
-@Getter
-@Builder
-@ToString
-@EqualsAndHashCode
-public class ChecksumManifestEntry {
-    private final String algorithm;
-    private final String checksum;
+public class TestDatasetContactResolver implements DatasetContactResolver {
+    @Override
+    public DatasetContact resolve(String userId) {
+        if (userId == null) {
+            return null;
+        }
+
+        return DatasetContact.builder()
+            .name(userId)
+            .affiliation(userId + " university")
+            .email(userId + "@dans.knaw.nl")
+            .build();
+    }
 }

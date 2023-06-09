@@ -41,6 +41,9 @@ public class Base {
     }
 
     static VIAF getVIAF(Node node) {
-        return XPathEvaluator.strings(node, "dcx-dai:VIAF").map(VIAF::new).findFirst().orElse(null);
+        // the example doesnt use dcx-dai:VIAF, should be looked into
+//        return XPathEvaluator.strings(node, "dcx-dai:VIAF").map(VIAF::new).findFirst().orElse(null);
+        return XPathEvaluator.strings(node, "dcx-dai:identifier[@scheme='VIAF']/@value")
+            .map(VIAF::new).findFirst().orElse(null);
     }
 }

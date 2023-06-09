@@ -65,12 +65,12 @@ class CommonDepositTest {
         var deposit = this.loadDeposit();
 
         assertThat(deposit.getOtherIds())
-            .extracting("fullName")
+            .extracting("value")
             .containsOnly(
                 "DCTERMS_ID001",
                 "DCTERMS_ID002",
                 "DCTERMS_ID003",
-                "DANS:12345"
+                "12345"
             );
     }
 
@@ -87,7 +87,7 @@ class CommonDepositTest {
             );
 
         assertThat(authors)
-            .extracting("identifierScheme")
+            .map(m -> m.getIdentifier() == null ? null : m.getIdentifier().getScheme())
             .containsOnly(
                 null,
                 "ORCID",
@@ -95,7 +95,7 @@ class CommonDepositTest {
             );
 
         assertThat(authors)
-            .extracting("identifier")
+            .map(m -> m.getIdentifier() == null ? null : m.getIdentifier().getValue())
             .containsOnly(
                 null,
                 "0000-1111-2222-3333",

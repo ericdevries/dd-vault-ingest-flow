@@ -30,17 +30,17 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class AbstractBagValidator implements BagValidator {
+public abstract class AbstractDepositValidator implements DepositValidator {
     private final Client httpClient;
     private final URI serviceUri;
 
-    public AbstractBagValidator(Client httpClient, URI serviceUri) {
+    public AbstractDepositValidator(Client httpClient, URI serviceUri) {
         this.httpClient = httpClient;
         this.serviceUri = serviceUri;
     }
 
     @Override
-    public void validate(Path depositDir) throws InvalidBagException {
+    public void validate(Path depositDir) throws InvalidDepositException {
         var bagDir = getBagDir(depositDir);
 
         var command = new ValidateCommand()
@@ -72,12 +72,12 @@ public abstract class AbstractBagValidator implements BagValidator {
         }
     }
 
-    private InvalidBagException formatValidationError(ValidateOk result) {
+    private InvalidDepositException formatValidationError(ValidateOk result) {
         var violations = result.getRuleViolations().stream()
                 .map(r -> String.format("- [%s] %s", r.getRule(), r.getViolation()))
                 .collect(Collectors.joining("\n"));
 
-        return new InvalidBagException(String.format(
+        return new InvalidDepositException(String.format(
                 "Bag was not valid according to Profile Version %s. Violations: %s",
                 result.getProfileVersion(), violations)
         );
@@ -85,14 +85,14 @@ public abstract class AbstractBagValidator implements BagValidator {
 
     protected abstract ValidateCommand.PackageTypeEnum getPackageType();
 
-    protected Path getBagDir(Path path) throws InvalidBagException {
+    protected Path getBagDir(Path path) throws InvalidDepositException {
         try (var list = Files.list(path)) {
             return list.filter(Files::isDirectory)
                     .findFirst()
                     .orElseThrow();
         }
         catch (IOException e) {
-            throw new InvalidBagException("Unable to find bag directory", e);
+            throw new InvalidDepositException("Unable to find bag directory", e);
         }
     }
 }

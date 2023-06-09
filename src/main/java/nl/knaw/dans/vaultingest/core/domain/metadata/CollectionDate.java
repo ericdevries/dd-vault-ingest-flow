@@ -16,15 +16,11 @@
 package nl.knaw.dans.vaultingest.core.domain.metadata;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Value;
 
-@Getter
+@Value
 @Builder
-@EqualsAndHashCode
-@ToString
 public class CollectionDate {
-    private final String start;
-    private final String end;
+    String start;
+    String end;
 }

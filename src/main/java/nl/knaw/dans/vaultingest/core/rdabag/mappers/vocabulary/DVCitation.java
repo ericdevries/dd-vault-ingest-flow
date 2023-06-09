@@ -23,7 +23,6 @@ import org.apache.jena.rdf.model.Resource;
 public class DVCitation {
     public static final String NS = "https://dataverse.org/schema/citation/";
     private static final Model m = ModelFactory.createDefaultModel();
-    public static final Resource NAMESPACE = m.createResource(NS);
     public static final Property author = m.createProperty(NS, "author");
     public static final Property authorName = m.createProperty(NS, "authorName");
     public static final Property authorAffiliation = m.createProperty(NS, "authorAffiliation");
@@ -46,8 +45,15 @@ public class DVCitation {
     public static final Property contributor = m.createProperty(NS, "contributor");
     public static final Property contributorType = m.createProperty(NS, "contributorType");
     public static final Property contributorName = m.createProperty(NS, "contributorName");
-
-    public static String getURI() {
-        return NS;
-    }
+    public static final Property grantNumberAgency = m.createProperty(NS, "grantNumberAgency");
+    public static final Property grantNumberValue = m.createProperty(NS, "grantNumberValue");
+    public static final Property distributor = m.createProperty(NS, "distributor");
+    public static final Property distributorName = m.createProperty(NS, "distributorName");
+    public static final Property distributionDate = m.createProperty(NS, "distributionDate");
+    public static final Property dateOfCollection = m.createProperty(NS, "dateOfCollection");
+    public static final Property dateOfCollectionStart = m.createProperty(NS, "dateOfCollectionStart");
+    public static final Property dateOfCollectionEnd = m.createProperty(NS, "dateOfCollectionEnd");
+    public static final Property series = m.createProperty(NS, "series");
+    public static final Property seriesName = m.createProperty(NS, "seriesName");
+    public static final Property seriesInformation = m.createProperty(NS, "seriesInformation");
 }

@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.validator;
+package nl.knaw.dans.vaultingest.config.validator;
 
-import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
-@Slf4j
-public class VoidBagValidator implements BagValidator {
+public class FileMustExistValidator implements ConstraintValidator<FileMustExist, Path> {
     @Override
-    public void validate(Path bagDir) throws InvalidBagException {
-        log.info("Validating bag on path {}, and it will succeed", bagDir);
+    public boolean isValid(Path path, ConstraintValidatorContext constraintValidatorContext) {
+        if (Files.exists(path)) {
+            return true;
+        }
+
+        var ctx = constraintValidatorContext.unwrap(HibernateConstraintValidatorContext.class);
+        ctx.addMessageParameter("path", path.toString());
+
+        return false;
     }
 }

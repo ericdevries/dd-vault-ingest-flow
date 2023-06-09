@@ -30,5 +30,6 @@ public interface XmlNamespaces {
     String NAMESPACE_DAMD = "http://easy.dans.knaw.nl/easy/dataset-administrative-metadata/";
     String NAMESPACE_AGREEMENTS = "http://easy.dans.knaw.nl/schemas/bag/metadata/agreements/";
     String NAMESPACE_AFM = "http://easy.dans.knaw.nl/schemas/bag/metadata/afm/";
+    String NAMESPACE_DATACITE = "http://datacite.org/schema/kernel-4";
 
 }

@@ -15,29 +15,72 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
-import nl.knaw.dans.vaultingest.core.utilities.EchoDatasetContactResolver;
+import nl.knaw.dans.vaultingest.core.utilities.TestDatasetContactResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommonDepositManagerIntegrationTest {
 
     @Test
     void loadDeposit() throws Exception {
-        var factory = new CommonDepositManager(
+        var manager = new CommonDepositManager(
             new XmlReaderImpl(),
-            new EchoDatasetContactResolver(),
+            new TestDatasetContactResolver(),
             new TestLanguageResolver()
         );
 
         var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
         assert s != null;
 
-        var deposit = factory.loadDeposit(Path.of(s.getPath()));
+        var deposit = manager.loadDeposit(Path.of(s.getPath()));
         assertEquals("0b9bb5ee-3187-4387-bb39-2c09536c79f7", deposit.getId());
+    }
+
+    @Test
+    void loadDeposit_should_handle_OriginalFilePaths() throws Exception {
+        var manager = new CommonDepositManager(
+            new XmlReaderImpl(),
+            new TestDatasetContactResolver(),
+            new TestLanguageResolver()
+        );
+
+        var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
+        assert s != null;
+        var path = Path.of(s.getPath());
+
+        // first verify there is actually an original-filepaths.txt file
+        assertTrue(Files.exists(path.resolve("audiences/original-filepaths.txt")));
+
+        var deposit = manager.loadDeposit(path);
+        var files = deposit.getPayloadFiles();
+
+        // check that the file paths are the original ones, not the renamed ones
+        assertThat(files).extracting("path").map(Object::toString)
+            .containsOnly(
+                "data/random images/image01.png",
+                "data/random images/image02.jpeg",
+                "data/random images/image03.jpeg",
+                "data/a/deeper/path/With some file.txt"
+            );
+
+        // check that the files are actually readable
+        for (var file : files) {
+            var stream = new ByteArrayOutputStream();
+
+            try (var input = file.openInputStream()) {
+                input.transferTo(stream);
+            }
+
+            assertTrue(stream.size() > 0);
+        }
     }
 }

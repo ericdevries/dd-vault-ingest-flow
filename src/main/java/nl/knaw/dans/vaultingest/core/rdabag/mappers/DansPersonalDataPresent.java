@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.deposit.mapping;
+package nl.knaw.dans.vaultingest.core.rdabag.mappers;
 
-import nl.knaw.dans.vaultingest.core.domain.DepositFile;
-import org.w3c.dom.Document;
+import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.DansRights;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
-import java.util.List;
+public class DansPersonalDataPresent {
 
-public class Files extends Base {
-    public static List<DepositFile> getFiles(Document ddm, Document filesXml) {
-        return List.of();
+    public static Statement toDansPersonalDataPresent(Resource resource, boolean isPersonalDataPresent) {
+        var model = resource.getModel();
+
+        return model.createStatement(
+            resource,
+            DansRights.dansPersonalDataPresent,
+            isPersonalDataPresent ? "Yes" : "No"
+        );
     }
 }
