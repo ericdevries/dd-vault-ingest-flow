@@ -19,6 +19,7 @@ import nl.knaw.dans.vaultingest.core.domain.Deposit;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class ZipBagOutputWriterFactory implements BagOutputWriterFactory {
     private final Path outputDir;
@@ -29,8 +30,9 @@ public class ZipBagOutputWriterFactory implements BagOutputWriterFactory {
 
     @Override
     public BagOutputWriter createBagOutputWriter(Deposit deposit) throws IOException {
+        var doi = Objects.requireNonNull(deposit.getDoi(), "Deposit DOI is null");
         // TODO version should be coming from the deposit
-        var output = outputDir.resolve(outputFilename(deposit.getDoi(), "1.0"));
+        var output = outputDir.resolve(outputFilename(doi, "1.0"));
         return new ZipBagOutputWriter(output);
     }
 

@@ -69,8 +69,7 @@ public class CommonDepositOutbox implements Outbox {
                 Files.move(path, outboxPath.resolve(OutboxPath.PROCESSED.getValue()).resolve(path.getFileName()));
                 break;
             default:
-                Files.move(path, outboxPath.resolve(OutboxPath.FAILED.getValue()).resolve(path.getFileName()));
-                throw new IllegalArgumentException("Unknown state: " + state);
+                throw new IllegalArgumentException("Unexpected state: " + state + "; only FAILED, REJECTED and ACCEPTED are allowed");
         }
     }
 

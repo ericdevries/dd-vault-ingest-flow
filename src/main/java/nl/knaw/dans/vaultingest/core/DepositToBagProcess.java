@@ -110,8 +110,7 @@ public class DepositToBagProcess {
         }
         catch (Exception e) {
             // TODO throw some kind of FAILURE state, which is different from REJECTED
-            log.error("Error writing bag", e);
-            e.printStackTrace();
+            throw new IllegalStateException("Error writing bag: " + e.getMessage(), e);
         }
 
         vaultCatalogService.registerDeposit(deposit);
