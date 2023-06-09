@@ -15,13 +15,14 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
+import nl.knaw.dans.vaultingest.core.xml.XmlNamespaces;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CommonDepositFileTest {
 
@@ -88,10 +89,94 @@ class CommonDepositFileTest {
         assertEquals("original_filepath: data/invalid/characters/here:*?\"<>|;#.txt", depositFile.getDescription());
     }
 
+    @Test
+    void isRestricted_should_return_false_when_no_information_is_available() throws Exception {
+        var depositFile = CommonDepositFile.builder()
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
+
+        assertFalse(depositFile.isRestricted());
+    }
+
+    @Test
+    void isRestricted_should_return_false_when_getAccessRights_equals_OPEN_ACCESS() throws Exception {
+        var depositFile = CommonDepositFile.builder()
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights("OPEN_ACCESS"))
+            .build();
+
+        assertFalse(depositFile.isRestricted());
+    }
+
+    @Test
+    void isRestricted_should_return_true_when_getAccessRights_equals_RANDOM_VALUE() throws Exception {
+        var depositFile = CommonDepositFile.builder()
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights("RANDOM_VALUE"))
+            .build();
+
+        assertTrue(depositFile.isRestricted());
+    }
+
+    @Test
+    void isRestricted_should_return_true_when_getAccessibleToRights_is_empty() throws Exception {
+        // TODO verify an empty accessibleToRights qualifies as restricted
+        var depositFile = CommonDepositFile.builder()
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
+
+        assertTrue(depositFile.isRestricted());
+    }
+
+    @Test
+    void isRestricted_should_return_true_when_getAccessibleToRights_equals_ANYTHING() throws Exception {
+        var depositFile = CommonDepositFile.builder()
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANYTHING"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
+
+        assertTrue(depositFile.isRestricted());
+    }
+
+    @Test
+    void isRestricted_should_return_false_when_getAccessibleToRights_equals_ANONYMOUS() throws Exception {
+        var depositFile = CommonDepositFile.builder()
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANONYMOUS"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
+
+        assertFalse(depositFile.isRestricted());
+    }
+
     Node getFilesXmlNode(String path) throws Exception {
         var node = new XmlReaderImpl().readXmlString("<file  xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
         node.getDocumentElement().setAttribute("filepath", path);
 
+        return node.getDocumentElement();
+    }
+
+    Node getFilesXmlNodeWithAccessibleToRights(String accessibleToRights) throws Exception {
+        var node = new XmlReaderImpl().readXmlString("<file xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
+        node.getDocumentElement().setAttribute("filepath", "path/to/file.txt");
+
+        var acc = node.createElementNS(XmlNamespaces.NAMESPACE_FILES_XML, "accessibleToRights");
+        acc.setTextContent(accessibleToRights);
+        node.getDocumentElement().appendChild(acc);
+        return node.getDocumentElement();
+    }
+
+
+    Node getDdmNodeWithAccessRights(String mode) throws Exception {
+        var accessRights = mode != null ? "<ddm:accessRights>" + mode + "</ddm:accessRights>" : "";
+        var str = "<ddm:DDM xmlns:ddm='http://schemas.dans.knaw.nl/dataset/ddm-v2/'>"
+            + "    <ddm:profile>"
+            + accessRights
+            + "    </ddm:profile>"
+            + "</ddm:DDM>";
+
+        var node = new XmlReaderImpl().readXmlString(str);
         return node.getDocumentElement();
     }
 }

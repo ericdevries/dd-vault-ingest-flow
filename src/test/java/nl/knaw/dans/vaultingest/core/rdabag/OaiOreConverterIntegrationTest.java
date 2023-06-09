@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Value;
 import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
@@ -25,7 +24,6 @@ import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.DVCitation;
 import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.DansRights;
 import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.Datacite;
 import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.PROV;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.OaiOreSerializer;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.SchemaDO;
@@ -402,7 +400,7 @@ public class OaiOreConverterIntegrationTest {
 
     private ModelObject loadModel() throws Exception {
         var depositManager = new SimpleCommonDepositManager();
-        var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag"));
+        var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
 
         var model = new OaiOreConverter().convert(deposit).getModel();
 

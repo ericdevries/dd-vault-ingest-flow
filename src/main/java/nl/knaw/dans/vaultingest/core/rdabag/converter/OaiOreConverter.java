@@ -30,6 +30,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SchemaDO;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 
 public class OaiOreConverter {
 

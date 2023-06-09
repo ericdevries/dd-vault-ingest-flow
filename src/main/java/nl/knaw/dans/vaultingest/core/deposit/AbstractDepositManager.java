@@ -122,7 +122,7 @@ public abstract class AbstractDepositManager implements DepositManager {
     protected List<DepositFile> getDepositFiles(Path bagDir, Bag bag, Document ddm, Document filesXml, OriginalFilepaths originalFilepaths) {
         var manifests = getPrecomputedChecksums(bagDir, bag);
 
-        return XPathEvaluator.nodes(filesXml, "/files:files/files:file")
+        var files = XPathEvaluator.nodes(filesXml, "/files:files/files:file")
             .map(node -> {
                 var filePath = node.getAttributes().getNamedItem("filepath").getTextContent();
                 var physicalPath = bagDir.resolve(originalFilepaths.getPhysicalPath(Path.of(filePath)));
@@ -136,7 +136,16 @@ public abstract class AbstractDepositManager implements DepositManager {
                     .checksums(checksums)
                     .build();
             })
+            .map(m -> (DepositFile) m)
             .collect(Collectors.toList());
+
+        files.add(OriginalMetadataDepositFile.builder()
+            .id(UUID.randomUUID().toString())
+            .bagDir(bagDir)
+            .build()
+        );
+
+        return files;
     }
 
 }

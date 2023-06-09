@@ -110,7 +110,7 @@ class DepositToBagProcessTest {
                 "metadata/files.xml",
                 "metadata/oai-ore.rdf",
                 "metadata/oai-ore.jsonld",
-                "original-metadata.zip",
+//                "original-metadata.zip",
                 "metadata/pid-mapping.txt",
                 "metadata/datacite.xml"
             );

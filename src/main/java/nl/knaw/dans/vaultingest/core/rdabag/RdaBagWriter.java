@@ -26,7 +26,6 @@ import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.output.MultiDigestInputStream;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.OaiOreSerializer;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.OriginalMetadataSerializer;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.PidMappingSerializer;
 import org.apache.commons.io.output.NullOutputStream;
 
@@ -46,7 +45,6 @@ public class RdaBagWriter {
     private final DataciteSerializer dataciteSerializer;
     private final PidMappingSerializer pidMappingSerializer;
     private final OaiOreSerializer oaiOreSerializer;
-    private final OriginalMetadataSerializer originalMetadataSerializer;
 
     private final DataciteConverter dataciteConverter;
     private final PidMappingConverter pidMappingConverter;
@@ -59,7 +57,6 @@ public class RdaBagWriter {
         DataciteSerializer dataciteSerializer,
         PidMappingSerializer pidMappingSerializer,
         OaiOreSerializer oaiOreSerializer,
-        OriginalMetadataSerializer originalMetadataSerializer,
         DataciteConverter dataciteConverter,
         PidMappingConverter pidMappingConverter,
         OaiOreConverter oaiOreConverter
@@ -67,7 +64,6 @@ public class RdaBagWriter {
         this.dataciteSerializer = dataciteSerializer;
         this.pidMappingSerializer = pidMappingSerializer;
         this.oaiOreSerializer = oaiOreSerializer;
-        this.originalMetadataSerializer = originalMetadataSerializer;
         this.dataciteConverter = dataciteConverter;
         this.pidMappingConverter = pidMappingConverter;
         this.oaiOreConverter = oaiOreConverter;
@@ -76,13 +72,11 @@ public class RdaBagWriter {
     }
 
     public void write(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
-
         var dataPath = Path.of("data");
+        var files = buildPayloadFileMap(deposit, dataPath);
 
-        for (var file : deposit.getPayloadFiles()) {
-            log.info("Writing payload file {}", file);
-            writePayloadFile(file, dataPath, outputWriter);
-        }
+        log.info("Writing payload files");
+        writePayloadFiles(files, outputWriter);
 
         log.info("Writing metadata/datacite.xml");
         writeDatacite(deposit, outputWriter);
@@ -104,43 +98,58 @@ public class RdaBagWriter {
             writeMetadataFile(deposit, metadataFile, outputWriter);
         }
 
-        writeOriginalMetadata(deposit, outputWriter);
-
-        writeManifests(deposit, dataPath, outputWriter);
+        writeManifests(files, outputWriter);
 
         // must be last, because all other files must have been written to
         writeTagManifest(deposit, outputWriter);
     }
 
-    private void writePayloadFile(DepositFile file, Path dataPath, BagOutputWriter outputWriter) throws IOException {
-        var targetPath = dataPath.resolve(file.getPath());
-        var existingChecksums = file.getChecksums();
-        var checksumsToCalculate = requiredAlgorithms.stream()
-            .filter(algorithm -> !existingChecksums.containsKey(algorithm))
-            .collect(Collectors.toList());
+    Map<DepositFile, Path> buildPayloadFileMap(Deposit deposit, Path dataPath) {
+        var result = new HashMap<DepositFile, Path>();
 
-        var allChecksums = new HashMap<>(existingChecksums);
-        log.debug("Checksums already present: {}", existingChecksums);
+        for (var file : deposit.getPayloadFiles()) {
+            var targetPath = dataPath.resolve(file.getPath());
 
-        try (var inputStream = file.openInputStream();
-             var digestInputStream = new MultiDigestInputStream(inputStream, checksumsToCalculate)) {
+            if (file.getPath().equals(Path.of("original-metadata.zip"))) {
+                targetPath = file.getPath();
+            }
 
-            log.info("Writing payload file {} to output", targetPath);
-            outputWriter.writeBagItem(digestInputStream, targetPath);
-
-            var newChecksums = digestInputStream.getChecksums();
-            log.debug("Newly calculated checksums: {}", newChecksums);
-
-            allChecksums.putAll(digestInputStream.getChecksums());
+            log.trace("Deposit file with name {} will be written to {}", file.getPath(), targetPath);
+            result.put(file, targetPath);
         }
 
-        checksums.put(targetPath, allChecksums);
+        return result;
     }
 
-    private void writeOriginalMetadata(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
-        var outputFile = originalMetadataSerializer.serialize(deposit);
-        checksummedWriteToOutput(outputFile, Path.of("original-metadata.zip"), outputWriter);
+    private void writePayloadFiles(Map<DepositFile, Path> files, BagOutputWriter outputWriter) throws IOException {
+        for (var entry : files.entrySet()) {
+            var file = entry.getKey();
+            var targetPath = entry.getValue();
+
+            var existingChecksums = file.getChecksums();
+            var checksumsToCalculate = requiredAlgorithms.stream()
+                .filter(algorithm -> !existingChecksums.containsKey(algorithm))
+                .collect(Collectors.toList());
+
+            var allChecksums = new HashMap<>(existingChecksums);
+            log.debug("Checksums already present: {}", existingChecksums);
+
+            try (var inputStream = file.openInputStream();
+                 var digestInputStream = new MultiDigestInputStream(inputStream, checksumsToCalculate)) {
+
+                log.info("Writing payload file {} to output", targetPath);
+                outputWriter.writeBagItem(digestInputStream, targetPath);
+
+                var newChecksums = digestInputStream.getChecksums();
+                log.debug("Newly calculated checksums: {}", newChecksums);
+
+                allChecksums.putAll(digestInputStream.getChecksums());
+            }
+
+            checksums.put(targetPath, allChecksums);
+        }
     }
+
 
     private void writeTagManifest(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
         // get the metadata, which is everything EXCEPT the data/** and tagmanifest-* files
@@ -165,12 +174,11 @@ public class RdaBagWriter {
 
     }
 
-    private void writeManifests(Deposit deposit, Path dataPath, BagOutputWriter outputWriter) throws IOException {
+    private void writeManifests(Map<DepositFile, Path> files, BagOutputWriter outputWriter) throws IOException {
         // iterate all files in rda bag and get checksum sha1
-        var files = deposit.getPayloadFiles();
         var checksumMap = new HashMap<DepositFile, Map<ManifestAlgorithm, String>>();
 
-        for (var file : files) {
+        for (var file : files.keySet()) {
             var output = (OutputStream) NullOutputStream.NULL_OUTPUT_STREAM;
 
             try (var input = new MultiDigestInputStream(file.openInputStream(), requiredAlgorithms)) {
@@ -183,9 +191,11 @@ public class RdaBagWriter {
             var outputFile = String.format("manifest-%s.txt", algorithm.getName());
             var outputString = new StringBuilder();
 
-            for (var file : files) {
+            for (var entry : files.entrySet()) {
+                var file = entry.getKey();
+                var path = entry.getValue();
                 var checksum = checksumMap.get(file).get(algorithm);
-                outputString.append(String.format("%s  %s\n", checksum, dataPath.resolve(file.getPath())));
+                outputString.append(String.format("%s  %s\n", checksum, path));
             }
 
             checksummedWriteToOutput(outputString.toString(), Path.of(outputFile), outputWriter);

@@ -28,7 +28,13 @@ public class PidMappingConverter {
         mappings.addMapping(deposit.getId(), dataPath);
 
         for (var file: deposit.getPayloadFiles()) {
-            mappings.addMapping("file:///" + file.getId(), dataPath + file.getPath().toString());
+            var path = dataPath + file.getPath().toString();
+
+            if (file.getPath().toString().equals("original-metadata.zip")) {
+                path = file.getPath().toString();
+            }
+
+            mappings.addMapping("file:///" + file.getId(), path);
         }
 
         return mappings;

@@ -24,10 +24,10 @@ import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.w3c.dom.Node;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,19 +62,27 @@ class CommonDepositFile implements DepositFile {
 
     // TODO implement according to TRM003 and TRM004
     public boolean isRestricted() {
-        if (getFilename().equals(Path.of("original-metadata.zip"))) {
-            return false;
-        }
-
         var accessibleToRights = getAccessibleToRights();
         var accessRights = getAccessRights();
 
         if (accessibleToRights != null) {
-            return !accessibleToRights.equals("ANONYMOUS");
+            // if ANONYMOUS then false else true
+            if ("ANONYMOUS".equals(accessibleToRights)) {
+                return false;
+            }
+            else {
+                return true;
+            }
         }
 
         if (accessRights != null) {
-            return accessRights.equals("OPEN_ACCESS");
+            // if OPEN_ACCESS then false else true
+            if ("OPEN_ACCESS".equals(accessRights)) {
+                return false;
+            }
+            else {
+                return true;
+            }
         }
 
         return false;
@@ -138,12 +146,12 @@ class CommonDepositFile implements DepositFile {
             .collect(Collectors.toList());
 
         // FIL002A (migration only)
-        for (var item: afmKeyValuePairs) {
+        for (var item : afmKeyValuePairs) {
             metadataFields.put(item.getKey(), item.getValue());
         }
 
         // FIL002B (migration only)
-        for (var item: otherKeyValuePairs) {
+        for (var item : otherKeyValuePairs) {
             metadataFields.put(item.getKey(), item.getValue());
         }
 
@@ -179,13 +187,15 @@ class CommonDepositFile implements DepositFile {
     }
 
     private String getAccessibleToRights() {
-        // TODO implement
-        return null;
+        return XPathEvaluator.strings(filesXmlNode, "//files:accessibleToRights")
+            .findFirst()
+            .orElse(null);
     }
 
     private String getAccessRights() {
-        // TODO implement
-        return null;
+        return XPathEvaluator.strings(ddmNode, "/ddm:DDM/ddm:profile/ddm:accessRights")
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
