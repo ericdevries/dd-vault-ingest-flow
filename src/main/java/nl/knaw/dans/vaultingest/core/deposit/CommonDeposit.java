@@ -29,6 +29,7 @@ import org.w3c.dom.Document;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -323,6 +324,11 @@ class CommonDeposit implements Deposit {
     @Override
     public Collection<String> getSpatialCoveragesText() {
         return TemporalSpatial.getSpatialCoveragesText(ddm, countryResolver);
+    }
+
+    @Override
+    public LocalDate getAvailableDate() {
+        return AvailableDate.getAvailableDate(ddm);
     }
 
     private List<String> getMetadataValue(String key) {

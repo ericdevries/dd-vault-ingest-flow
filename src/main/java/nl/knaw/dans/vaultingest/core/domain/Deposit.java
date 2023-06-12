@@ -20,6 +20,7 @@ import nl.knaw.dans.vaultingest.core.domain.metadata.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Collection;
 
 public interface Deposit {
@@ -60,6 +61,8 @@ public interface Deposit {
     Collection<String> getLanguages();
 
     String getProductionDate();
+
+    LocalDate getAvailableDate();
 
     Collection<Contributor> getContributors();
 

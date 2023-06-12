@@ -18,10 +18,10 @@ package nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
 
 public class PROV {
     public static final String NS = "https://www.w3.org/prov-o/#";
     private static final Model m = ModelFactory.createDefaultModel();
     public static final Property wasDerivedFrom = m.createProperty(NS, "wasDerivedFrom");
+    public static final Property alternateOf = m.createProperty(NS, "alternateOf");
 }

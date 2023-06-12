@@ -39,6 +39,13 @@ public class OaiOreConverter {
         var resourceMap = createResourceMap(deposit, model);
         var resource = createAggregation(deposit, model);
 
+        NonMetadata.toDoi(resource, deposit.getDoi())
+            .ifPresent(model::add);
+
+        NonMetadata.toAvailable(resource, deposit.getAvailableDate())
+            .ifPresent(model::add);
+
+        model.add(Title.toTitle(resource, deposit.getTitle()));
         model.add(Title.toTitle(resource, deposit.getTitle()));
         model.add(AlternativeTitles.toAlternativeTitle(resource, deposit.getAlternativeTitles()));
         model.add(OtherIds.toOtherIds(resource, deposit.getOtherIds()));

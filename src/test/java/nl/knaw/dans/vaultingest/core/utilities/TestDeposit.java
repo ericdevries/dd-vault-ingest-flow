@@ -24,6 +24,7 @@ import nl.knaw.dans.vaultingest.core.domain.metadata.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -81,6 +82,8 @@ public class TestDeposit implements Deposit {
     private List<SpatialBox> spatialBoxes;
     private List<String> spatialCoveragesControlled;
     private List<String> spatialCoveragesText;
+
+    private LocalDate availableDate;
 
     @Override
     public void setState(State state, String message) {

@@ -351,6 +351,34 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly("Sous an ayisyen", "Source 3", "Source 2");
     }
 
+    // DSET001
+    @Test
+    void doi() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, PROV.alternateOf, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("10.17026/dans-z6y-5y2e");
+    }
+
+    // DFILE001
+    @Test
+    void available() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DCTerms.available, (RDFNode) null)
+        ).toList();
+
+        // because date is in the past
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .isEmpty();
+    }
 
     // RIG001
     @Test
