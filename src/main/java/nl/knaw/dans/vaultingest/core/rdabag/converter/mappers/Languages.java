@@ -19,28 +19,14 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.DCTerms;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
 
 public class Languages {
 
     public static List<Statement> toLanguages(Resource resource, Collection<String> languages) {
-        if (languages == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var language: languages) {
-            result.add(model.createStatement(
-                resource,
-                DCTerms.language,
-                language
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, DCTerms.language, languages);
     }
 }

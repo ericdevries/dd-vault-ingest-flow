@@ -19,28 +19,14 @@ import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansRig
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
 
 public class DansMetadataLanguages {
 
     public static List<Statement> toLanguages(Resource resource, Collection<String> metadataLanguages) {
-        if (metadataLanguages == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var language : metadataLanguages) {
-            result.add(model.createStatement(
-                resource,
-                DansRights.dansMetadataLanguage,
-                language
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, DansRights.dansMetadataLanguage, metadataLanguages);
     }
 }

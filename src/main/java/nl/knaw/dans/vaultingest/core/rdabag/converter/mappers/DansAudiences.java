@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.converter.mappers;
 
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansArchaeology;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansRel;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -23,25 +24,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
+
 public class DansAudiences {
 
     public static List<Statement> toDansAudiences(Resource resource, Collection<String> audiences) {
-        if (audiences == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var audience: audiences) {
-            // TODO should these be converted with the vocabs?
-            result.add(model.createStatement(
-                resource,
-                DansRel.dansAudience,
-                audience
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, DansRel.dansAudience, audiences);
     }
 }

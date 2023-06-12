@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 // Test all the mappings end-to-end
 public class OaiOreConverterIntegrationTest {
 
-
     // CIT001
     @Test
     void title() throws Exception {

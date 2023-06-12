@@ -23,24 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
+
 public class DansRightsHolders {
 
     public static List<Statement> toDansRightsHolders(Resource resource, Collection<String> rightsHolders) {
-        if (rightsHolders == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var rightsHolder : rightsHolders) {
-            result.add(model.createStatement(
-                resource,
-                DansRights.dansRightsHolder,
-                rightsHolder
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, DansRights.dansRightsHolder, rightsHolders);
     }
 }

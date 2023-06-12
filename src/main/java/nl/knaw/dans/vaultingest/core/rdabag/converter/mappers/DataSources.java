@@ -19,28 +19,14 @@ import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.PROV;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
 
 public class DataSources {
 
     public static List<Statement> toDataSources(Resource resource, Collection<String> sources) {
-        if (sources == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var source : sources) {
-            result.add(model.createStatement(
-                resource,
-                PROV.wasDerivedFrom,
-                source
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, PROV.wasDerivedFrom, sources);
     }
 }

@@ -23,24 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
+
 public class DansCollections {
 
     public static List<Statement> toDansCollections(Resource resource, Collection<String> collections) {
-        if (collections == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var collection : collections) {
-            result.add(model.createStatement(
-                resource,
-                DansRel.dansCollection,
-                collection
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, DansRel.dansCollection, collections);
     }
 }

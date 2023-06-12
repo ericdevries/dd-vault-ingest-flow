@@ -17,7 +17,6 @@ package nl.knaw.dans.vaultingest.core.rdabag.converter.mappers;
 
 import nl.knaw.dans.vaultingest.core.domain.metadata.ArchisNumber;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansArchaeology;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
@@ -25,10 +24,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
+
 public class Archaeology {
 
     public static List<Statement> toArchisZaakIds(Resource resource, Collection<String> archisZaakIds) {
-        return mapStrings(resource, archisZaakIds, DansArchaeology.dansArchisZaakId);
+        return toBasicTerms(resource, DansArchaeology.dansArchisZaakId, archisZaakIds);
     }
 
     public static List<Statement> toArchisNumbers(Resource resource, Collection<ArchisNumber> archisNumbers) {
@@ -60,46 +61,26 @@ public class Archaeology {
     }
 
     public static List<Statement> toAbrRapportTypes(Resource resource, Collection<String> abrRapportTypes) {
-        return mapStrings(resource, abrRapportTypes, DansArchaeology.dansAbrRapportType);
+        return toBasicTerms(resource, DansArchaeology.dansAbrRapportType, abrRapportTypes);
     }
 
     public static List<Statement> toAbrRapportNummers(Resource resource, Collection<String> abrRapportNumbers) {
-        return mapStrings(resource, abrRapportNumbers, DansArchaeology.dansAbrRapportNummer);
+        return toBasicTerms(resource, DansArchaeology.dansAbrRapportNummer, abrRapportNumbers);
     }
 
-    public static List<Statement> toAbrVerwervingswijzes(Resource
-                                                             resource, Collection<String> abrVerwervingswijzes) {
-        return mapStrings(resource, abrVerwervingswijzes, DansArchaeology.dansAbrVerwervingswijze);
+    public static List<Statement> toAbrVerwervingswijzes(Resource resource, Collection<String> abrVerwervingswijzes) {
+        return toBasicTerms(resource, DansArchaeology.dansAbrVerwervingswijze, abrVerwervingswijzes);
     }
 
     public static List<Statement> toAbrComplex(Resource resource, Collection<String> abrComplex) {
-        return mapStrings(resource, abrComplex, DansArchaeology.dansAbrComplex);
+        return toBasicTerms(resource, DansArchaeology.dansAbrComplex, abrComplex);
     }
 
     public static List<Statement> toAbrArtifacts(Resource resource, Collection<String> abrArtifact) {
-        return mapStrings(resource, abrArtifact, DansArchaeology.dansAbrArtifact);
+        return toBasicTerms(resource, DansArchaeology.dansAbrArtifact, abrArtifact);
     }
 
     public static List<Statement> toAbrPeriods(Resource resource, Collection<String> abrPeriod) {
-        return mapStrings(resource, abrPeriod, DansArchaeology.dansAbrPeriod);
-    }
-
-    private static List<Statement> mapStrings(Resource resource, Collection<String> values, Property property) {
-        if (values == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var value : values) {
-            result.add(model.createStatement(
-                resource,
-                property,
-                value
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, DansArchaeology.dansAbrPeriod, abrPeriod);
     }
 }

@@ -23,26 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
+
 public class Subjects {
 
     public static List<Statement> toSubjects(Resource resource, Collection<String> subjects) {
-        if (subjects == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var subject: subjects) {
-            // TODO these are the values according to the Subject mapper, but according to the example
-            // they should be the original values like D52000
-            result.add(model.createStatement(
-                resource,
-                DCTerms.subject,
-                subject
-            ));
-        }
-
-        return result;
+        return toBasicTerms(resource, DCTerms.subject, subjects);
     }
 }
