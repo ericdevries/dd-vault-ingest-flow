@@ -130,6 +130,8 @@ public class OaiOreSerializer {
         namespaces.put("provo", PROV.NS);
         namespaces.put("dansREL", DansRel.NS);
         namespaces.put("dansRIG", DansRights.NS);
+        namespaces.put("dansTS", DansTS.NS);
+        namespaces.put("dansAR", DansArchaeology.NS);
 
         return namespaces;
     }

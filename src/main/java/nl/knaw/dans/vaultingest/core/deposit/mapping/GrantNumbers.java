@@ -17,17 +17,21 @@ package nl.knaw.dans.vaultingest.core.deposit.mapping;
 
 import nl.knaw.dans.vaultingest.core.domain.metadata.GrantNumber;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
-import org.w3c.dom.Node;
+import org.w3c.dom.Document;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GrantNumbers extends Base {
-    public static List<GrantNumber> getGrantNumbers(Node node) {
+    // CIT024
+    public static List<GrantNumber> getGrantNumbers(Document document) {
         // TODO CIT023 is under revision
-        // CIT024
-        return XPathEvaluator.strings(node,
-                "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type = 'id-type:NWO-PROJECTNR']")
+        var idType = getIdTypeNamespace(document);
+
+        return XPathEvaluator.strings(document,
+                String.format(
+                    "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type = '%s:NWO-PROJECTNR']", idType)
+            )
             .map(value -> GrantNumber.builder()
                 .agency("NWO")
                 .value(value)

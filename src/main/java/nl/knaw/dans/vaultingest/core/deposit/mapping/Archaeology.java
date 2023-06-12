@@ -48,7 +48,7 @@ public class Archaeology {
         var xpathFilters = filters.stream().map(item -> String.format("@xsi:type = '%s:%s'", namespace, item))
             .collect(Collectors.joining(" or "));
 
-        return XPathEvaluator.nodes(document, "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier" + "[" + xpathFilters + "]")
+        return XPathEvaluator.nodes(document, "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[" + xpathFilters + "]")
             .map(node -> ArchisNumber.builder()
                 .id(node.getTextContent().trim())
                 .type(node.getAttributes().getNamedItemNS(XmlNamespaces.NAMESPACE_XSI, "type").getTextContent().substring(namespace.length() + 1))
