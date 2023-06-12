@@ -17,6 +17,7 @@ package nl.knaw.dans.vaultingest.core.utilities;
 
 import lombok.Builder;
 import lombok.Data;
+import nl.knaw.dans.vaultingest.core.domain.DansRelation;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.metadata.*;
@@ -62,7 +63,11 @@ public class TestDeposit implements Deposit {
     private State state;
     private String stateDescription;
     private List<String> metadataLanguages;
+    private List<String> audiences;
     private boolean personalDataPresent;
+
+    private List<String> inCollection;
+    private List<DansRelation> dansRelations;
 
     @Override
     public void setState(State state, String message) {

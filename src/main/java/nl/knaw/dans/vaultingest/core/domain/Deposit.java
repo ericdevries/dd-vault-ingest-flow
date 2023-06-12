@@ -87,6 +87,12 @@ public interface Deposit {
 
     InputStream inputStreamForMetadataFile(Path path);
 
+    Collection<String> getAudiences();
+
+    Collection<String> getInCollection();
+
+    Collection<DansRelation> getDansRelations();
+
     enum State {
         PUBLISHED,
         ACCEPTED,

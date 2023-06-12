@@ -18,6 +18,7 @@ package nl.knaw.dans.vaultingest.core.deposit;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import nl.knaw.dans.vaultingest.core.deposit.mapping.*;
+import nl.knaw.dans.vaultingest.core.domain.DansRelation;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.metadata.*;
@@ -243,6 +244,21 @@ class CommonDeposit implements Deposit {
     @Override
     public InputStream inputStreamForMetadataFile(Path path) {
         return bag.inputStreamForMetadataFile(path);
+    }
+
+    @Override
+    public Collection<String> getAudiences() {
+        return Audiences.getAudiences(ddm);
+    }
+
+    @Override
+    public Collection<String> getInCollection() {
+        return InCollection.getInCollections(ddm);
+    }
+
+    @Override
+    public Collection<DansRelation> getDansRelations() {
+        return DansRelations.getDansRelations(ddm);
     }
 
     private List<String> getMetadataValue(String key) {

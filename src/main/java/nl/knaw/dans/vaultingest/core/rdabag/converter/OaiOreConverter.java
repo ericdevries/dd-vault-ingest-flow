@@ -18,9 +18,9 @@ package nl.knaw.dans.vaultingest.core.rdabag.converter;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.OreResourceMap;
-import nl.knaw.dans.vaultingest.core.rdabag.mappers.*;
-import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.DVCore;
-import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.ORE;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.*;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DVCore;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.ORE;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -70,6 +70,10 @@ public class OaiOreConverter {
         model.add(DansRightsHolders.toDansRightsHolders(resource, deposit.getRightsHolder()));
         model.add(DansPersonalDataPresent.toDansPersonalDataPresent(resource, deposit.isPersonalDataPresent()));
         model.add(DansMetadataLanguages.toLanguages(resource, deposit.getMetadataLanguages()));
+
+        model.add(DansAudiences.toDansAudiences(resource, deposit.getAudiences()));
+        model.add(DansCollections.toDansCollections(resource, deposit.getInCollection()));
+        model.add(DansRelations.toDansRelations(resource, deposit.getDansRelations()));
 
         model.add(model.createStatement(
             resourceMap,
