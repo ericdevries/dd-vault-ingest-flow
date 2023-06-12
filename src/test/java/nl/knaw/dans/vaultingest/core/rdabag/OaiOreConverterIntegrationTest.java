@@ -491,6 +491,127 @@ public class OaiOreConverterIntegrationTest {
     }
 
 
+    // AR001
+    @Test
+    void dansArchisZaakId() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansArchisZaakId, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("12345");
+    }
+
+    // AR002
+    @Test
+    void dansArchisNumber() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansArchisNumber, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansArchaeology.dansArchisNumberId))
+            .map(Object::toString)
+            .containsOnly("67891", "67890", "12347", "12346");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansArchaeology.dansArchisNumberType))
+            .map(Object::toString)
+            .containsOnly("ARCHIS-VONDSTMELDING",
+                "ARCHIS-ONDERZOEK",
+                "ARCHIS-WAARNEMING",
+                "ARCHIS-MONUMENT");
+    }
+
+    // AR003
+    @Test
+    void dansAbrRapportType() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansAbrRapportType, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/d6b2e162-3f49-4027-8f03-28194db2905e");
+    }
+
+    // AR004
+    @Test
+    void dansAbrRapportNumber() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansAbrRapportNummer, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("BAAC 123-A");
+    }
+
+    // AR005
+    @Test
+    void dansAbrVerwervingswijze() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansAbrVerwervingswijze, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/967bfdf8-c44d-4c69-8318-34ed1ab1e784");
+    }
+
+    // AR006
+    @Test
+    void dansAbrComplex() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansAbrComplex, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/9a758542-8d0d-4afa-b664-104b938fe13e");
+    }
+
+
+    // AR007
+    @Test
+    void dansAbrArtifact() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansAbrArtifact, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5bd97bc0-697c-4128-b7b2-d2324bc4a2e1");
+    }
+
+    // AR008
+    @Test
+    void dansAbrPeriod() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansArchaeology.dansAbrPeriod, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5b253754-ddd0-4ae0-a5bb-555176bca858");
+    }
+
     private ModelObject loadModel() throws Exception {
         var depositManager = new SimpleCommonDepositManager();
         var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));

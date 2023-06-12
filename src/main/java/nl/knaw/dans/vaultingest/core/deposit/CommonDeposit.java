@@ -18,7 +18,6 @@ package nl.knaw.dans.vaultingest.core.deposit;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import nl.knaw.dans.vaultingest.core.deposit.mapping.*;
-import nl.knaw.dans.vaultingest.core.domain.DansRelation;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.metadata.*;
@@ -259,6 +258,46 @@ class CommonDeposit implements Deposit {
     @Override
     public Collection<DansRelation> getDansRelations() {
         return DansRelations.getDansRelations(ddm);
+    }
+
+    @Override
+    public Collection<String> getArchisZaakIds() {
+        return Archaeology.getArchisZaakIds(ddm);
+    }
+
+    @Override
+    public Collection<ArchisNumber> getArchisNumbers() {
+        return Archaeology.getArchisNumbers(ddm);
+    }
+
+    @Override
+    public Collection<String> getAbrRapportTypes() {
+        return Archaeology.getAbrRapportTypes(ddm);
+    }
+
+    @Override
+    public Collection<String> getAbrRapportNumbers() {
+        return Archaeology.getAbrRapportNumbers(ddm);
+    }
+
+    @Override
+    public Collection<String> getAbrVerwervingswijzes() {
+        return Archaeology.getAbrVerwervingswijzes(ddm);
+    }
+
+    @Override
+    public Collection<String> getAbrComplex() {
+        return Archaeology.getAbrComplex(ddm);
+    }
+
+    @Override
+    public Collection<String> getAbrArtifact() {
+        return Archaeology.getAbrArtifact(ddm);
+    }
+
+    @Override
+    public Collection<String> getAbrPeriod() {
+        return Archaeology.getAbrPeriod(ddm);
     }
 
     private List<String> getMetadataValue(String key) {

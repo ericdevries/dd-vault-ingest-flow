@@ -75,6 +75,15 @@ public class OaiOreConverter {
         model.add(DansCollections.toDansCollections(resource, deposit.getInCollection()));
         model.add(DansRelations.toDansRelations(resource, deposit.getDansRelations()));
 
+        model.add(Archaeology.toArchisZaakIds(resource, deposit.getArchisZaakIds()));
+        model.add(Archaeology.toArchisNumbers(resource, deposit.getArchisNumbers()));
+        model.add(Archaeology.toAbrRapportTypes(resource, deposit.getAbrRapportTypes()));
+        model.add(Archaeology.toAbrRapportNummers(resource, deposit.getAbrRapportNumbers()));
+        model.add(Archaeology.toAbrVerwervingswijzes(resource, deposit.getAbrVerwervingswijzes()));
+        model.add(Archaeology.toAbrComplex(resource, deposit.getAbrComplex()));
+        model.add(Archaeology.toAbrArtifacts(resource, deposit.getAbrArtifact()));
+        model.add(Archaeology.toAbrPeriods(resource, deposit.getAbrPeriod()));
+
         model.add(model.createStatement(
             resourceMap,
             ORE.describes,

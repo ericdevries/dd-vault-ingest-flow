@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.domain;
+package nl.knaw.dans.vaultingest.core.domain.metadata;
 
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
-public class DansRelation {
+public class ArchisNumber {
+    String id;
     String type;
-    String text;
-    String uri;
 }

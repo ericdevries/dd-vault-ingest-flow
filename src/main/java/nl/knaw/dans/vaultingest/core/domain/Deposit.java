@@ -93,6 +93,22 @@ public interface Deposit {
 
     Collection<DansRelation> getDansRelations();
 
+    Collection<String> getArchisZaakIds();
+
+    Collection<ArchisNumber> getArchisNumbers();
+
+    Collection<String> getAbrRapportTypes();
+
+    Collection<String> getAbrRapportNumbers();
+
+    Collection<String> getAbrVerwervingswijzes();
+
+    Collection<String> getAbrComplex();
+
+    Collection<String> getAbrArtifact();
+
+    Collection<String> getAbrPeriod();
+
     enum State {
         PUBLISHED,
         ACCEPTED,

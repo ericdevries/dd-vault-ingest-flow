@@ -210,10 +210,10 @@
         <dcterms:identifier xsi:type="id-type:ARCHIS-ZAAK-IDENTIFICATIE">12345</dcterms:identifier>
 
         <!-- AR002 -->
-        <dcterms:identifier xsi:type="id-type:ARCHIS-ONDERZOEK">12345</dcterms:identifier>
+        <dcterms:identifier xsi:type="id-type:ARCHIS-ONDERZOEK">12346</dcterms:identifier>
         <dcterms:identifier xsi:type="id-type:ARCHIS-VONDSTMELDING">67890</dcterms:identifier>
-        <dcterms:identifier xsi:type="id-type:ARCHIS-MONUMENT">12345</dcterms:identifier>
-        <dcterms:identifier xsi:type="id-type:ARCHIS-WAARNEMING">67890</dcterms:identifier>
+        <dcterms:identifier xsi:type="id-type:ARCHIS-MONUMENT">12347</dcterms:identifier>
+        <dcterms:identifier xsi:type="id-type:ARCHIS-WAARNEMING">67891</dcterms:identifier>
 
         <!-- AR003 and AR004 -->
         <ddm:reportNumber
