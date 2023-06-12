@@ -77,13 +77,14 @@ public class OaiOreConverterIntegrationTest {
 
         assertThat(statements)
             .map(getPropertyAsString(DVCitation.otherIdValue))
-            .containsOnly("DCTERMS_ID001",
+            .containsOnly("1234",
+                "DCTERMS_ID001",
                 "DCTERMS_ID002",
                 "DCTERMS_ID003");
 
         assertThat(statements)
             .map(getPropertyAsString(DVCitation.otherIdAgency))
-            .containsOnlyNulls();
+            .containsOnly(null, "REPO1");
     }
 
     // CIT005, CIT006, CIT007
@@ -734,18 +735,107 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly("Roman Empire");
     }
 
-    private ModelObject loadModel() throws Exception {
-        var depositManager = new SimpleCommonDepositManager();
-        var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
-        deposit.setNbn("urn:nbn:nl:ui:13-4c-1a2b");
 
-        var model = new OaiOreConverter().convert(deposit).getModel();
+    // @VLT001
+    // TODO make this one work
+//    @Test
+    void dansDataversePid() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansDVMetadata.dansDataversePid, (RDFNode) null)
+        ).toList();
 
-        return ModelObject.builder()
-            .deposit(deposit)
-            .resource(model.getResource(deposit.getNbn()))
-            .model(model)
-            .build();
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5b253754-ddd0-4ae0-a5bb-555176bca858");
+    }
+
+    // @VLT002
+    // TODO make this one work
+//    @Test
+    void dansDataversePidVersion() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansDVMetadata.dansDataversePidVersion, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5b253754-ddd0-4ae0-a5bb-555176bca858");
+    }
+
+    // @VLT003
+    @Test
+    void dansBagId() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansDVMetadata.dansBagId, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("c169676f-5315-4d86-bde0-a62dbc915228");
+    }
+
+    // VLT004
+    @Test
+    void dansNbn() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansDVMetadata.dansNbn, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("urn:nbn:nl:ui:13-4c-1a2b");
+    }
+
+    // VLT005
+    @Test
+    void dansOtherId() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansDVMetadata.dansOtherId, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("REPO1:1234");
+    }
+
+    // VLT006
+    @Test
+    void dansOtherIdVersion() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansDVMetadata.dansOtherIdVersion, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("1.1");
+    }
+
+
+    // VLT007
+    // TODO make this work
+//    @Test
+    void dansSwordToken() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansDVMetadata.dansSwordToken, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("1.1");
     }
 
     private ThrowingExtractor<Statement, String, RuntimeException> getPropertyAsString(Property property) {
@@ -758,6 +848,20 @@ public class OaiOreConverterIntegrationTest {
 
             return prop.getObject().toString();
         };
+    }
+
+    private ModelObject loadModel() throws Exception {
+        var depositManager = new SimpleCommonDepositManager();
+        var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
+        deposit.setNbn("urn:nbn:nl:ui:13-4c-1a2b");
+
+        var model = new OaiOreConverter().convert(deposit).getModel();
+
+        return ModelObject.builder()
+            .deposit(deposit)
+            .resource(model.getResource(deposit.getNbn()))
+            .model(model)
+            .build();
     }
 
     @Builder

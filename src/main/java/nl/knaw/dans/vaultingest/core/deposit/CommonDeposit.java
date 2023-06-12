@@ -87,6 +87,28 @@ class CommonDeposit implements Deposit {
     }
 
     @Override
+    public String getPid() {
+        // VLT001 where to get this from?
+        return null;
+    }
+
+    @Override
+    public String getPidVersion() {
+        // VLT002 where to get this from?
+        return null;
+    }
+
+    @Override
+    public String getOtherId() {
+        return getMetadataValue("Has-Organizational-Identifier").stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public String getOtherIdVersion() {
+        return getMetadataValue("Has-Organizational-Identifier-Version").stream().findFirst().orElse(null);
+    }
+
+    @Override
     public String getTitle() {
         return Title.getTitle(ddm);
     }

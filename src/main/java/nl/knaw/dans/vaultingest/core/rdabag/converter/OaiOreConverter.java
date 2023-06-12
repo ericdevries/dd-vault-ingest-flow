@@ -97,6 +97,14 @@ public class OaiOreConverter {
         model.add(DansTemporalSpatial.toSpatialCoverageControlled(resource, deposit.getSpatialCoveragesControlled()));
         model.add(DansTemporalSpatial.toSpatialCoverageText(resource, deposit.getSpatialCoveragesText()));
 
+        DansDataVaultMetadata.toDataversePid(resource, deposit.getPid()).ifPresent(model::add);
+        DansDataVaultMetadata.toDataversePidVersion(resource, deposit.getPidVersion()).ifPresent(model::add);
+        DansDataVaultMetadata.toBagId(resource, deposit.getId()).ifPresent(model::add);
+        DansDataVaultMetadata.toNbn(resource, deposit.getNbn()).ifPresent(model::add);
+        DansDataVaultMetadata.toOtherId(resource, deposit.getOtherId()).ifPresent(model::add);
+        DansDataVaultMetadata.toOtherIdVersion(resource, deposit.getOtherIdVersion()).ifPresent(model::add);
+        DansDataVaultMetadata.toSwordToken(resource, deposit.getSwordToken()).ifPresent(model::add);
+
         model.add(model.createStatement(
             resourceMap,
             ORE.describes,

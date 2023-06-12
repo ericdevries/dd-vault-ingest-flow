@@ -33,6 +33,10 @@ import java.util.List;
 public class TestDeposit implements Deposit {
     boolean update;
     private String id;
+    private String pid;
+    private String pidVersion;
+    private String otherId;
+    private String otherIdVersion;
     private String title;
     private String nbn;
     private String doi;

@@ -32,6 +32,14 @@ public interface Deposit {
 
     void setNbn(String nbn);
 
+    String getPid();
+
+    String getPidVersion();
+
+    String getOtherId();
+
+    String getOtherIdVersion();
+
     String getTitle();
 
     boolean isUpdate();
