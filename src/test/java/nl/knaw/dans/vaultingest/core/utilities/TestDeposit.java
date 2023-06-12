@@ -76,6 +76,12 @@ public class TestDeposit implements Deposit {
     private List<String> abrArtifact;
     private List<String> abrPeriod;
 
+    private List<String> temporalCoverages;
+    private List<SpatialPoint> spatialPoints;
+    private List<SpatialBox> spatialBoxes;
+    private List<String> spatialCoveragesControlled;
+    private List<String> spatialCoveragesText;
+
     @Override
     public void setState(State state, String message) {
         this.state = state;
