@@ -47,6 +47,7 @@ class CommonDeposit implements Deposit {
     private final CommonDepositProperties properties;
     private final DatasetContactResolver datasetContactResolver;
     private final LanguageResolver languageResolver;
+    private final CountryResolver countryResolver;
     private final List<DepositFile> depositFiles;
     private final Path path;
     private String nbn;
@@ -259,6 +260,31 @@ class CommonDeposit implements Deposit {
     @Override
     public Collection<DansRelation> getDansRelations() {
         return DansRelations.getDansRelations(ddm);
+    }
+
+    @Override
+    public Collection<String> getTemporalCoverages() {
+        return TemporalSpatial.getTemporalCoverages(ddm);
+    }
+
+    @Override
+    public Collection<SpatialPoint> getSpatialPoints() {
+        return TemporalSpatial.getSpatialPoints(ddm);
+    }
+
+    @Override
+    public Collection<SpatialBox> getSpatialBoxes() {
+        return TemporalSpatial.getSpatialBoxes(ddm);
+    }
+
+    @Override
+    public Collection<String> getSpatialCoveragesControlled() {
+        return TemporalSpatial.getSpatialCoveragesControlled(ddm, countryResolver);
+    }
+
+    @Override
+    public Collection<String> getSpatialCoveragesText() {
+        return TemporalSpatial.getSpatialCoveragesText(ddm, countryResolver);
     }
 
     private List<String> getMetadataValue(String key) {

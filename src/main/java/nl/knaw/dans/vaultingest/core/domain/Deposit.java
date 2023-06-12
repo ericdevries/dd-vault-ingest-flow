@@ -93,6 +93,16 @@ public interface Deposit {
 
     Collection<DansRelation> getDansRelations();
 
+    Collection<String> getTemporalCoverages();
+
+    Collection<SpatialPoint> getSpatialPoints();
+
+    Collection<SpatialBox> getSpatialBoxes();
+
+    Collection<String> getSpatialCoveragesControlled();
+
+    Collection<String> getSpatialCoveragesText();
+
     enum State {
         PUBLISHED,
         ACCEPTED,

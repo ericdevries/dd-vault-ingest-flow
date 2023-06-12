@@ -13,32 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.config;
+package nl.knaw.dans.vaultingest.core.deposit;
 
-import lombok.Getter;
-import nl.knaw.dans.lib.util.ExecutorServiceFactory;
+public interface CountryResolver {
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.nio.file.Path;
-
-@Getter
-public class IngestFlowConfig {
-    @NotNull
-    @Valid
-    private InboxConfig autoIngest;
-    @NotNull
-    @Valid
-    private InboxConfig migration;
-    @NotNull
-    @Valid
-    private ExecutorServiceFactory taskQueue;
-    @NotNull
-    private Path rdaBagOutputDir;
-    @NotNull
-    @Valid
-    private LanguageConfig languages;
-    @NotNull
-    @Valid
-    private Path spatialCoverageCountryTermsPath;
+    boolean isControlledValue(String country);
 }

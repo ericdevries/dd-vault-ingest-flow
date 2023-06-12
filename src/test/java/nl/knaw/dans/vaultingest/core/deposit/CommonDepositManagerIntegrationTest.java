@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
+import nl.knaw.dans.vaultingest.core.utilities.TestCountryResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestDatasetContactResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
@@ -35,8 +36,8 @@ class CommonDepositManagerIntegrationTest {
         var manager = new CommonDepositManager(
             new XmlReaderImpl(),
             new TestDatasetContactResolver(),
-            new TestLanguageResolver()
-        );
+            new TestLanguageResolver(),
+            new TestCountryResolver());
 
         var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
         assert s != null;
@@ -50,8 +51,8 @@ class CommonDepositManagerIntegrationTest {
         var manager = new CommonDepositManager(
             new XmlReaderImpl(),
             new TestDatasetContactResolver(),
-            new TestLanguageResolver()
-        );
+            new TestLanguageResolver(),
+            new TestCountryResolver());
 
         var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
         assert s != null;

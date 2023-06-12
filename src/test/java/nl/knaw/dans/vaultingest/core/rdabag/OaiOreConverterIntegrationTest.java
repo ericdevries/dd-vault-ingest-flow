@@ -491,6 +491,101 @@ public class OaiOreConverterIntegrationTest {
     }
 
 
+    // TS001
+    @Test
+    void temporalCoverage() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansTS.dansTemporalCoverage, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("Het Romeinse Rijk", "De Oudheid");
+    }
+
+    // TS002
+    @Test
+    void spatialPoint() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansTS.dansSpatialPoint, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialPointX))
+            .map(Object::toString)
+            .containsOnly("126466", "4.288788");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialPointY))
+            .map(Object::toString)
+            .containsOnly("52.078663", "529006");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialPointScheme))
+            .containsOnly(null, "http://www.opengis.net/def/crs/EPSG/0/28992");
+    }
+
+    // TS003
+    @Test
+    void spatialBox() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansTS.dansSpatialBox, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialBoxNorth))
+            .containsOnly("628000", "53.23074335194507");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialBoxEast))
+            .containsOnly("140000", "6.563118076315912");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialBoxSouth))
+            .containsOnly("335000", "51.46343658020442");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialBoxWest))
+            .containsOnly("102000", "3.5621054065986075");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DansTS.dansSpatialBoxScheme))
+            .containsOnly("http://www.opengis.net/def/crs/EPSG/0/4326", "http://www.opengis.net/def/crs/EPSG/0/28992");
+
+    }
+
+    // TS006
+    @Test
+    void spatialCoverageControlled() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansTS.dansSpatialCoverageControlled, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("South Africa", "Japan");
+    }
+
+    // TS007
+    @Test
+    void spatialCoverageText() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DansTS.dansSpatialCoverageText, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("Roman Empire");
+    }
+
     private ModelObject loadModel() throws Exception {
         var depositManager = new SimpleCommonDepositManager();
         var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));

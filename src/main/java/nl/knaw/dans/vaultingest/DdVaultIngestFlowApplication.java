@@ -26,6 +26,7 @@ import nl.knaw.dans.vaultingest.core.IdMinter;
 import nl.knaw.dans.vaultingest.core.deposit.CommonDepositManager;
 import nl.knaw.dans.vaultingest.core.deposit.CommonDepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
+import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
 import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
@@ -71,14 +72,18 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             configuration.getIngestFlow().getLanguages().getIso6391(),
             configuration.getIngestFlow().getLanguages().getIso6392()
         );
+
+        var countryResolver = new FileCountryResolver(
+            configuration.getIngestFlow().getSpatialCoverageCountryTermsPath()
+        );
         var xmlReader = new XmlReaderImpl();
         var depositValidator = new VoidDepositValidator();
         //        var depositValidator = new CommonDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getBaseUrl());
         var depositFactory = new CommonDepositManager(
             xmlReader,
             userId -> DatasetContact.builder().name(userId).email(userId + "@test.com").build(),
-            languageResolver
-        );
+            languageResolver,
+            countryResolver);
 
         var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(environment.getObjectMapper());
         var outputWriterFactory = new ZipBagOutputWriterFactory(configuration.getIngestFlow().getRdaBagOutputDir());

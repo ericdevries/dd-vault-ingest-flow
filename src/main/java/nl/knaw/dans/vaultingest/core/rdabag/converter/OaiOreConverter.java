@@ -75,6 +75,12 @@ public class OaiOreConverter {
         model.add(DansCollections.toDansCollections(resource, deposit.getInCollection()));
         model.add(DansRelations.toDansRelations(resource, deposit.getDansRelations()));
 
+        model.add(DansTemporalSpatial.toTemporalCoverages(resource, deposit.getTemporalCoverages()));
+        model.add(DansTemporalSpatial.toSpatialPoints(resource, deposit.getSpatialPoints()));
+        model.add(DansTemporalSpatial.toSpatialBoxes(resource, deposit.getSpatialBoxes()));
+        model.add(DansTemporalSpatial.toSpatialCoverageControlled(resource, deposit.getSpatialCoveragesControlled()));
+        model.add(DansTemporalSpatial.toSpatialCoverageText(resource, deposit.getSpatialCoveragesText()));
+
         model.add(model.createStatement(
             resourceMap,
             ORE.describes,
