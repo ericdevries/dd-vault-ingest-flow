@@ -66,8 +66,8 @@
         <ddm:audience>E16000
         </ddm:audience> <!-- NB CIT013 will map this to the subject 'Other', but drop that because it is not the only subject found -->
 
-        <!-- If changed to NO_ACCESS, demonstrates TRM003 -->
-        <ddm:accessRights>OPEN_ACCESS</ddm:accessRights>
+        <!-- If changed to NO_ACCESS, demonstrates TRM003 (WAS OPEN_ACCESS) -->
+        <ddm:accessRights>NO_ACCESS</ddm:accessRights>
         <!-- RIG002 -->
         <ddm:personalData present="Yes"/>
     </ddm:profile>

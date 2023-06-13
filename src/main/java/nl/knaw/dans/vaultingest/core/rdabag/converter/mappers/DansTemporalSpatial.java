@@ -30,25 +30,6 @@ import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toB
 
 public class DansTemporalSpatial {
 
-    public static List<Statement> toLanguages(Resource resource, Collection<String> metadataLanguages) {
-        if (metadataLanguages == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var language : metadataLanguages) {
-            result.add(model.createStatement(
-                resource,
-                DansRights.dansMetadataLanguage,
-                language
-            ));
-        }
-
-        return result;
-    }
-
     public static List<Statement> toTemporalCoverages(Resource resource, Collection<String> temporalCoverages) {
         return toBasicTerms(resource, DansTS.dansTemporalCoverage, temporalCoverages);
     }

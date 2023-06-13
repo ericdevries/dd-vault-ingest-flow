@@ -179,8 +179,9 @@ class CommonDepositFile implements DepositFile {
         return Path.of(getFilePathAttribute());//.substring("data/".length()));
     }
 
-    private String getAccessibleToRights() {
-        return XPathEvaluator.strings(filesXmlNode, "//files:accessibleToRights")
+    @Override
+    public String getAccessibleToRights() {
+        return XPathEvaluator.strings(filesXmlNode, "files:accessibleToRights")
             .findFirst()
             .orElse(null);
     }

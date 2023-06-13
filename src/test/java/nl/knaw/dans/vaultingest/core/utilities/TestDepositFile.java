@@ -32,6 +32,7 @@ public class TestDepositFile implements DepositFile {
     private final boolean restricted;
     private final Path path;
     private final String description;
+    private final String accessibleToRights;
     private final Map<ManifestAlgorithm, String> checksums;
 
     @Override

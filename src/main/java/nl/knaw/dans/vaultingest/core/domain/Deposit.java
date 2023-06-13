@@ -130,6 +130,13 @@ public interface Deposit {
 
     Collection<String> getSpatialCoveragesText();
 
+    String getLicense();
+
+    boolean isRequestAccess();
+
+    // TODO should this really be a collection?
+    Collection<String> getTermsOfAccess();
+
     enum State {
         PUBLISHED,
         ACCEPTED,

@@ -78,11 +78,14 @@ class DepositToBagProcessTest {
             ))
             .subject("Something about science")
             .rightsHolder(List.of("John Rights"))
+            .requestAccess(true)
+            .termsOfAccess(List.of("Terms of access"))
             .payloadFiles(List.of(
                 TestDepositFile.builder()
                     .path(Path.of("data/file1.txt"))
                     .checksums(Map.of())
                     .id(UUID.randomUUID().toString())
+                    .accessibleToRights("KNOWN")
                     .build(),
                 TestDepositFile.builder()
                     .path(Path.of("data/file2.txt"))

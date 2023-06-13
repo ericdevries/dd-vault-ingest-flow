@@ -349,6 +349,21 @@ class CommonDeposit implements Deposit {
     }
 
     @Override
+    public String getLicense() {
+        return Terms.getLicense(ddm);
+    }
+
+    @Override
+    public boolean isRequestAccess() {
+        return Terms.isRequestAccess(ddm, getPayloadFiles());
+    }
+
+    @Override
+    public Collection<String> getTermsOfAccess() {
+        return Terms.getTermsOfAccess(ddm, getPayloadFiles());
+    }
+
+    @Override
     public LocalDate getAvailableDate() {
         return AvailableDate.getAvailableDate(ddm);
     }

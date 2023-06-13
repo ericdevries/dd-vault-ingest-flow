@@ -822,7 +822,6 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly("1.1");
     }
 
-
     // VLT007
     // TODO make this work
 //    @Test
@@ -836,6 +835,37 @@ public class OaiOreConverterIntegrationTest {
             .extracting("object")
             .map(Object::toString)
             .containsOnly("1.1");
+    }
+
+    // TRM001
+    @Test
+    void license() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, SchemaDO.license, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .extracting("object")
+            .map(Object::toString)
+            .containsOnly("http://opensource.org/licenses/MIT");
+    }
+
+    // TRM002 through TRM006
+    @Test
+    void fileTermsOfAccess() throws Exception {
+        var obj = loadModel();
+        var statements = obj.model.listStatements(
+            new SimpleSelector(obj.resource, DVCore.fileTermsOfAccess, (RDFNode) null)
+        ).toList();
+
+        assertThat(statements)
+            .map(getPropertyAsString(DVCore.fileRequestAccess))
+            .containsOnly("false");
+
+        assertThat(statements)
+            .map(getPropertyAsString(DVCore.termsOfAccess))
+            .containsOnly("Restricted files accessible under the following conditions: ...");
     }
 
     private ThrowingExtractor<Statement, String, RuntimeException> getPropertyAsString(Property property) {

@@ -89,6 +89,10 @@ public class TestDeposit implements Deposit {
 
     private LocalDate availableDate;
 
+    private String license;
+    private boolean requestAccess;
+    private List<String> termsOfAccess;
+
     @Override
     public void setState(State state, String message) {
         this.state = state;

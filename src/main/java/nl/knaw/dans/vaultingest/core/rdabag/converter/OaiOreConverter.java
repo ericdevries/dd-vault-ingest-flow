@@ -105,6 +105,9 @@ public class OaiOreConverter {
         DansDataVaultMetadata.toOtherIdVersion(resource, deposit.getOtherIdVersion()).ifPresent(model::add);
         DansDataVaultMetadata.toSwordToken(resource, deposit.getSwordToken()).ifPresent(model::add);
 
+        Terms.toLicense(resource, deposit.getLicense()).ifPresent(model::add);
+        model.add(Terms.toFileTermsOfAccess(resource, deposit));
+
         model.add(model.createStatement(
             resourceMap,
             ORE.describes,

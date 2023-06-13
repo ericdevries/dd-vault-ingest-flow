@@ -32,6 +32,8 @@ public interface DepositFile {
 
     String getDescription();
 
+    String getAccessibleToRights();
+
     InputStream openInputStream() throws IOException;
 
     // TODO refactor to getChecksumAlgorithms() and getChecksumFor(algorithm)
