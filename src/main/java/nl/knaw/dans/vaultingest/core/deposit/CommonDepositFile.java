@@ -39,9 +39,6 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @Builder
 class CommonDepositFile implements DepositFile {
-    private final static Pattern filenameForbidden = Pattern.compile("[:*?\"<>|;#]");
-    private final static Pattern directoryLabelForbidden = Pattern.compile("[^_\\-.\\\\/ 0-9a-zA-Z]");
-
     private final String id;
     private final Node filesXmlNode;
     private final Node ddmNode;
@@ -84,21 +81,11 @@ class CommonDepositFile implements DepositFile {
 
     @Override
     public Path getDirectoryLabel() {
-        var parent = getFilePath().getParent();
-
-        if (parent != null) {
-            var sanitized = directoryLabelForbidden.matcher(parent.toString()).replaceAll("_");
-            return Path.of(sanitized);
-        }
-
-        return null;
+        return getFilePath().getParent();
     }
 
     public Path getFilename() {
-        var filename = getFilePath().getFileName().toString();
-        var sanitized = filenameForbidden.matcher(filename).replaceAll("_");
-
-        return Path.of(sanitized);
+        return getFilePath().getFileName();
     }
 
     @Override

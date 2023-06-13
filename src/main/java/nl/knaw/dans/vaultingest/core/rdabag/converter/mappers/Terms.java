@@ -36,8 +36,12 @@ public class Terms {
             String.valueOf(deposit.isRequestAccess()));
 
         // TRM005 and TRM006
-        for (var term : deposit.getTermsOfAccess()) {
-            termsOfAccess.addProperty(DVCore.termsOfAccess, term);
+        var terms = deposit.getTermsOfAccess();
+
+        if (terms != null) {
+            for (var term : terms) {
+                termsOfAccess.addProperty(DVCore.termsOfAccess, term);
+            }
         }
 
         return model.createStatement(

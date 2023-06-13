@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -92,6 +93,7 @@ public class TestDeposit implements Deposit {
     private String license;
     private boolean requestAccess;
     private List<String> termsOfAccess;
+
 
     @Override
     public void setState(State state, String message) {
