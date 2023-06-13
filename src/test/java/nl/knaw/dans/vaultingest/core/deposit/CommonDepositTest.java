@@ -249,18 +249,6 @@ class CommonDepositTest {
     }
 
     @Test
-    void getSeries() throws Exception {
-        var deposit = this.loadDeposit();
-        var dates = deposit.getSeries();
-
-        assertThat(dates)
-            .extracting("information")
-            .containsOnly(
-                "Information about a series: first", "Information about a series: second"
-            );
-    }
-
-    @Test
     void getSources() throws Exception {
         var deposit = this.loadDeposit();
         var sources = deposit.getSources();
@@ -316,11 +304,6 @@ class CommonDepositTest {
             .bag(bag)
             .filesXml(null)
             .properties(props)
-            .datasetContactResolver((userId -> DatasetContact.builder()
-                .name(userId)
-                .email(userId + "@test.com")
-                .affiliation(userId + " university")
-                .build()))
             .languageResolver(new TestLanguageResolver())
             .build();
     }

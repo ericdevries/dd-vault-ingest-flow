@@ -34,6 +34,7 @@ import java.util.List;
 public class TestDeposit implements Deposit {
     boolean update;
     private String id;
+    private String bagId;
     private String pid;
     private String pidVersion;
     private String otherId;
@@ -73,18 +74,8 @@ public class TestDeposit implements Deposit {
 
     private List<String> inCollection;
     private List<DansRelation> dansRelations;
-    private List<String> archisZaakIds;
-    private List<ArchisNumber> archisNumbers;
-    private List<String> abrRapportTypes;
-    private List<String> abrRapportNumbers;
-    private List<String> abrVerwervingswijzes;
-    private List<String> abrComplex;
-    private List<String> abrArtifact;
-    private List<String> abrPeriod;
 
     private List<String> temporalCoverages;
-    private List<SpatialPoint> spatialPoints;
-    private List<SpatialBox> spatialBoxes;
     private List<String> spatialCoveragesControlled;
     private List<String> spatialCoveragesText;
 

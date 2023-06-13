@@ -18,7 +18,6 @@ package nl.knaw.dans.vaultingest.core.deposit;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.utilities.TestCountryResolver;
-import nl.knaw.dans.vaultingest.core.utilities.TestDatasetContactResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
@@ -31,7 +30,6 @@ public class SimpleCommonDepositManager extends CommonDepositManager {
     public SimpleCommonDepositManager() throws IOException {
         super(
             new XmlReaderImpl(),
-            new TestDatasetContactResolver(),
             new TestLanguageResolver(),
             new TestCountryResolver()
         );

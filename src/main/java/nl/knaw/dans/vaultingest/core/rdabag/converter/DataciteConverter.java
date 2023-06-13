@@ -140,24 +140,25 @@ public class DataciteConverter {
 
     private Resource.Contributors getContributors(Deposit deposit) {
         var contributors = new Resource.Contributors();
-
-        var contact = deposit.getContact();
-
-        if (contact != null) {
-            var contributor = new Resource.Contributors.Contributor();
-            var name = new Resource.Contributors.Contributor.ContributorName();
-            name.setValue(contact.getName());
-            contributor.setContributorName(name);
-
-            if (contact.getAffiliation() != null) {
-                var affiliation = new Affiliation();
-                affiliation.setValue("(" + contact.getAffiliation() + ")");
-                contributor.getAffiliation().add(affiliation);
-            }
-
-            contributor.setContributorType(ContributorType.CONTACT_PERSON);
-            contributors.getContributor().add(contributor);
-        }
+        // TODO change property, contact is not the one
+//
+//        var contact = deposit.getContact();
+//
+//        if (contact != null) {
+//            var contributor = new Resource.Contributors.Contributor();
+//            var name = new Resource.Contributors.Contributor.ContributorName();
+//            name.setValue(contact.getName());
+//            contributor.setContributorName(name);
+//
+//            if (contact.getAffiliation() != null) {
+//                var affiliation = new Affiliation();
+//                affiliation.setValue("(" + contact.getAffiliation() + ")");
+//                contributor.getAffiliation().add(affiliation);
+//            }
+//
+//            contributor.setContributorType(ContributorType.CONTACT_PERSON);
+//            contributors.getContributor().add(contributor);
+//        }
 
         return contributors;
     }

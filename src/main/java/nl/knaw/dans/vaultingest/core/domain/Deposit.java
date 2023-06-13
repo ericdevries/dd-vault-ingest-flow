@@ -26,19 +26,13 @@ import java.util.Collection;
 public interface Deposit {
     String getId();
 
+    String getBagId();
+
     String getDoi();
 
     String getNbn();
 
     void setNbn(String nbn);
-
-    String getPid();
-
-    String getPidVersion();
-
-    String getOtherId();
-
-    String getOtherIdVersion();
 
     String getTitle();
 
@@ -82,11 +76,7 @@ public interface Deposit {
 
     Collection<CollectionDate> getCollectionDates();
 
-    Collection<SeriesElement> getSeries();
-
     Collection<String> getSources();
-
-    DatasetContact getContact();
 
     boolean isPersonalDataPresent();
 
@@ -104,27 +94,7 @@ public interface Deposit {
 
     Collection<DansRelation> getDansRelations();
 
-    Collection<String> getArchisZaakIds();
-
-    Collection<ArchisNumber> getArchisNumbers();
-
-    Collection<String> getAbrRapportTypes();
-
-    Collection<String> getAbrRapportNumbers();
-
-    Collection<String> getAbrVerwervingswijzes();
-
-    Collection<String> getAbrComplex();
-
-    Collection<String> getAbrArtifact();
-
-    Collection<String> getAbrPeriod();
-
     Collection<String> getTemporalCoverages();
-
-    Collection<SpatialPoint> getSpatialPoints();
-
-    Collection<SpatialBox> getSpatialBoxes();
 
     Collection<String> getSpatialCoveragesControlled();
 

@@ -45,7 +45,6 @@ class CommonDeposit implements Deposit {
     protected final CommonDepositBag bag;
     private final String id;
     private final CommonDepositProperties properties;
-    private final DatasetContactResolver datasetContactResolver;
     private final LanguageResolver languageResolver;
     private final CountryResolver countryResolver;
     private final List<DepositFile> depositFiles;
@@ -55,6 +54,11 @@ class CommonDeposit implements Deposit {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getBagId() {
+        return properties.getBagId();
     }
 
     @Override
@@ -84,28 +88,6 @@ class CommonDeposit implements Deposit {
     @Override
     public void setNbn(String nbn) {
         this.nbn = nbn;
-    }
-
-    @Override
-    public String getPid() {
-        // VLT001 where to get this from?
-        return null;
-    }
-
-    @Override
-    public String getPidVersion() {
-        // VLT002 where to get this from?
-        return null;
-    }
-
-    @Override
-    public String getOtherId() {
-        return getMetadataValue("Has-Organizational-Identifier").stream().findFirst().orElse(null);
-    }
-
-    @Override
-    public String getOtherIdVersion() {
-        return getMetadataValue("Has-Organizational-Identifier-Version").stream().findFirst().orElse(null);
     }
 
     @Override
@@ -227,21 +209,15 @@ class CommonDeposit implements Deposit {
         return CollectionDates.getCollectionDates(ddm);
     }
 
-    @Override
-    public Collection<SeriesElement> getSeries() {
-        return Series.getSeries(ddm);
-    }
-
+    // TODO verify it is not supported
+//    @Override
+//    public Collection<SeriesElement> getSeries() {
+//        return Series.getSeries(ddm);
+//    }
+//
     @Override
     public Collection<String> getSources() {
         return Sources.getSources(ddm);
-    }
-
-    @Override
-    public DatasetContact getContact() {
-        return datasetContactResolver.resolve(
-            this.properties.getDepositorId()
-        );
     }
 
     @Override
@@ -285,57 +261,8 @@ class CommonDeposit implements Deposit {
     }
 
     @Override
-    public Collection<String> getArchisZaakIds() {
-        return Archaeology.getArchisZaakIds(ddm);
-    }
-
-    @Override
-    public Collection<ArchisNumber> getArchisNumbers() {
-        return Archaeology.getArchisNumbers(ddm);
-    }
-
-    @Override
-    public Collection<String> getAbrRapportTypes() {
-        return Archaeology.getAbrRapportTypes(ddm);
-    }
-
-    @Override
-    public Collection<String> getAbrRapportNumbers() {
-        return Archaeology.getAbrRapportNumbers(ddm);
-    }
-
-    @Override
-    public Collection<String> getAbrVerwervingswijzes() {
-        return Archaeology.getAbrVerwervingswijzes(ddm);
-    }
-
-    @Override
-    public Collection<String> getAbrComplex() {
-        return Archaeology.getAbrComplex(ddm);
-    }
-
-    @Override
-    public Collection<String> getAbrArtifact() {
-        return Archaeology.getAbrArtifact(ddm);
-    }
-
-    @Override
-    public Collection<String> getAbrPeriod() {
-        return Archaeology.getAbrPeriod(ddm);
-    }
-
     public Collection<String> getTemporalCoverages() {
         return TemporalSpatial.getTemporalCoverages(ddm);
-    }
-
-    @Override
-    public Collection<SpatialPoint> getSpatialPoints() {
-        return TemporalSpatial.getSpatialPoints(ddm);
-    }
-
-    @Override
-    public Collection<SpatialBox> getSpatialBoxes() {
-        return TemporalSpatial.getSpatialBoxes(ddm);
     }
 
     @Override

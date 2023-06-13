@@ -51,9 +51,6 @@ public class OaiOreConverter {
         model.add(OtherIds.toOtherIds(resource, deposit.getOtherIds()));
         model.add(Authors.toAuthors(resource, deposit.getAuthors()));
 
-        DatasetContacts.toDatasetContact(resource, deposit.getContact())
-            .ifPresent(model::add);
-
         model.add(Descriptions.toDescriptions(resource, deposit.getDescriptions()));
         model.add(Subjects.toSubjects(resource, deposit.getSubjects()));
         model.add(Keywords.toKeywords(resource, deposit.getKeywords()));
@@ -71,7 +68,6 @@ public class OaiOreConverter {
             .ifPresent(model::add);
 
         model.add(DatesOfCollections.toDatesOfCollection(resource, deposit.getCollectionDates()));
-        model.add(Series.toSeries(resource, deposit.getSeries()));
         model.add(DataSources.toDataSources(resource, deposit.getSources()));
 
         model.add(DansRightsHolders.toDansRightsHolders(resource, deposit.getRightsHolder()));
@@ -82,27 +78,13 @@ public class OaiOreConverter {
         model.add(DansCollections.toDansCollections(resource, deposit.getInCollection()));
         model.add(DansRelations.toDansRelations(resource, deposit.getDansRelations()));
 
-        model.add(Archaeology.toArchisZaakIds(resource, deposit.getArchisZaakIds()));
-        model.add(Archaeology.toArchisNumbers(resource, deposit.getArchisNumbers()));
-        model.add(Archaeology.toAbrRapportTypes(resource, deposit.getAbrRapportTypes()));
-        model.add(Archaeology.toAbrRapportNummers(resource, deposit.getAbrRapportNumbers()));
-        model.add(Archaeology.toAbrVerwervingswijzes(resource, deposit.getAbrVerwervingswijzes()));
-        model.add(Archaeology.toAbrComplex(resource, deposit.getAbrComplex()));
-        model.add(Archaeology.toAbrArtifacts(resource, deposit.getAbrArtifact()));
-        model.add(Archaeology.toAbrPeriods(resource, deposit.getAbrPeriod()));
-
         model.add(DansTemporalSpatial.toTemporalCoverages(resource, deposit.getTemporalCoverages()));
-        model.add(DansTemporalSpatial.toSpatialPoints(resource, deposit.getSpatialPoints()));
-        model.add(DansTemporalSpatial.toSpatialBoxes(resource, deposit.getSpatialBoxes()));
         model.add(DansTemporalSpatial.toSpatialCoverageControlled(resource, deposit.getSpatialCoveragesControlled()));
         model.add(DansTemporalSpatial.toSpatialCoverageText(resource, deposit.getSpatialCoveragesText()));
 
-        DansDataVaultMetadata.toDataversePid(resource, deposit.getPid()).ifPresent(model::add);
-        DansDataVaultMetadata.toDataversePidVersion(resource, deposit.getPidVersion()).ifPresent(model::add);
-        DansDataVaultMetadata.toBagId(resource, deposit.getId()).ifPresent(model::add);
+        DansDataVaultMetadata.toBagId(resource, deposit.getBagId()).ifPresent(model::add);
         DansDataVaultMetadata.toNbn(resource, deposit.getNbn()).ifPresent(model::add);
-        DansDataVaultMetadata.toOtherId(resource, deposit.getOtherId()).ifPresent(model::add);
-        DansDataVaultMetadata.toOtherIdVersion(resource, deposit.getOtherIdVersion()).ifPresent(model::add);
+        DansDataVaultMetadata.toOtherId(resource, deposit.getDoi()).ifPresent(model::add);
         DansDataVaultMetadata.toSwordToken(resource, deposit.getSwordToken()).ifPresent(model::add);
 
         Terms.toLicense(resource, deposit.getLicense()).ifPresent(model::add);

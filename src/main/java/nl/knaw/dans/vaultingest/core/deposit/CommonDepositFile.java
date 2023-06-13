@@ -19,7 +19,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
-import nl.knaw.dans.vaultingest.core.domain.KeyValuePair;
 import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.w3c.dom.Node;
@@ -30,10 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @ToString
 @EqualsAndHashCode
@@ -51,7 +47,6 @@ class CommonDepositFile implements DepositFile {
         return id;
     }
 
-    // TODO implement according to TRM003 and TRM004
     public boolean isRestricted() {
         var accessibleToRights = getAccessibleToRights();
         var accessRights = getAccessRights();
@@ -101,56 +96,8 @@ class CommonDepositFile implements DepositFile {
 
     @Override
     public String getDescription() {
-        var originalFilepath = getFilePath();
-        var filenameWasSanitized = !getFilename().equals(originalFilepath.getFileName());
-        var directoryLabelWasSanitized = getDirectoryLabel() != null && !getDirectoryLabel().equals(originalFilepath.getParent());
-
-        var metadataFields = new HashMap<String, String>();
-
-        var afmKeyValuePairs = XPathEvaluator.nodes(filesXmlNode, "afm:keyvaluepair")
-            .map(keyValuePair -> {
-                var key = XPathEvaluator.strings(keyValuePair, "afm:key").findFirst().orElse(null);
-                var value = XPathEvaluator.strings(keyValuePair, "afm:value").findFirst().orElse(null);
-
-                return new KeyValuePair(key, value);
-            })
-            .collect(Collectors.toList());
-
-        var otherKeyValuePairs = XPathEvaluator.nodes(filesXmlNode, "*[not(local-name() = 'keyvaluepair')]")
-            .map(keyValuePair -> {
-                var key = keyValuePair.getLocalName();
-                var value = keyValuePair.getTextContent();
-
-                return new KeyValuePair(key, value);
-            })
-            .collect(Collectors.toList());
-
-        // FIL002A (migration only)
-        for (var item : afmKeyValuePairs) {
-            metadataFields.put(item.getKey(), item.getValue());
-        }
-
-        // FIL002B (migration only)
-        for (var item : otherKeyValuePairs) {
-            metadataFields.put(item.getKey(), item.getValue());
-        }
-
-        // FIL003
-        if (filenameWasSanitized || directoryLabelWasSanitized) {
-            metadataFields.put("original_filepath", getFilePathAttribute());
-        }
-
-        // FIL004
-        var description = XPathEvaluator.strings(filesXmlNode, "dcterms:description").findFirst().orElse(null);
-
-        if (metadataFields.size() == 0 && description != null) {
-            return description;
-        }
-        else {
-            return metadataFields.entrySet().stream()
-                .map(entry -> String.format("%s: %s", entry.getKey(), entry.getValue()))
-                .collect(Collectors.joining("; "));
-        }
+        return XPathEvaluator.strings(filesXmlNode, "dcterms:description")
+            .findFirst().orElse(null);
     }
 
     @Override

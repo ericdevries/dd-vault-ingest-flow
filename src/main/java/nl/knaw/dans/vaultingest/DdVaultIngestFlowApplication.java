@@ -81,7 +81,6 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
         //        var depositValidator = new CommonDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getBaseUrl());
         var depositFactory = new CommonDepositManager(
             xmlReader,
-            userId -> DatasetContact.builder().name(userId).email(userId + "@test.com").build(),
             languageResolver,
             countryResolver);
 

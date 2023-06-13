@@ -26,13 +26,11 @@ import java.nio.file.Path;
 
 @Slf4j
 public class CommonDepositManager extends AbstractDepositManager {
-    private final DatasetContactResolver datasetContactResolver;
     private final LanguageResolver languageResolver;
     private final CountryResolver countryResolver;
 
-    public CommonDepositManager(XmlReader xmlReader, DatasetContactResolver datasetContactResolver, LanguageResolver languageResolver, CountryResolver countryResolver) {
+    public CommonDepositManager(XmlReader xmlReader, LanguageResolver languageResolver, CountryResolver countryResolver) {
         super(xmlReader);
-        this.datasetContactResolver = datasetContactResolver;
         this.languageResolver = languageResolver;
         this.countryResolver = countryResolver;
     }
@@ -68,7 +66,6 @@ public class CommonDepositManager extends AbstractDepositManager {
                 .filesXml(filesXml)
                 .depositFiles(depositFiles)
                 .properties(depositProperties)
-                .datasetContactResolver(datasetContactResolver)
                 .languageResolver(languageResolver)
                 .countryResolver(countryResolver)
                 .build();

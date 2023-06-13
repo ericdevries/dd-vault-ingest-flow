@@ -112,27 +112,6 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly(null, "ORCID", "VIAF");
     }
 
-    // CIT008
-    @Test
-    void datasetContact() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.datasetContact, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .map(getPropertyAsString(DVCitation.datasetContactName))
-            .containsOnly("user001");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DVCitation.datasetContactEmail))
-            .containsOnly("user001@dans.knaw.nl");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DVCitation.datasetContactAffiliation))
-            .containsOnly("user001 university");
-    }
-
     // CIT009, CIT011, CIT012
     @Test
     void descriptions() throws Exception {
@@ -324,20 +303,6 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly("2016-12-31");
     }
 
-    // CIT027
-    @Test
-    void series() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.series, (RDFNode) null)
-        ).toList();
-
-        // TODO docs state "Separate multiple occurrences with an empty line", but that is not how it is implemented
-        assertThat(statements)
-            .map(getPropertyAsString(DVCitation.seriesInformation))
-            .containsOnly("Information about a series: first", "Information about a series: second");
-    }
-
     // CIT028
     @Test
     void wasDerivedFrom() throws Exception {
@@ -518,128 +483,6 @@ public class OaiOreConverterIntegrationTest {
             );
     }
 
-
-    // AR001
-    @Test
-    void dansArchisZaakId() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansArchisZaakId, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("12345");
-    }
-
-    // AR002
-    @Test
-    void dansArchisNumber() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansArchisNumber, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansArchaeology.dansArchisNumberId))
-            .map(Object::toString)
-            .containsOnly("67891", "67890", "12347", "12346");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansArchaeology.dansArchisNumberType))
-            .map(Object::toString)
-            .containsOnly("ARCHIS-VONDSTMELDING",
-                "ARCHIS-ONDERZOEK",
-                "ARCHIS-WAARNEMING",
-                "ARCHIS-MONUMENT");
-    }
-
-    // AR003
-    @Test
-    void dansAbrRapportType() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansAbrRapportType, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/d6b2e162-3f49-4027-8f03-28194db2905e");
-    }
-
-    // AR004
-    @Test
-    void dansAbrRapportNumber() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansAbrRapportNummer, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("BAAC 123-A");
-    }
-
-    // AR005
-    @Test
-    void dansAbrVerwervingswijze() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansAbrVerwervingswijze, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/967bfdf8-c44d-4c69-8318-34ed1ab1e784");
-    }
-
-    // AR006
-    @Test
-    void dansAbrComplex() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansAbrComplex, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/9a758542-8d0d-4afa-b664-104b938fe13e");
-    }
-
-
-    // AR007
-    @Test
-    void dansAbrArtifact() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansAbrArtifact, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5bd97bc0-697c-4128-b7b2-d2324bc4a2e1");
-    }
-
-    // AR008
-    @Test
-    void dansAbrPeriod() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansArchaeology.dansAbrPeriod, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5b253754-ddd0-4ae0-a5bb-555176bca858");
-    }
-
     // TS001
     @Test
     void temporalCoverage() throws Exception {
@@ -652,59 +495,6 @@ public class OaiOreConverterIntegrationTest {
             .extracting("object")
             .map(Object::toString)
             .containsOnly("Het Romeinse Rijk", "De Oudheid");
-    }
-
-    // TS002
-    @Test
-    void spatialPoint() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansTS.dansSpatialPoint, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialPointX))
-            .map(Object::toString)
-            .containsOnly("126466", "4.288788");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialPointY))
-            .map(Object::toString)
-            .containsOnly("52.078663", "529006");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialPointScheme))
-            .containsOnly(null, "http://www.opengis.net/def/crs/EPSG/0/28992");
-    }
-
-    // TS003
-    @Test
-    void spatialBox() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansTS.dansSpatialBox, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialBoxNorth))
-            .containsOnly("628000", "53.23074335194507");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialBoxEast))
-            .containsOnly("140000", "6.563118076315912");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialBoxSouth))
-            .containsOnly("335000", "51.46343658020442");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialBoxWest))
-            .containsOnly("102000", "3.5621054065986075");
-
-        assertThat(statements)
-            .map(getPropertyAsString(DansTS.dansSpatialBoxScheme))
-            .containsOnly("http://www.opengis.net/def/crs/EPSG/0/4326", "http://www.opengis.net/def/crs/EPSG/0/28992");
-
     }
 
     // TS006
@@ -777,7 +567,7 @@ public class OaiOreConverterIntegrationTest {
         assertThat(statements)
             .extracting("object")
             .map(Object::toString)
-            .containsOnly("c169676f-5315-4d86-bde0-a62dbc915228");
+            .containsOnly("urn:uuid:0b9bb5ee-3187-4387-bb39-2c09536c79f7");
     }
 
     // VLT004
@@ -805,21 +595,7 @@ public class OaiOreConverterIntegrationTest {
         assertThat(statements)
             .extracting("object")
             .map(Object::toString)
-            .containsOnly("REPO1:1234");
-    }
-
-    // VLT006
-    @Test
-    void dansOtherIdVersion() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansDVMetadata.dansOtherIdVersion, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("1.1");
+            .containsOnly("10.17026/dans-z6y-5y2e");
     }
 
     // VLT007

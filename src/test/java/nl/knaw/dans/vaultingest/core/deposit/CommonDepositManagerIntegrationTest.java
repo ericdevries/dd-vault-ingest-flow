@@ -16,7 +16,6 @@
 package nl.knaw.dans.vaultingest.core.deposit;
 
 import nl.knaw.dans.vaultingest.core.utilities.TestCountryResolver;
-import nl.knaw.dans.vaultingest.core.utilities.TestDatasetContactResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,6 @@ class CommonDepositManagerIntegrationTest {
     void loadDeposit() throws Exception {
         var manager = new CommonDepositManager(
             new XmlReaderImpl(),
-            new TestDatasetContactResolver(),
             new TestLanguageResolver(),
             new TestCountryResolver());
 
@@ -50,7 +48,6 @@ class CommonDepositManagerIntegrationTest {
     void loadDeposit_should_handle_OriginalFilePaths() throws Exception {
         var manager = new CommonDepositManager(
             new XmlReaderImpl(),
-            new TestDatasetContactResolver(),
             new TestLanguageResolver(),
             new TestCountryResolver());
 
