@@ -136,7 +136,6 @@ public class DataciteConverter {
 
     private Resource.Contributors getContributors(Deposit deposit) {
         var contributors = new Resource.Contributors();
-        // TODO change property, contact is not the one
 
         if (deposit.getContributors() != null) {
             for (var item : deposit.getContributors()) {
