@@ -27,7 +27,6 @@ public class Terms {
 
 
     public static Optional<Statement> toLicense(Resource resource, String license) {
-        System.out.println("Terms.toLicense " + license);
         if (license == null) {
             return Optional.empty();
         }
