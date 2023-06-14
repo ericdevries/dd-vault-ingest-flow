@@ -103,7 +103,7 @@ class DataciteConverterIntegrationTest {
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:descriptions/datacite:description")
             .collect(Collectors.toList()))
-            .containsOnly("This bags contains one or more examples of each mapping rule.; A second description; some date; some acceptance date; some copyright date; some submission date; some modified date; some issuing date; some validation date; some coverage description; Even more descriptions");
+            .containsOnly("This bags contains one or more examples of each mapping rule.");
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:descriptions/datacite:description/@descriptionType")
             .collect(Collectors.toList()))
@@ -116,15 +116,15 @@ class DataciteConverterIntegrationTest {
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/datacite:contributorName")
             .collect(Collectors.toList()))
-            .containsOnly("user001");
+            .containsOnly("CON van Tributor (Contributing Org)", "Contributing Org");
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/datacite:affiliation")
             .collect(Collectors.toList()))
-            .containsOnly("(user001 university)");
+            .isEmpty();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/@contributorType")
             .collect(Collectors.toList()))
-            .containsOnly("ContactPerson");
+            .containsOnly("ProjectMember", "Sponsor");
     }
 
     // serialize to XML, then convert to Node, so we can use XPath to test the output

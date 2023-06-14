@@ -66,8 +66,8 @@
         <ddm:audience>E16000
         </ddm:audience> <!-- NB CIT013 will map this to the subject 'Other', but drop that because it is not the only subject found -->
 
-        <!-- If changed to NO_ACCESS, demonstrates TRM003 (WAS OPEN_ACCESS) -->
-        <ddm:accessRights>NO_ACCESS</ddm:accessRights>
+        <!-- If changed to NO_ACCESS, demonstrates TRM003 -->
+        <ddm:accessRights>NOP_ACCESS</ddm:accessRights>
         <!-- RIG002 -->
         <ddm:personalData present="Yes"/>
     </ddm:profile>
@@ -210,10 +210,10 @@
         <dcterms:identifier xsi:type="id-type:ARCHIS-ZAAK-IDENTIFICATIE">12345</dcterms:identifier>
 
         <!-- AR002 -->
-        <dcterms:identifier xsi:type="id-type:ARCHIS-ONDERZOEK">12346</dcterms:identifier>
+        <dcterms:identifier xsi:type="id-type:ARCHIS-ONDERZOEK">12345</dcterms:identifier>
         <dcterms:identifier xsi:type="id-type:ARCHIS-VONDSTMELDING">67890</dcterms:identifier>
-        <dcterms:identifier xsi:type="id-type:ARCHIS-MONUMENT">12347</dcterms:identifier>
-        <dcterms:identifier xsi:type="id-type:ARCHIS-WAARNEMING">67891</dcterms:identifier>
+        <dcterms:identifier xsi:type="id-type:ARCHIS-MONUMENT">12345</dcterms:identifier>
+        <dcterms:identifier xsi:type="id-type:ARCHIS-WAARNEMING">67890</dcterms:identifier>
 
         <!-- AR003 and AR004 -->
         <ddm:reportNumber

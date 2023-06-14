@@ -16,8 +16,6 @@
 package nl.knaw.dans.vaultingest.core.deposit.mapping;
 
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.w3c.dom.Document;
 
 import java.time.LocalDate;

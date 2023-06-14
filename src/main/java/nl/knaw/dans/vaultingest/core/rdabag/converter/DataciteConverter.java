@@ -16,7 +16,6 @@
 package nl.knaw.dans.vaultingest.core.rdabag.converter;
 
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
 import nl.knaw.dans.vaultingest.domain.*;
 
 import java.text.SimpleDateFormat;
@@ -125,15 +124,12 @@ public class DataciteConverter {
     private Resource.Descriptions getDescriptions(Deposit deposit) {
         var descriptions = new Resource.Descriptions();
 
-        if (deposit.getDescriptions() != null && deposit.getDescriptions().size() > 0) {
+        deposit.getDescription().ifPresent(d -> {
             var description = new Resource.Descriptions.Description();
-
-            var depositDescription = deposit.getDescriptions().stream().map(Description::getValue).collect(Collectors.joining("; "));
-
             description.setDescriptionType(DescriptionType.ABSTRACT);
-            description.getContent().add(depositDescription);
+            description.getContent().add(d.getValue());
             descriptions.getDescription().add(description);
-        }
+        });
 
         return descriptions;
     }
@@ -141,25 +137,29 @@ public class DataciteConverter {
     private Resource.Contributors getContributors(Deposit deposit) {
         var contributors = new Resource.Contributors();
         // TODO change property, contact is not the one
-//
-//        var contact = deposit.getContact();
-//
-//        if (contact != null) {
-//            var contributor = new Resource.Contributors.Contributor();
-//            var name = new Resource.Contributors.Contributor.ContributorName();
-//            name.setValue(contact.getName());
-//            contributor.setContributorName(name);
-//
-//            if (contact.getAffiliation() != null) {
-//                var affiliation = new Affiliation();
-//                affiliation.setValue("(" + contact.getAffiliation() + ")");
-//                contributor.getAffiliation().add(affiliation);
-//            }
-//
-//            contributor.setContributorType(ContributorType.CONTACT_PERSON);
-//            contributors.getContributor().add(contributor);
-//        }
+
+        if (deposit.getContributors() != null) {
+            for (var item : deposit.getContributors()) {
+
+                var contributor = new Resource.Contributors.Contributor();
+                var name = new Resource.Contributors.Contributor.ContributorName();
+                name.setValue(item.getName());
+                contributor.setContributorName(name);
+                contributor.setContributorType(getContributorType(item.getType()));
+                contributors.getContributor().add(contributor);
+            }
+        }
 
         return contributors;
     }
+
+    private ContributorType getContributorType(String type) {
+        try {
+            return ContributorType.fromValue(type);
+        }
+        catch (Exception e) {
+            return ContributorType.OTHER;
+        }
+    }
+
 }

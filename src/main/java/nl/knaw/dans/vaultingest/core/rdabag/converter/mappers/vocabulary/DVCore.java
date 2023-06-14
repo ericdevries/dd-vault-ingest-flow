@@ -18,7 +18,6 @@ package nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
 
 public class DVCore {
     public static final String NS = "https://dataverse.org/schema/core#";

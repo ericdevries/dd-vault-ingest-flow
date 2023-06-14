@@ -16,36 +16,20 @@
 package nl.knaw.dans.vaultingest.core.rdabag.converter.mappers;
 
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansDVMetadata;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansTS;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-
-import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
 
 public class DansDataVaultMetadata {
 
-    // VLT001
-    public static Optional<Statement> toDataversePid(Resource resource, String value) {
-        return toStatement(resource, DansDVMetadata.dansDataversePid, value);
-    }
-
-
-    // VLT002
-    public static Optional<Statement> toDataversePidVersion(Resource resource, String value) {
-        return toStatement(resource, DansDVMetadata.dansDataversePidVersion, value);
-    }
-
-    // VLT003
+    // VLT003(A)
     public static Optional<Statement> toBagId(Resource resource, String value) {
         return toStatement(resource, DansDVMetadata.dansBagId, value);
     }
 
-    // VLT004
+    // VLT004(A)
     public static Optional<Statement> toNbn(Resource resource, String value) {
         return toStatement(resource, DansDVMetadata.dansNbn, value);
     }
@@ -54,11 +38,6 @@ public class DansDataVaultMetadata {
     // VLT005
     public static Optional<Statement> toOtherId(Resource resource, String value) {
         return toStatement(resource, DansDVMetadata.dansOtherId, value);
-    }
-
-    // VLT006
-    public static Optional<Statement> toOtherIdVersion(Resource resource, String value) {
-        return toStatement(resource, DansDVMetadata.dansOtherIdVersion, value);
     }
 
     // VLT007

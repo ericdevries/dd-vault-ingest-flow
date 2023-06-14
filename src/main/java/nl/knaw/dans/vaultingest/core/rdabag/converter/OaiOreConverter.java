@@ -46,8 +46,8 @@ public class OaiOreConverter {
             .ifPresent(model::add);
 
         model.add(Title.toTitle(resource, deposit.getTitle()));
-        model.add(Title.toTitle(resource, deposit.getTitle()));
-        model.add(AlternativeTitles.toAlternativeTitle(resource, deposit.getAlternativeTitles()));
+        AlternativeTitles.toAlternativeTitle(resource, deposit.getAlternativeTitles())
+            .ifPresent(model::add);
         model.add(OtherIds.toOtherIds(resource, deposit.getOtherIds()));
         model.add(Authors.toAuthors(resource, deposit.getAuthors()));
 

@@ -21,7 +21,8 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 class CommonDepositProperties {
-    private static final String BAG_ID = "dataverse.bag-id";
+    private static final String DATAVERSE_BAG_ID = "dataverse.bag-id";
+    private static final String DATAVERSE_NBN = "dataverse.nbn";
     private static final String STATE_LABEL = "state.label";
     private static final String STATE_DESCRIPTION = "state.description";
     private static final String IDENTIFIER_DOI = "identifier.doi";
@@ -54,6 +55,10 @@ class CommonDepositProperties {
         return configuration.getString(IDENTIFIER_DOI);
     }
 
+    public String getDataverseNbn() {
+        return configuration.getString(DATAVERSE_NBN);
+    }
+
     public void setIdentifierDoi(String identifierDoi) {
         configuration.setProperty(IDENTIFIER_DOI, identifierDoi);
     }
@@ -71,6 +76,6 @@ class CommonDepositProperties {
     }
 
     public String getBagId() {
-        return configuration.getString(BAG_ID);
+        return configuration.getString(DATAVERSE_BAG_ID);
     }
 }

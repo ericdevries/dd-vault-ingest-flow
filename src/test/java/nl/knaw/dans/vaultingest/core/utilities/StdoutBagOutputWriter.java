@@ -27,12 +27,10 @@ public class StdoutBagOutputWriter implements BagOutputWriter {
         System.out.println("--- START(" + path + ") ---");
 
         try {
-            // only output first 512 bytes
-                        byte[] bytes = new byte[64];
-                        inputStream.read(bytes);
-                        System.out.write(bytes);
-                        System.out.println("...");
-//            inputStream.transferTo(System.out);
+            byte[] bytes = new byte[64];
+            inputStream.read(bytes);
+            System.out.write(bytes);
+            System.out.println("...");
         }
         catch (Exception e) {
             e.printStackTrace();

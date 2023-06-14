@@ -25,9 +25,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -63,7 +63,6 @@ public class TestDeposit implements Deposit {
     private List<Distributor> distributors;
     private String distributionDate;
     private List<CollectionDate> collectionDates;
-    private List<SeriesElement> series;
     private DatasetContact contact;
     private List<String> sources;
     private State state;
@@ -90,6 +89,19 @@ public class TestDeposit implements Deposit {
     public void setState(State state, String message) {
         this.state = state;
         this.stateDescription = message;
+    }
+
+    @Override
+    public Optional<Description> getDescription() {
+        return Optional.ofNullable(getFirstDescription());
+    }
+
+    private Description getFirstDescription() {
+        if (this.descriptions != null && this.descriptions.size() > 0) {
+            return this.descriptions.get(0);
+        }
+
+        return null;
     }
 
     @Override

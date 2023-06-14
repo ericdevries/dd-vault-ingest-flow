@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -138,6 +139,11 @@ class CommonDeposit implements Deposit {
     }
 
     @Override
+    public Optional<Description> getDescription() {
+        return Descriptions.getDescription(ddm);
+    }
+
+    @Override
     public Collection<Description> getDescriptions() {
         return Descriptions.getDescriptions(ddm);
     }
@@ -213,12 +219,6 @@ class CommonDeposit implements Deposit {
         return CollectionDates.getCollectionDates(ddm);
     }
 
-    // TODO verify it is not supported
-//    @Override
-//    public Collection<SeriesElement> getSeries() {
-//        return Series.getSeries(ddm);
-//    }
-//
     @Override
     public Collection<String> getSources() {
         return Sources.getSources(ddm);

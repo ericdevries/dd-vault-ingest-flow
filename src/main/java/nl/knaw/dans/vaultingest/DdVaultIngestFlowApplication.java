@@ -28,7 +28,6 @@ import nl.knaw.dans.vaultingest.core.deposit.CommonDepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
 import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;

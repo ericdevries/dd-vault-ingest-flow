@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class Title {
     public static String getTitle(Document ddm) {
         return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/dc:title")
+            .map(String::trim)
             .findFirst()
             .orElse(null);
     }
@@ -31,7 +32,9 @@ public class Title {
     public static List<String> getAlternativeTitles(Document ddm) {
         return XPathEvaluator.strings(ddm,
                 "/ddm:DDM/ddm:dcmiMetadata/dcterms:title",
+                "/ddm:DDM/ddm:dcmiMetadata/dc:title",
                 "/ddm:DDM/ddm:dcmiMetadata/dcterms:alternative")
+            .map(String::trim)
             .collect(Collectors.toList());
     }
 }

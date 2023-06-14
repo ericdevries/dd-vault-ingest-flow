@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.domain.OreResourceMap;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.DansDataVaultMetadata;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.*;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;

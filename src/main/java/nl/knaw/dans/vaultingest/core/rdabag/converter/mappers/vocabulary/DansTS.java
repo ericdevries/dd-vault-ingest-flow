@@ -25,14 +25,4 @@ public class DansTS {
     public static final Property dansTemporalCoverage = m.createProperty(NS, "dansTemporalCoverage");
     public static final Property dansSpatialCoverageControlled = m.createProperty(NS, "dansSpatialCoverageControlled");
     public static final Property dansSpatialCoverageText = m.createProperty(NS, "dansSpatialCoverageText");
-    public static final Property dansSpatialPoint = m.createProperty(NS, "dansSpatialPoint");
-    public static final Property dansSpatialPointX = m.createProperty(NS, "dansSpatialPointX");
-    public static final Property dansSpatialPointY = m.createProperty(NS, "dansSpatialPointY");
-    public static final Property dansSpatialPointScheme = m.createProperty(NS, "dansSpatialPointScheme");
-    public static final Property dansSpatialBox = m.createProperty(NS, "dansSpatialBox");
-    public static final Property dansSpatialBoxNorth = m.createProperty(NS, "dansSpatialBoxNorth");
-    public static final Property dansSpatialBoxWest = m.createProperty(NS, "dansSpatialBoxWest");
-    public static final Property dansSpatialBoxSouth = m.createProperty(NS, "dansSpatialBoxSouth");
-    public static final Property dansSpatialBoxEast = m.createProperty(NS, "dansSpatialBoxEast");
-    public static final Property dansSpatialBoxScheme = m.createProperty(NS, "dansSpatialBoxScheme");
 }

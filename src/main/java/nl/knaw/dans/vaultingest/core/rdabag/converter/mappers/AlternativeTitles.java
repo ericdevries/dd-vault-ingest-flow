@@ -20,14 +20,13 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.DCTerms;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class AlternativeTitles {
 
-    public static List<Statement> toAlternativeTitle(Resource resource, Collection<String> titles) {
+    public static Optional<Statement> toAlternativeTitle(Resource resource, Collection<String> titles) {
         if (titles == null) {
-            return List.of();
+            return Optional.empty();
         }
 
         var model = resource.getModel();
@@ -38,6 +37,6 @@ public class AlternativeTitles {
                 DCTerms.alternative,
                 model.createLiteral(title)
             ))
-            .collect(Collectors.toList());
+            .findFirst();
     }
 }

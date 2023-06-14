@@ -61,10 +61,7 @@ public class OaiOreConverterIntegrationTest {
         assertThat(statements)
             .extracting("object")
             .map(Object::toString)
-            .containsOnly("DCTERMS title 2",
-                "DCTERMS alt title 1",
-                "DCTERMS alt title 2",
-                "DCTERMS title 1");
+            .containsOnly("DCTERMS title 1");
     }
 
     // CIT003, CIT004
@@ -132,7 +129,9 @@ public class OaiOreConverterIntegrationTest {
                 "some modified date",
                 "some date",
                 "some acceptance date",
-                "some coverage description");
+                "some coverage description",
+                "DCTERMS alt title 1", "DCTERMS title 2", "DCTERMS alt title 2"
+            );
 
         assertThat(statements)
             .map(getPropertyAsString(DVCitation.dsDescriptionDate))
@@ -523,37 +522,6 @@ public class OaiOreConverterIntegrationTest {
             .extracting("object")
             .map(Object::toString)
             .containsOnly("Roman Empire");
-    }
-
-
-    // @VLT001
-    // TODO make this one work
-//    @Test
-    void dansDataversePid() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansDVMetadata.dansDataversePid, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5b253754-ddd0-4ae0-a5bb-555176bca858");
-    }
-
-    // @VLT002
-    // TODO make this one work
-//    @Test
-    void dansDataversePidVersion() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansDVMetadata.dansDataversePidVersion, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://data.cultureelerfgoed.nl/term/id/abr/5b253754-ddd0-4ae0-a5bb-555176bca858");
     }
 
     // @VLT003

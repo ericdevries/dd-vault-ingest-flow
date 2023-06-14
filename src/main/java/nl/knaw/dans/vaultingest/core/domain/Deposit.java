@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface Deposit {
     String getId();
@@ -47,6 +48,8 @@ public interface Deposit {
     Collection<String> getAlternativeTitles();
 
     Collection<OtherId> getOtherIds();
+
+    Optional<Description> getDescription();
 
     Collection<Description> getDescriptions();
 

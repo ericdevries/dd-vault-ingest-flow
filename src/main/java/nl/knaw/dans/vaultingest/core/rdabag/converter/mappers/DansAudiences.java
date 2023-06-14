@@ -15,12 +15,10 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.converter.mappers;
 
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansArchaeology;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansRel;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

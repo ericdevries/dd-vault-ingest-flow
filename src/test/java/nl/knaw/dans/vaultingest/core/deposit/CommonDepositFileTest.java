@@ -51,7 +51,7 @@ class CommonDepositFileTest {
             .filesXmlNode(getFilesXmlNode("path/to/file.txt"))
             .build();
 
-        assertEquals("", depositFile.getDescription());
+        assertNull(depositFile.getDescription());
     }
 
     @Test
