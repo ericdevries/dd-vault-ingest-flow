@@ -5,9 +5,6 @@ import lombok.experimental.SuperBuilder;
 import nl.knaw.dans.vaultingest.core.deposit.CountryResolver;
 import nl.knaw.dans.vaultingest.core.deposit.LanguageResolver;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
-import nl.knaw.dans.vaultingest.core.simpledeposit.mapping.Citation;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 import org.w3c.dom.Document;
 
 import java.io.ByteArrayInputStream;
@@ -15,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 @SuperBuilder
 @ToString
@@ -30,27 +26,26 @@ public class SimpleDeposit {
     private final SimpleDepositProperties properties;
     private String nbn;
 
-    // CIT001
-    public List<Statement> mapTitles(Resource resource) {
-        return Citation.mapTitles(resource, ddm);
+    public SimpleDepositProperties getProperties() {
+        return properties;
     }
 
-    // CIT002
-    public Optional<Statement> mapAlternativeTitle(Resource resource) {
-        return Citation.mapAlternativeTitles(resource, ddm);
+    public Document getDdm() {
+        return ddm;
     }
 
-    // CIT003 and CIT004
-    public List<Statement> mapOtherIds(Resource resource) {
-        return Citation.mapOtherIds(resource, ddm, properties);
+    public Document getFilesXml() {
+        return filesXml;
     }
 
-    // CIT005, CIT006 and CIT007
-    public List<Statement> mapAuthors(Resource resource) {
-        return Citation.mapAuthors(resource, ddm);
+    public String getNbn() {
+        return nbn;
     }
 
-    // etc
+    public String getId() {
+        return id;
+    }
+
     public List<DepositFile> getPayloadFiles() {
         return depositFiles;
     }
