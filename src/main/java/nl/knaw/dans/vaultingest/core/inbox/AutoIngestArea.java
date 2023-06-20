@@ -19,32 +19,35 @@ import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.domain.Outbox;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
 @Slf4j
 public class AutoIngestArea {
-    private final ExecutorService executorService;
-    private final IngestAreaDirectoryWatcher ingestAreaDirectoryWatcher;
+    private final Executor executor;
+    private final IngestAreaWatcher ingestAreaWatcher;
     private final DepositToBagProcess depositToBagProcess;
     private final Outbox outbox;
 
     public AutoIngestArea(
-        ExecutorService executorService,
-        IngestAreaDirectoryWatcher ingestAreaDirectoryWatcher,
+        Executor executor,
+        IngestAreaWatcher ingestAreaWatcher,
         DepositToBagProcess depositToBagProcess,
         Outbox outbox
     ) {
-        this.executorService = executorService;
-        this.ingestAreaDirectoryWatcher = ingestAreaDirectoryWatcher;
+        this.executor = executor;
+        this.ingestAreaWatcher = ingestAreaWatcher;
         this.depositToBagProcess = depositToBagProcess;
         this.outbox = outbox;
     }
 
     public void start() {
-        ingestAreaDirectoryWatcher.start((path) -> {
+        ingestAreaWatcher.start((path) -> {
             log.info("New item in inbox; path = {}", path);
 
-            executorService.submit(() -> depositToBagProcess.process(path, outbox));
+            executor.execute(() -> {
+                depositToBagProcess.process(path, outbox);
+            });
         });
     }
 
