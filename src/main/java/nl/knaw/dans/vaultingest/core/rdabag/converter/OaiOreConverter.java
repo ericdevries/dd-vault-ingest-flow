@@ -18,9 +18,9 @@ package nl.knaw.dans.vaultingest.core.rdabag.converter;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.OreResourceMap;
-import nl.knaw.dans.vaultingest.core.rdabag.mappers.*;
-import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.DVCore;
-import nl.knaw.dans.vaultingest.core.rdabag.mappers.vocabulary.ORE;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.*;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DVCore;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.ORE;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -39,13 +39,17 @@ public class OaiOreConverter {
         var resourceMap = createResourceMap(deposit, model);
         var resource = createAggregation(deposit, model);
 
+        NonMetadata.toDoi(resource, deposit.getDoi())
+            .ifPresent(model::add);
+
+        NonMetadata.toAvailable(resource, deposit.getAvailableDate())
+            .ifPresent(model::add);
+
         model.add(Title.toTitle(resource, deposit.getTitle()));
-        model.add(AlternativeTitles.toAlternativeTitle(resource, deposit.getAlternativeTitles()));
+        AlternativeTitles.toAlternativeTitle(resource, deposit.getAlternativeTitles())
+            .ifPresent(model::add);
         model.add(OtherIds.toOtherIds(resource, deposit.getOtherIds()));
         model.add(Authors.toAuthors(resource, deposit.getAuthors()));
-
-        DatasetContacts.toDatasetContact(resource, deposit.getContact())
-            .ifPresent(model::add);
 
         model.add(Descriptions.toDescriptions(resource, deposit.getDescriptions()));
         model.add(Subjects.toSubjects(resource, deposit.getSubjects()));
@@ -64,12 +68,27 @@ public class OaiOreConverter {
             .ifPresent(model::add);
 
         model.add(DatesOfCollections.toDatesOfCollection(resource, deposit.getCollectionDates()));
-        model.add(Series.toSeries(resource, deposit.getSeries()));
         model.add(DataSources.toDataSources(resource, deposit.getSources()));
 
         model.add(DansRightsHolders.toDansRightsHolders(resource, deposit.getRightsHolder()));
         model.add(DansPersonalDataPresent.toDansPersonalDataPresent(resource, deposit.isPersonalDataPresent()));
         model.add(DansMetadataLanguages.toLanguages(resource, deposit.getMetadataLanguages()));
+
+        model.add(DansAudiences.toDansAudiences(resource, deposit.getAudiences()));
+        model.add(DansCollections.toDansCollections(resource, deposit.getInCollection()));
+        model.add(DansRelations.toDansRelations(resource, deposit.getDansRelations()));
+
+        model.add(DansTemporalSpatial.toTemporalCoverages(resource, deposit.getTemporalCoverages()));
+        model.add(DansTemporalSpatial.toSpatialCoverageControlled(resource, deposit.getSpatialCoveragesControlled()));
+        model.add(DansTemporalSpatial.toSpatialCoverageText(resource, deposit.getSpatialCoveragesText()));
+
+        DansDataVaultMetadata.toBagId(resource, deposit.getBagId()).ifPresent(model::add);
+        DansDataVaultMetadata.toNbn(resource, deposit.getNbn()).ifPresent(model::add);
+        DansDataVaultMetadata.toOtherId(resource, deposit.getDoi()).ifPresent(model::add);
+        DansDataVaultMetadata.toSwordToken(resource, deposit.getSwordToken()).ifPresent(model::add);
+
+        Terms.toLicense(resource, deposit.getLicense()).ifPresent(model::add);
+        model.add(Terms.toFileTermsOfAccess(resource, deposit));
 
         model.add(model.createStatement(
             resourceMap,

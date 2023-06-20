@@ -38,4 +38,7 @@ public class IngestFlowConfig {
     @NotNull
     @Valid
     private LanguageConfig languages;
+    @NotNull
+    @Valid
+    private Path spatialCoverageCountryTermsPath;
 }

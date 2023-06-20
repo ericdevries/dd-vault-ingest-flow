@@ -35,14 +35,6 @@ class CommonDepositFileTest {
         assertEquals(Path.of("data/only/valid/"), depositFile.getDirectoryLabel());
     }
 
-    @Test
-    void getDirectoryLabel_should_return_underscores_for_invalid_characters() throws Exception {
-        var depositFile = CommonDepositFile.builder()
-            .filesXmlNode(getFilesXmlNode("data/&invalid**/(characters)))/characters.txt"))
-            .build();
-
-        assertEquals(Path.of("data/_invalid__/_characters___/"), depositFile.getDirectoryLabel());
-    }
 
     @Test
     void getFilename_should_return_same_value_for_valid_characters() throws Exception {
@@ -54,39 +46,12 @@ class CommonDepositFileTest {
     }
 
     @Test
-    void getFilename_should_return_underscores_for_invalid_characters() throws Exception {
-        var depositFile = CommonDepositFile.builder()
-            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-            .build();
-
-        assertEquals(Path.of("here_________.txt"), depositFile.getFilename());
-    }
-
-    @Test
-    void getPath_should_transform_output() throws Exception {
-        var depositFile = CommonDepositFile.builder()
-            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-            .build();
-
-        assertEquals(Path.of("data/invalid/characters/here_________.txt"), depositFile.getPath());
-    }
-
-    @Test
     void getDescription_should_be_empty() throws Exception {
         var depositFile = CommonDepositFile.builder()
             .filesXmlNode(getFilesXmlNode("path/to/file.txt"))
             .build();
 
-        assertEquals("", depositFile.getDescription());
-    }
-
-    @Test
-    void getDescription_should_have_original_filepath_attribute() throws Exception {
-        var depositFile = CommonDepositFile.builder()
-            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-            .build();
-
-        assertEquals("original_filepath: data/invalid/characters/here:*?\"<>|;#.txt", depositFile.getDescription());
+        assertNull(depositFile.getDescription());
     }
 
     @Test

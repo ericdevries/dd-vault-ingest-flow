@@ -22,22 +22,23 @@ import org.w3c.dom.Document;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Publications {
+public class Publications extends Base {
 
     public static List<Publication> getPublications(Document document) {
         // CIT017
         // TODO the spec says dc:identifier, but example uses dcterms:identifier
-        return XPathEvaluator.nodes(document, "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[" +
-                "@xsi:type = 'id-type:ISSN' or @xsi:type = 'id-type:ISBN'" +
-                "]")
+        var idType = getIdTypeNamespace(document);
+        return XPathEvaluator.nodes(document, String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[" +
+                "@xsi:type = '%s:ISSN' or @xsi:type = '%s:ISBN'" +
+                "]", idType, idType))
             .map(node -> {
-                var idType = node.getAttributes()
+                var idTypeValue = node.getAttributes()
                     .getNamedItem("xsi:type").getTextContent()
                     .trim()
                     .replaceAll("id-type:", "");
 
                 return Publication.builder()
-                    .idType(idType)
+                    .idType(idTypeValue)
                     .idNumber(node.getTextContent().trim())
                     .build();
             })

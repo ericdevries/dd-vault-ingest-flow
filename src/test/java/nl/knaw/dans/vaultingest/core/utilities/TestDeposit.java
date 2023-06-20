@@ -24,14 +24,21 @@ import nl.knaw.dans.vaultingest.core.domain.metadata.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
 public class TestDeposit implements Deposit {
     boolean update;
     private String id;
+    private String bagId;
+    private String pid;
+    private String pidVersion;
+    private String otherId;
+    private String otherIdVersion;
     private String title;
     private String nbn;
     private String doi;
@@ -56,13 +63,27 @@ public class TestDeposit implements Deposit {
     private List<Distributor> distributors;
     private String distributionDate;
     private List<CollectionDate> collectionDates;
-    private List<SeriesElement> series;
     private DatasetContact contact;
     private List<String> sources;
     private State state;
     private String stateDescription;
     private List<String> metadataLanguages;
+    private List<String> audiences;
     private boolean personalDataPresent;
+
+    private List<String> inCollection;
+    private List<DansRelation> dansRelations;
+
+    private List<String> temporalCoverages;
+    private List<String> spatialCoveragesControlled;
+    private List<String> spatialCoveragesText;
+
+    private LocalDate availableDate;
+
+    private String license;
+    private boolean requestAccess;
+    private List<String> termsOfAccess;
+
 
     @Override
     public void setState(State state, String message) {
@@ -71,10 +92,21 @@ public class TestDeposit implements Deposit {
     }
 
     @Override
+    public Optional<Description> getDescription() {
+        return Optional.ofNullable(getFirstDescription());
+    }
+
+    private Description getFirstDescription() {
+        if (this.descriptions != null && this.descriptions.size() > 0) {
+            return this.descriptions.get(0);
+        }
+
+        return null;
+    }
+
+    @Override
     public Collection<Path> getMetadataFiles() {
         return List.of(
-            Path.of("bag-info.txt"),
-            Path.of("bagit.txt"),
             Path.of("metadata/files.xml"),
             Path.of("metadata/dataset.xml")
         );

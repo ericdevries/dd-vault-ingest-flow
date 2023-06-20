@@ -29,9 +29,11 @@ import org.w3c.dom.Document;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -44,8 +46,8 @@ class CommonDeposit implements Deposit {
     protected final CommonDepositBag bag;
     private final String id;
     private final CommonDepositProperties properties;
-    private final DatasetContactResolver datasetContactResolver;
     private final LanguageResolver languageResolver;
+    private final CountryResolver countryResolver;
     private final List<DepositFile> depositFiles;
     private final Path path;
     private String nbn;
@@ -56,9 +58,18 @@ class CommonDeposit implements Deposit {
     }
 
     @Override
+    public String getBagId() {
+        return properties.getBagId();
+    }
+
+    @Override
     public String getDoi() {
         var prefix = ddm.lookupPrefix(XmlNamespaces.NAMESPACE_ID_TYPE);
-        var expr = String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix);
+        var expr = new String[]{
+            String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix),
+            String.format("/ddm:DDM/ddm:dcmiMetadata/dc:identifier[@xsi:type='%s:DOI']", prefix)
+        };
+
         var dois = XPathEvaluator.strings(ddm, expr).collect(Collectors.toList());
 
         if (dois.size() != 1) {
@@ -125,6 +136,11 @@ class CommonDeposit implements Deposit {
     @Override
     public Collection<OtherId> getOtherIds() {
         return OtherIds.getOtherIds(ddm, getMetadataValue("Has-Organizational-Identifier"));
+    }
+
+    @Override
+    public Optional<Description> getDescription() {
+        return Descriptions.getDescription(ddm);
     }
 
     @Override
@@ -204,20 +220,8 @@ class CommonDeposit implements Deposit {
     }
 
     @Override
-    public Collection<SeriesElement> getSeries() {
-        return Series.getSeries(ddm);
-    }
-
-    @Override
     public Collection<String> getSources() {
         return Sources.getSources(ddm);
-    }
-
-    @Override
-    public DatasetContact getContact() {
-        return datasetContactResolver.resolve(
-            this.properties.getDepositorId()
-        );
     }
 
     @Override
@@ -243,6 +247,56 @@ class CommonDeposit implements Deposit {
     @Override
     public InputStream inputStreamForMetadataFile(Path path) {
         return bag.inputStreamForMetadataFile(path);
+    }
+
+    @Override
+    public Collection<String> getAudiences() {
+        return Audiences.getAudiences(ddm);
+    }
+
+    @Override
+    public Collection<String> getInCollection() {
+        return InCollection.getInCollections(ddm);
+    }
+
+    @Override
+    public Collection<DansRelation> getDansRelations() {
+        return DansRelations.getDansRelations(ddm);
+    }
+
+    @Override
+    public Collection<String> getTemporalCoverages() {
+        return TemporalSpatial.getTemporalCoverages(ddm);
+    }
+
+    @Override
+    public Collection<String> getSpatialCoveragesControlled() {
+        return TemporalSpatial.getSpatialCoveragesControlled(ddm, countryResolver);
+    }
+
+    @Override
+    public Collection<String> getSpatialCoveragesText() {
+        return TemporalSpatial.getSpatialCoveragesText(ddm, countryResolver);
+    }
+
+    @Override
+    public String getLicense() {
+        return Terms.getLicense(ddm);
+    }
+
+    @Override
+    public boolean isRequestAccess() {
+        return Terms.isRequestAccess(ddm, getPayloadFiles());
+    }
+
+    @Override
+    public Collection<String> getTermsOfAccess() {
+        return Terms.getTermsOfAccess(ddm, getPayloadFiles());
+    }
+
+    @Override
+    public LocalDate getAvailableDate() {
+        return AvailableDate.getAvailableDate(ddm);
     }
 
     private List<String> getMetadataValue(String key) {

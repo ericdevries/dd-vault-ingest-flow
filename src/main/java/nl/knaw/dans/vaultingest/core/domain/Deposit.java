@@ -20,10 +20,14 @@ import nl.knaw.dans.vaultingest.core.domain.metadata.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface Deposit {
     String getId();
+
+    String getBagId();
 
     String getDoi();
 
@@ -45,6 +49,8 @@ public interface Deposit {
 
     Collection<OtherId> getOtherIds();
 
+    Optional<Description> getDescription();
+
     Collection<Description> getDescriptions();
 
     Collection<DatasetRelation> getAuthors();
@@ -61,6 +67,8 @@ public interface Deposit {
 
     String getProductionDate();
 
+    LocalDate getAvailableDate();
+
     Collection<Contributor> getContributors();
 
     Collection<GrantNumber> getGrantNumbers();
@@ -71,11 +79,7 @@ public interface Deposit {
 
     Collection<CollectionDate> getCollectionDates();
 
-    Collection<SeriesElement> getSeries();
-
     Collection<String> getSources();
-
-    DatasetContact getContact();
 
     boolean isPersonalDataPresent();
 
@@ -86,6 +90,25 @@ public interface Deposit {
     Collection<Path> getMetadataFiles() throws IOException;
 
     InputStream inputStreamForMetadataFile(Path path);
+
+    Collection<String> getAudiences();
+
+    Collection<String> getInCollection();
+
+    Collection<DansRelation> getDansRelations();
+
+    Collection<String> getTemporalCoverages();
+
+    Collection<String> getSpatialCoveragesControlled();
+
+    Collection<String> getSpatialCoveragesText();
+
+    String getLicense();
+
+    boolean isRequestAccess();
+
+    // TODO should this really be a collection?
+    Collection<String> getTermsOfAccess();
 
     enum State {
         PUBLISHED,

@@ -20,6 +20,8 @@ import nl.knaw.dans.vaultingest.core.domain.ids.ISNI;
 import nl.knaw.dans.vaultingest.core.domain.ids.ORCID;
 import nl.knaw.dans.vaultingest.core.domain.ids.VIAF;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
+import nl.knaw.dans.vaultingest.core.xml.XmlNamespaces;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class Base {
@@ -45,5 +47,9 @@ public class Base {
 //        return XPathEvaluator.strings(node, "dcx-dai:VIAF").map(VIAF::new).findFirst().orElse(null);
         return XPathEvaluator.strings(node, "dcx-dai:identifier[@scheme='VIAF']/@value")
             .map(VIAF::new).findFirst().orElse(null);
+    }
+
+    static String getIdTypeNamespace(Document document) {
+        return document.lookupPrefix(XmlNamespaces.NAMESPACE_ID_TYPE);
     }
 }

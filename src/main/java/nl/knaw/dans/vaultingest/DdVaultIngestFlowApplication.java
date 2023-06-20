@@ -26,8 +26,8 @@ import nl.knaw.dans.vaultingest.core.IdMinter;
 import nl.knaw.dans.vaultingest.core.deposit.CommonDepositManager;
 import nl.knaw.dans.vaultingest.core.deposit.CommonDepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
+import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
 import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
@@ -40,6 +40,7 @@ import nl.knaw.dans.vaultingest.health.DansBagValidatorHealthCheck;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 @Slf4j
@@ -61,6 +62,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
 
     @Override
     public void run(final DdVaultIngestFlowConfiguration configuration, final Environment environment) throws IOException {
+        createDirectories(configuration);
 
         var dansBagValidatorClient = new JerseyClientBuilder(environment)
             .withProvider(MultiPartFeature.class)
@@ -71,14 +73,17 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             configuration.getIngestFlow().getLanguages().getIso6391(),
             configuration.getIngestFlow().getLanguages().getIso6392()
         );
+
+        var countryResolver = new FileCountryResolver(
+            configuration.getIngestFlow().getSpatialCoverageCountryTermsPath()
+        );
         var xmlReader = new XmlReaderImpl();
         var depositValidator = new VoidDepositValidator();
         //        var depositValidator = new CommonDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getBaseUrl());
         var depositFactory = new CommonDepositManager(
             xmlReader,
-            userId -> DatasetContact.builder().name(userId).email(userId + "@test.com").build(),
-            languageResolver
-        );
+            languageResolver,
+            countryResolver);
 
         var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(environment.getObjectMapper());
         var outputWriterFactory = new ZipBagOutputWriterFactory(configuration.getIngestFlow().getRdaBagOutputDir());
@@ -123,5 +128,13 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
                 dansBagValidatorClient, configuration.getValidateDansBag().getPingUrl()
             )
         );
+    }
+
+    void createDirectories(DdVaultIngestFlowConfiguration config) throws IOException {
+        Files.createDirectories(config.getIngestFlow().getAutoIngest().getInbox());
+        Files.createDirectories(config.getIngestFlow().getAutoIngest().getOutbox());
+        Files.createDirectories(config.getIngestFlow().getMigration().getInbox());
+        Files.createDirectories(config.getIngestFlow().getMigration().getOutbox());
+        Files.createDirectories(config.getIngestFlow().getRdaBagOutputDir());
     }
 }

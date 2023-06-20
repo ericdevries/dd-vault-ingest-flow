@@ -74,6 +74,8 @@ class OaiOreConverterTest {
                     .path(Path.of("data/valid/characters.txt"))
                     .build()
             ))
+            .requestAccess(true)
+            .termsOfAccess(List.of("Terms of access"))
             .build();
 
         var converter = new OaiOreConverter();

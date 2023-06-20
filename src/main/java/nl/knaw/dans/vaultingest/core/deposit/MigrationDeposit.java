@@ -31,6 +31,11 @@ public class MigrationDeposit extends CommonDeposit {
     private final Document amdXml;
 
     @Override
+    public String getNbn() {
+        return getProperties().getDataverseNbn();
+    }
+
+    @Override
     public Collection<String> getRightsHolder() {
         var result = super.getRightsHolder();
 

@@ -17,25 +17,26 @@ package nl.knaw.dans.vaultingest.core.deposit;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.utilities.TestDatasetContactResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
-import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 @Slf4j
 public class SimpleCommonDepositManager extends CommonDepositManager {
-    public SimpleCommonDepositManager() {
+
+
+    public SimpleCommonDepositManager(CountryResolver countryResolver) throws IOException {
         super(
             new XmlReaderImpl(),
-            new TestDatasetContactResolver(),
-            new TestLanguageResolver()
+            new TestLanguageResolver(),
+            countryResolver
         );
     }
 
     @Override
-    public Deposit loadDeposit(Path inputPath) throws InvalidDepositException {
+    public Deposit loadDeposit(Path inputPath) {
         try {
             var resource = getClass().getResource(inputPath.toString());
             assert resource != null;
@@ -45,7 +46,7 @@ public class SimpleCommonDepositManager extends CommonDepositManager {
             return super.loadDeposit(path);
         }
         catch (Exception e) {
-            throw new InvalidDepositException("Error loading deposit", e);
+            throw new RuntimeException("Error loading deposit", e);
         }
     }
 

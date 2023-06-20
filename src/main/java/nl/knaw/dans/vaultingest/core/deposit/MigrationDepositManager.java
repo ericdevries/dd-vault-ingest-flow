@@ -31,13 +31,11 @@ import java.nio.file.Path;
 
 @Slf4j
 public class MigrationDepositManager extends AbstractDepositManager {
-    private final DatasetContactResolver datasetContactResolver;
     private final LanguageResolver languageResolver;
     private final DepositValidator depositValidator;
 
-    public MigrationDepositManager(XmlReader xmlReader, DatasetContactResolver datasetContactResolver, LanguageResolver languageResolver, DepositValidator depositValidator) {
+    public MigrationDepositManager(XmlReader xmlReader, LanguageResolver languageResolver, DepositValidator depositValidator) {
         super(xmlReader);
-        this.datasetContactResolver = datasetContactResolver;
         this.languageResolver = languageResolver;
         this.depositValidator = depositValidator;
     }
@@ -67,7 +65,6 @@ public class MigrationDepositManager extends AbstractDepositManager {
                 .bag(new CommonDepositBag(bag))
                 .depositFiles(depositFiles)
                 .properties(depositProperties)
-                .datasetContactResolver(datasetContactResolver)
                 .languageResolver(languageResolver)
                 .build();
 

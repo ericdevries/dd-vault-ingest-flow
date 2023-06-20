@@ -33,6 +33,7 @@ public class DataciteSerializer {
             return writer.toString();
         }
         catch (Exception e) {
+            // TODO throw proper checked exception
             throw new RuntimeException(e.getMessage(), e);
         }
     }

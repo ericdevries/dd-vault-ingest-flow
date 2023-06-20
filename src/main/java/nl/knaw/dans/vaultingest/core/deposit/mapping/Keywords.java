@@ -40,6 +40,7 @@ public class Keywords {
         return results;
     }
 
+    // CIT014
     static List<Keyword> getKeywordsWithoutScheme(Document document) {
         // CIT014
         return XPathEvaluator.nodes(document,
@@ -49,6 +50,7 @@ public class Keywords {
             .collect(Collectors.toList());
     }
 
+    // CIT015
     static List<Keyword> getPanAndAatKeywords(Document document) {
         var expr = "/ddm:DDM/ddm:dcmiMetadata/ddm:subject[" +
             String.format("(@schemeURI = '%s' and @subjectScheme = '%s')", SCHEME_URI_PAN, SCHEME_PAN) +
@@ -66,6 +68,7 @@ public class Keywords {
             .collect(Collectors.toList());
     }
 
+    // CIT016
     static List<Keyword> getLanguageKeywords(Document document) {
         return XPathEvaluator.strings(document,
             "/ddm:DDM/ddm:dcmiMetadata/dcterms:language"

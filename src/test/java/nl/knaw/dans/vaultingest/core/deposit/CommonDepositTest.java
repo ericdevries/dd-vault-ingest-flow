@@ -16,7 +16,6 @@
 package nl.knaw.dans.vaultingest.core.deposit;
 
 import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetContact;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
 import org.junit.jupiter.api.Test;
@@ -42,6 +41,13 @@ class CommonDepositTest {
     void getDescription() throws Exception {
         var deposit = this.loadDeposit();
 
+        assertEquals("This bags contains one or more examples of each mapping rule.", deposit.getDescription().get().getValue());
+    }
+
+    @Test
+    void getDescriptions() throws Exception {
+        var deposit = this.loadDeposit();
+
         assertThat(deposit.getDescriptions())
             .extracting("value")
             .containsOnly(
@@ -55,9 +61,9 @@ class CommonDepositTest {
                 "some issuing date",
                 "some validation date",
                 "some coverage description",
-                "Even more descriptions"
+                "Even more descriptions",
+                "DCTERMS title 2", "DCTERMS alt title 1", "DCTERMS alt title 2"
             );
-        System.out.println(deposit.getDescriptions());
     }
 
     @Test
@@ -249,18 +255,6 @@ class CommonDepositTest {
     }
 
     @Test
-    void getSeries() throws Exception {
-        var deposit = this.loadDeposit();
-        var dates = deposit.getSeries();
-
-        assertThat(dates)
-            .extracting("information")
-            .containsOnly(
-                "Information about a series: first", "Information about a series: second"
-            );
-    }
-
-    @Test
     void getSources() throws Exception {
         var deposit = this.loadDeposit();
         var sources = deposit.getSources();
@@ -316,11 +310,6 @@ class CommonDepositTest {
             .bag(bag)
             .filesXml(null)
             .properties(props)
-            .datasetContactResolver((userId -> DatasetContact.builder()
-                .name(userId)
-                .email(userId + "@test.com")
-                .affiliation(userId + " university")
-                .build()))
             .languageResolver(new TestLanguageResolver())
             .build();
     }

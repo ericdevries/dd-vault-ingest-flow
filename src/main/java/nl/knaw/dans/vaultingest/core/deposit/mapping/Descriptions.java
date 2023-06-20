@@ -20,21 +20,27 @@ import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.w3c.dom.Document;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Descriptions {
+    public static Optional<Description> getDescription(Document document) {
+        return getAllProfileDescriptions(document).findFirst();
+    }
+
     public static List<Description> getDescriptions(Document document) {
         // CIT009, profile / description
-        var profileDescriptions = XPathEvaluator.strings(document,
-            "/ddm:DDM/ddm:profile/dc:description",
-            "/ddm:DDM/ddm:profile/dcterms:description"
-        ).map(value -> Description.builder()
-            .value(value.trim())
-            .build()
-        );
+        var profileDescriptions = getAllProfileDescriptions(document);
 
-        // TODO CIT010, alternative titles and non-first title?
+        // CIT010, first title is for 002, the rest should go into the descriptions
+        var titles = Title.getAlternativeTitles(document)
+            .stream().skip(1)
+            .map(s -> Description.builder()
+                .value(s)
+                .build()
+            )
+            .collect(Collectors.toList());
 
         // CIT011, dcmiMetadata / [tags]
         var dcmiDescriptions = XPathEvaluator.nodes(document,
@@ -61,10 +67,22 @@ public class Descriptions {
                 .build()
             );
 
-        var streams = Stream.concat(profileDescriptions,
+        var result = Stream.concat(profileDescriptions,
             Stream.concat(dcmiDescriptions, dcmiDescription)
-        );
+        ).collect(Collectors.toList());
 
-        return streams.collect(Collectors.toList());
+        result.addAll(titles);
+
+        return result;
+    }
+
+    private static Stream<Description> getAllProfileDescriptions(Document document) {
+        return XPathEvaluator.strings(document,
+            "/ddm:DDM/ddm:profile/dc:description",
+            "/ddm:DDM/ddm:profile/dcterms:description"
+        ).map(value -> Description.builder()
+            .value(value.trim())
+            .build()
+        );
     }
 }
