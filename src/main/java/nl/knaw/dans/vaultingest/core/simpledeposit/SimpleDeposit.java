@@ -39,10 +39,15 @@ public class SimpleDeposit {
     private final List<DepositFile> depositFiles;
     private final Path path;
     private final SimpleDepositProperties properties;
+    private final SimpleDepositBag bag;
     private String nbn;
 
     public SimpleDepositProperties getProperties() {
         return properties;
+    }
+
+    public SimpleDepositBag getBag() {
+        return bag;
     }
 
     public Document getDdm() {

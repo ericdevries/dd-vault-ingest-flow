@@ -18,7 +18,10 @@ package nl.knaw.dans.vaultingest.core.simpledeposit;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DVCore;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.ORE;
-import nl.knaw.dans.vaultingest.core.simpledeposit.mapping.Citation;
+import nl.knaw.dans.vaultingest.core.simpledeposit.mapping.AlternativeTitles;
+import nl.knaw.dans.vaultingest.core.simpledeposit.mapping.Authors;
+import nl.knaw.dans.vaultingest.core.simpledeposit.mapping.OtherIds;
+import nl.knaw.dans.vaultingest.core.simpledeposit.mapping.Titles;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -29,24 +32,20 @@ import org.apache.jena.vocabulary.SchemaDO;
 
 import java.time.OffsetDateTime;
 
-public class OaiOreMapper {
+public class OaiOreConverter {
 
-    public Model mapToOaiOreModel(SimpleDeposit deposit) {
+    public Model convert(SimpleDeposit deposit) {
         var model = ModelFactory.createDefaultModel();
-        var resourceMap = createResourceMap(model, deposit.getId());
-        var resource = createAggregation(model, deposit);
 
-        var ddm = deposit.getDdm();
-        var filesXml = deposit.getFilesXml();
-        var properties = deposit.getProperties();
+        var resourceMap = createResourceMap(deposit, model);
+        var resource = createAggregation(deposit, model);
 
-        model.add(Citation.mapTitles(resource, ddm));
-
-        Citation.mapAlternativeTitles(resource, ddm)
+        model.add(Titles.toRDF(resource, deposit));
+        AlternativeTitles.toRDF(resource, deposit)
             .ifPresent(model::add);
 
-        model.add(Citation.mapOtherIds(resource, ddm, properties));
-        model.add(Citation.mapAuthors(resource, ddm));
+        model.add(OtherIds.toRDF(resource, deposit));
+        model.add(Authors.toRDF(resource, deposit));
 
         model.add(model.createStatement(
             resourceMap,
@@ -57,8 +56,8 @@ public class OaiOreMapper {
         return model;
     }
 
-    private Resource createResourceMap(Model model, String id) {
-        var resourceMap = model.createResource("urn:uuid:" + id);
+    Resource createResourceMap(SimpleDeposit deposit, Model model) {
+        var resourceMap = model.createResource("urn:uuid:" + deposit.getId());
         var resourceMapType = model.createStatement(resourceMap, RDF.type, ORE.ResourceMap);
 
         model.add(resourceMapType);
@@ -84,7 +83,7 @@ public class OaiOreMapper {
         return resourceMap;
     }
 
-    private Resource createAggregatedResource(Model model, DepositFile depositFile) {
+    Resource createAggregatedResource(Model model, DepositFile depositFile) {
         var resource = model.createResource("urn:uuid:" + depositFile.getId());
 
         // TODO add access rights and checksum
@@ -112,16 +111,14 @@ public class OaiOreMapper {
         return resource;
     }
 
-    private Resource createAggregation(Model model, SimpleDeposit deposit) {
+    Resource createAggregation(SimpleDeposit deposit, Model model) {
         var resource = model.createResource(deposit.getNbn());
         var type = model.createStatement(resource, RDF.type, ORE.Aggregation);
 
         model.add(type);
 
-        var files = deposit.getPayloadFiles();
-
-        if (files != null) {
-            for (var file : files) {
+        if (deposit.getPayloadFiles() != null) {
+            for (var file : deposit.getPayloadFiles()) {
                 var fileResource = createAggregatedResource(model, file);
 
                 model.add(model.createStatement(
@@ -134,5 +131,4 @@ public class OaiOreMapper {
 
         return resource;
     }
-
 }

@@ -15,11 +15,74 @@
  */
 package nl.knaw.dans.vaultingest.core.simpledeposit;
 
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import java.util.List;
 
 public class SimpleDepositProperties {
+    private static final String DATAVERSE_BAG_ID = "dataverse.bag-id";
+    private static final String DATAVERSE_NBN = "dataverse.nbn";
+    private static final String STATE_LABEL = "state.label";
+    private static final String STATE_DESCRIPTION = "state.description";
+    private static final String IDENTIFIER_DOI = "identifier.doi";
+    private static final String DEPOSITOR_ID = "depositor.userId";
+    private final Configuration configuration;
+    private final FileBasedConfigurationBuilder<FileBasedConfiguration> builder;
+
+    public SimpleDepositProperties(FileBasedConfigurationBuilder<FileBasedConfiguration> builder) throws ConfigurationException {
+        this.configuration = builder.getConfiguration();
+        this.builder = builder;
+    }
+
     public List<String> getProperty(String value) {
         // obviously not correct
         return List.of(value);
+    }
+
+    public String getStateLabel() {
+        return configuration.getString(STATE_LABEL);
+    }
+
+    public void setStateLabel(String stateLabel) {
+        configuration.setProperty(STATE_LABEL, stateLabel);
+    }
+
+    public String getStateDescription() {
+        return configuration.getString(STATE_DESCRIPTION);
+    }
+
+    public void setStateDescription(String stateDescription) {
+        configuration.setProperty(STATE_DESCRIPTION, stateDescription);
+    }
+
+    public String getIdentifierDoi() {
+        return configuration.getString(IDENTIFIER_DOI);
+    }
+
+    public void setIdentifierDoi(String identifierDoi) {
+        configuration.setProperty(IDENTIFIER_DOI, identifierDoi);
+    }
+
+    public String getDataverseNbn() {
+        return configuration.getString(DATAVERSE_NBN);
+    }
+
+    public String getDepositorId() {
+        return configuration.getString(DEPOSITOR_ID);
+    }
+
+    public void setDepositorId(String depositorId) {
+        configuration.setProperty(DEPOSITOR_ID, depositorId);
+    }
+
+    public void save() throws ConfigurationException {
+        builder.save();
+    }
+
+    public String getBagId() {
+        return configuration.getString(DATAVERSE_BAG_ID);
     }
 }

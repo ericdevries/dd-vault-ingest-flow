@@ -15,11 +15,21 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit.mapping;
 
+import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetAuthor;
+import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetRelation;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DVCitation;
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.Datacite;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
+import nl.knaw.dans.vaultingest.domain.Affiliation;
+import nl.knaw.dans.vaultingest.domain.NameIdentifier;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
