@@ -20,35 +20,33 @@ import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.SchemaDO;
 import org.w3c.dom.Document;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
-public class Titles {
-    // CIT001
-    public static List<Statement> toRDF(Resource resource, SimpleDeposit deposit) {
-        return rdfTitle(resource, getTitle(deposit.getDdm()));
+public class AvailableDate extends Base {
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public static Optional<Statement> toRDF(Resource resource, SimpleDeposit deposit) {
+        var available = getAvailableDate(deposit.getDdm());
+        return toAvailable(resource, available);
     }
 
-    static String getTitle(Document ddm) {
-        return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/dc:title")
-            .map(String::trim)
+    // DFILE001
+    static Optional<Statement> toAvailable(Resource resource, LocalDate available) {
+        return toBasicTerm(resource, DCTerms.available, available.format(formatter));
+    }
+
+    static LocalDate getAvailableDate(Document document) {
+        return XPathEvaluator.strings(document, "/ddm:DDM/ddm:profile/ddm:available")
             .findFirst()
+            .map(AvailableDate::toYearMonthDayFormat)
             .orElse(null);
     }
 
-    static List<Statement> rdfTitle(Resource resource, String title) {
-        if (title == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var literal = model.createLiteral(title);
-
-        return List.of(
-            model.createStatement(resource, DCTerms.title, literal),
-            model.createStatement(resource, SchemaDO.name, literal)
-        );
+    static LocalDate toYearMonthDayFormat(String text) {
+        return LocalDate.parse(text);
     }
 }

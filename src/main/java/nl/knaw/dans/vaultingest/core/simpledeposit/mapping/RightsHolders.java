@@ -15,40 +15,30 @@
  */
 package nl.knaw.dans.vaultingest.core.simpledeposit.mapping;
 
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansRights;
 import nl.knaw.dans.vaultingest.core.simpledeposit.SimpleDeposit;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.SchemaDO;
 import org.w3c.dom.Document;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Titles {
-    // CIT001
+public class RightsHolders extends Base {
+
     public static List<Statement> toRDF(Resource resource, SimpleDeposit deposit) {
-        return rdfTitle(resource, getTitle(deposit.getDdm()));
+        return toDansRightsHolders(resource, getOtherIds(deposit.getDdm()));
     }
 
-    static String getTitle(Document ddm) {
-        return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/dc:title")
-            .map(String::trim)
-            .findFirst()
-            .orElse(null);
+    static List<String> getOtherIds(Document document) {
+        // RIG001
+        return XPathEvaluator.strings(document, "/ddm:DDM/ddm:dcmiMetadata/dcterms:rightsHolder")
+            .collect(Collectors.toList());
     }
 
-    static List<Statement> rdfTitle(Resource resource, String title) {
-        if (title == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var literal = model.createLiteral(title);
-
-        return List.of(
-            model.createStatement(resource, DCTerms.title, literal),
-            model.createStatement(resource, SchemaDO.name, literal)
-        );
+    static List<Statement> toDansRightsHolders(Resource resource, Collection<String> rightsHolders) {
+        return toBasicTerms(resource, DansRights.dansRightsHolder, rightsHolders);
     }
 }

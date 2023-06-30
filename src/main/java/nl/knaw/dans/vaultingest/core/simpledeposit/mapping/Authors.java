@@ -50,43 +50,26 @@ public class Authors extends Base {
         return rdfAuthors(resource, results);
     }
 
-    public static List<Statement> rdfAuthors(Resource resource, Collection<DatasetRelation> authors) {
-        if (authors == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var result = new ArrayList<Statement>();
-
-        for (var author : authors) {
-            var authorElement = model.createResource();
-            authorElement.addProperty(DVCitation.authorName, author.getDisplayName());
+    static List<Statement> rdfAuthors(Resource resource, Collection<DatasetRelation> authors) {
+        return toComplexTerms(resource, DVCitation.author, authors, (element, author) -> {
+            element.addProperty(DVCitation.authorName, author.getDisplayName());
 
             if (author.getAffiliation() != null) {
-                authorElement.addProperty(DVCitation.authorAffiliation, author.getAffiliation());
+                element.addProperty(DVCitation.authorAffiliation, author.getAffiliation());
             }
 
             var identifier = author.getIdentifier();
 
             if (identifier != null) {
                 if (identifier.getScheme() != null) {
-                    authorElement.addProperty(Datacite.agentIdentifierScheme, identifier.getScheme());
+                    element.addProperty(Datacite.agentIdentifierScheme, identifier.getScheme());
                 }
 
                 if (identifier.getValue() != null) {
-                    authorElement.addProperty(Datacite.agentIdentifier, identifier.getValue());
+                    element.addProperty(Datacite.agentIdentifier, identifier.getValue());
                 }
             }
-
-            result.add(model.createStatement(
-                resource,
-                DVCitation.author,
-                authorElement
-            ));
-        }
-
-        return result;
-
+        });
     }
 
     static List<DatasetAuthor> getAuthors(Document ddm) {

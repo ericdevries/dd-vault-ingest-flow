@@ -15,40 +15,37 @@
  */
 package nl.knaw.dans.vaultingest.core.simpledeposit.mapping;
 
+import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansRel;
 import nl.knaw.dans.vaultingest.core.simpledeposit.SimpleDeposit;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.SchemaDO;
 import org.w3c.dom.Document;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Titles {
-    // CIT001
+import static nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.Generic.toBasicTerms;
+
+public class Audiences {
+
     public static List<Statement> toRDF(Resource resource, SimpleDeposit deposit) {
-        return rdfTitle(resource, getTitle(deposit.getDdm()));
+        var audiences = getAudiences(deposit.getDdm());
+        return toDansAudiences(resource, audiences);
     }
 
-    static String getTitle(Document ddm) {
-        return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/dc:title")
+    static List<String> getAudiences(Document document) {
+        var results = XPathEvaluator.strings(document,
+                "/ddm:DDM/ddm:profile/ddm:audience")
             .map(String::trim)
-            .findFirst()
-            .orElse(null);
+            .collect(Collectors.toSet());
+
+        return List.copyOf(results);
     }
 
-    static List<Statement> rdfTitle(Resource resource, String title) {
-        if (title == null) {
-            return List.of();
-        }
-
-        var model = resource.getModel();
-        var literal = model.createLiteral(title);
-
-        return List.of(
-            model.createStatement(resource, DCTerms.title, literal),
-            model.createStatement(resource, SchemaDO.name, literal)
-        );
+    static List<Statement> toDansAudiences(Resource resource, Collection<String> audiences) {
+        return toBasicTerms(resource, DansRel.dansAudience, audiences);
     }
+
 }

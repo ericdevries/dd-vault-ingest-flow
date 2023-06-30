@@ -28,13 +28,12 @@ import org.w3c.dom.Document;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class OtherIds {
+public class OtherIds extends Base {
 
     // CIT003, CIT004
     public static List<Statement> toRDF(Resource resource, SimpleDeposit deposit) {
-        return rdfOtherIds(resource, getOtherIds(deposit.getDdm(), deposit.getBag()));
+        return toOtherIds(resource, getOtherIds(deposit.getDdm(), deposit.getBag()));
     }
 
     static List<OtherId> getOtherIds(Document document, SimpleDepositBag bag) {
@@ -71,30 +70,13 @@ public class OtherIds {
         return results;
     }
 
-    static List<Statement> rdfOtherIds(Resource resource, Collection<OtherId> titles) {
-        if (titles == null) {
-            return List.of();
-        }
+    static List<Statement> toOtherIds(Resource resource, Collection<OtherId> ids) {
+        return toComplexTerms(resource, DVCitation.otherId, ids, (element, id) -> {
+            if (id.getAgency() != null) {
+                element.addProperty(DVCitation.otherIdAgency, id.getAgency());
+            }
 
-        var model = resource.getModel();
-
-        return titles.stream()
-            .map(id -> {
-                var otherId = model.createResource();
-
-                otherId.addProperty(DVCitation.otherIdValue, id.getValue());
-
-                if (id.getAgency() != null) {
-                    otherId.addProperty(DVCitation.otherIdAgency, id.getAgency());
-                }
-
-                return model.createStatement(
-                    resource,
-                    DVCitation.otherId,
-                    otherId
-                );
-            })
-            .collect(Collectors.toList());
+            element.addProperty(DVCitation.otherIdValue, id.getValue());
+        });
     }
-
 }

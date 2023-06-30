@@ -20,13 +20,16 @@ import lombok.experimental.SuperBuilder;
 import nl.knaw.dans.vaultingest.core.deposit.CountryResolver;
 import nl.knaw.dans.vaultingest.core.deposit.LanguageResolver;
 import nl.knaw.dans.vaultingest.core.domain.DepositFile;
+import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
+import nl.knaw.dans.vaultingest.core.xml.XmlNamespaces;
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuperBuilder
 @ToString
@@ -40,7 +43,12 @@ public class SimpleDeposit {
     private final Path path;
     private final SimpleDepositProperties properties;
     private final SimpleDepositBag bag;
+    private final boolean migration;
     private String nbn;
+
+    public boolean isMigration() {
+        return migration;
+    }
 
     public SimpleDepositProperties getProperties() {
         return properties;
@@ -70,14 +78,35 @@ public class SimpleDeposit {
         return depositFiles;
     }
 
+    public String getDoi() {
+        var prefix = ddm.lookupPrefix(XmlNamespaces.NAMESPACE_ID_TYPE);
+        var expr = new String[] {
+            String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix),
+            String.format("/ddm:DDM/ddm:dcmiMetadata/dc:identifier[@xsi:type='%s:DOI']", prefix)
+        };
+
+        var dois = XPathEvaluator.strings(ddm, expr).collect(Collectors.toList());
+
+        if (dois.size() != 1) {
+            throw new IllegalStateException("There should be exactly one DOI in the DDM, but found " + dois.size() + " DOIs");
+        }
+
+        var doi = dois.get(0);
+
+        if (StringUtils.isBlank(doi)) {
+            throw new IllegalStateException("DOI is blank in the DDM");
+        }
+
+        return doi;
+    }
+
     public List<Path> getMetadataFiles() throws IOException {
         return List.of();
     }
 
     public InputStream inputStreamForMetadataFile(Path path) {
-        return new ByteArrayInputStream(("Data for path " + path).getBytes());
+        return bag.inputStreamForMetadataFile(path);
     }
-
 
     public enum State {
         PUBLISHED,

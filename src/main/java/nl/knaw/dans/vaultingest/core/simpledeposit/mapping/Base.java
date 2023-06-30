@@ -21,8 +21,16 @@ import nl.knaw.dans.vaultingest.core.domain.ids.ORCID;
 import nl.knaw.dans.vaultingest.core.domain.ids.VIAF;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlNamespaces;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class Base {
 
@@ -44,12 +52,72 @@ public class Base {
 
     static VIAF getVIAF(Node node) {
         // the example doesnt use dcx-dai:VIAF, should be looked into
-//        return XPathEvaluator.strings(node, "dcx-dai:VIAF").map(VIAF::new).findFirst().orElse(null);
+        //        return XPathEvaluator.strings(node, "dcx-dai:VIAF").map(VIAF::new).findFirst().orElse(null);
         return XPathEvaluator.strings(node, "dcx-dai:identifier[@scheme='VIAF']/@value")
             .map(VIAF::new).findFirst().orElse(null);
     }
 
     static String getIdTypeNamespace(Document document) {
         return document.lookupPrefix(XmlNamespaces.NAMESPACE_ID_TYPE);
+    }
+
+    static List<Statement> toBasicTerms(Resource resource, Property property, Collection<String> values) {
+        if (values == null) {
+            return List.of();
+        }
+
+        var model = resource.getModel();
+        var result = new ArrayList<Statement>();
+
+        for (var value : values) {
+            result.add(model.createStatement(
+                resource,
+                property,
+                value
+            ));
+        }
+
+        return result;
+    }
+
+    static Optional<Statement> toBasicTerm(Resource resource, Property property, String value) {
+        if (value == null) {
+            return Optional.empty();
+        }
+
+        var model = resource.getModel();
+
+        return Optional.of(model.createStatement(
+            resource,
+            property,
+            value
+        ));
+    }
+
+    static <T> List<Statement> toComplexTerms(Resource resource, Property property, Collection<T> values, TermMapper<T> mapper) {
+        if (values == null) {
+            return List.of();
+        }
+
+        var model = resource.getModel();
+        var result = new ArrayList<Statement>();
+
+        for (var value : values) {
+            var element = model.createResource();
+            mapper.map(element, value);
+
+            result.add(model.createStatement(
+                resource,
+                property,
+                element
+            ));
+        }
+
+        return result;
+    }
+
+    public interface TermMapper<T> {
+
+        void map(Resource element, T value);
     }
 }
