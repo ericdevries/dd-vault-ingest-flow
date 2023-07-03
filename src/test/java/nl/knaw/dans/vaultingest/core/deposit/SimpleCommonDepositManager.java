@@ -16,20 +16,19 @@
 package nl.knaw.dans.vaultingest.core.deposit;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 @Slf4j
-public class SimpleCommonDepositManager extends CommonDepositManager {
+public class SimpleCommonDepositManager extends DepositManager {
 
 
     public SimpleCommonDepositManager(CountryResolver countryResolver) throws IOException {
         super(
-            new XmlReaderImpl(),
+            new XmlReader(),
             new TestLanguageResolver(),
             countryResolver
         );

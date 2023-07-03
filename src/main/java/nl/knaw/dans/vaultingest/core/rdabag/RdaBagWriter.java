@@ -16,16 +16,16 @@
 package nl.knaw.dans.vaultingest.core.rdabag;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.DepositFile;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import nl.knaw.dans.vaultingest.core.deposit.DepositFile;
 import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.DataciteConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.OaiOreConverter;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.PidMappingConverter;
+import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreConverter;
+import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreSerializer;
 import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.output.MultiDigestInputStream;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.OaiOreSerializer;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.PidMappingSerializer;
 import org.apache.commons.io.output.NullOutputStream;
 
@@ -228,14 +228,14 @@ public class RdaBagWriter {
         }
     }
 
-    void checksummedWriteToOutput(InputStream inputStream, Path path, BagOutputWriter outputWriter) throws IOException {
+    private void checksummedWriteToOutput(InputStream inputStream, Path path, BagOutputWriter outputWriter) throws IOException {
         try (var input = new MultiDigestInputStream(inputStream, requiredAlgorithms)) {
             outputWriter.writeBagItem(input, path);
             checksums.put(path, input.getChecksums());
         }
     }
 
-    void checksummedWriteToOutput(String string, Path path, BagOutputWriter outputWriter) throws IOException {
+    private void checksummedWriteToOutput(String string, Path path, BagOutputWriter outputWriter) throws IOException {
         checksummedWriteToOutput(new ByteArrayInputStream(string.getBytes()), path, outputWriter);
     }
 }

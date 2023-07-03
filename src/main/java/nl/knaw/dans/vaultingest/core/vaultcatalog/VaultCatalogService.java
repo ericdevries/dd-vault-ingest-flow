@@ -15,7 +15,8 @@
  */
 package nl.knaw.dans.vaultingest.core.vaultcatalog;
 
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
+
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 
 import java.util.Optional;
 

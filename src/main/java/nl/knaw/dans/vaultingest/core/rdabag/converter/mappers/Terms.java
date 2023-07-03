@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.converter.mappers;
 
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DVCore;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -44,19 +44,19 @@ public class Terms {
 
         var model = resource.getModel();
         var termsOfAccess = model.createResource();
-
-        // TRM002, TRM003, TRM004
-        termsOfAccess.addProperty(DVCore.fileRequestAccess,
-            String.valueOf(deposit.isRequestAccess()));
-
-        // TRM005 and TRM006
-        var terms = deposit.getTermsOfAccess();
-
-        if (terms != null) {
-            for (var term : terms) {
-                termsOfAccess.addProperty(DVCore.termsOfAccess, term);
-            }
-        }
+//
+//        // TRM002, TRM003, TRM004
+//        termsOfAccess.addProperty(DVCore.fileRequestAccess,
+//            String.valueOf(deposit.isRequestAccess()));
+//
+//        // TRM005 and TRM006
+//        var terms = deposit.getTermsOfAccess();
+//
+//        if (terms != null) {
+//            for (var term : terms) {
+//                termsOfAccess.addProperty(DVCore.termsOfAccess, term);
+//            }
+//        }
 
         return model.createStatement(
             resource,

@@ -16,8 +16,8 @@
 package nl.knaw.dans.vaultingest.core;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.Outbox;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriterFactory;
@@ -72,9 +72,11 @@ public class DepositToBagProcess {
             outbox.moveDeposit(deposit);
         }
         catch (InvalidDepositException e) {
+            e.printStackTrace();
             handleFailedDeposit(path, outbox, Deposit.State.REJECTED, e);
         }
         catch (Throwable e) {
+            e.printStackTrace();
             handleFailedDeposit(path, outbox, Deposit.State.FAILED, e);
         }
     }

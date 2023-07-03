@@ -16,7 +16,7 @@
 package nl.knaw.dans.vaultingest.core.deposit;
 
 import nl.knaw.dans.vaultingest.core.xml.XmlNamespaces;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 
@@ -28,7 +28,7 @@ class CommonDepositFileTest {
 
     @Test
     void getDirectoryLabel_should_return_same_path_for_valid_characters() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNode("data/only/valid/characters.txt"))
             .build();
 
@@ -38,7 +38,7 @@ class CommonDepositFileTest {
 
     @Test
     void getFilename_should_return_same_value_for_valid_characters() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNode("data/valid/characters.txt"))
             .build();
 
@@ -47,7 +47,7 @@ class CommonDepositFileTest {
 
     @Test
     void getDescription_should_be_empty() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNode("path/to/file.txt"))
             .build();
 
@@ -56,7 +56,7 @@ class CommonDepositFileTest {
 
     @Test
     void isRestricted_should_return_false_when_no_information_is_available() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
@@ -66,7 +66,7 @@ class CommonDepositFileTest {
 
     @Test
     void isRestricted_should_return_false_when_getAccessRights_equals_OPEN_ACCESS() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
             .ddmNode(getDdmNodeWithAccessRights("OPEN_ACCESS"))
             .build();
@@ -76,7 +76,7 @@ class CommonDepositFileTest {
 
     @Test
     void isRestricted_should_return_true_when_getAccessRights_equals_RANDOM_VALUE() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
             .ddmNode(getDdmNodeWithAccessRights("RANDOM_VALUE"))
             .build();
@@ -87,7 +87,7 @@ class CommonDepositFileTest {
     @Test
     void isRestricted_should_return_true_when_getAccessibleToRights_is_empty() throws Exception {
         // TODO verify an empty accessibleToRights qualifies as restricted
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
@@ -97,7 +97,7 @@ class CommonDepositFileTest {
 
     @Test
     void isRestricted_should_return_true_when_getAccessibleToRights_equals_ANYTHING() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANYTHING"))
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
@@ -107,7 +107,7 @@ class CommonDepositFileTest {
 
     @Test
     void isRestricted_should_return_false_when_getAccessibleToRights_equals_ANONYMOUS() throws Exception {
-        var depositFile = CommonDepositFile.builder()
+        var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANONYMOUS"))
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
@@ -116,14 +116,14 @@ class CommonDepositFileTest {
     }
 
     Node getFilesXmlNode(String path) throws Exception {
-        var node = new XmlReaderImpl().readXmlString("<file  xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
+        var node = new XmlReader().readXmlString("<file  xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
         node.getDocumentElement().setAttribute("filepath", path);
 
         return node.getDocumentElement();
     }
 
     Node getFilesXmlNodeWithAccessibleToRights(String accessibleToRights) throws Exception {
-        var node = new XmlReaderImpl().readXmlString("<file xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
+        var node = new XmlReader().readXmlString("<file xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
         node.getDocumentElement().setAttribute("filepath", "path/to/file.txt");
 
         var acc = node.createElementNS(XmlNamespaces.NAMESPACE_FILES_XML, "accessibleToRights");
@@ -141,7 +141,7 @@ class CommonDepositFileTest {
             + "    </ddm:profile>"
             + "</ddm:DDM>";
 
-        var node = new XmlReaderImpl().readXmlString(str);
+        var node = new XmlReader().readXmlString(str);
         return node.getDocumentElement();
     }
 }

@@ -17,10 +17,10 @@ package nl.knaw.dans.vaultingest.core.rdabag;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.DataciteConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.OaiOreConverter;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.PidMappingConverter;
+import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreConverter;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.OaiOreSerializer;
+import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreSerializer;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.PidMappingSerializer;
 
 public class DefaultRdaBagWriterFactory implements RdaBagWriterFactory {

@@ -23,11 +23,11 @@ import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
-import nl.knaw.dans.vaultingest.core.deposit.CommonDepositManager;
-import nl.knaw.dans.vaultingest.core.deposit.CommonDepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
+import nl.knaw.dans.vaultingest.core.deposit.DepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
@@ -35,7 +35,7 @@ import nl.knaw.dans.vaultingest.core.rdabag.output.ZipBagOutputWriterFactory;
 import nl.knaw.dans.vaultingest.core.validator.VoidDepositValidator;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogDeposit;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import nl.knaw.dans.vaultingest.health.DansBagValidatorHealthCheck;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
@@ -77,13 +77,14 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
         var countryResolver = new FileCountryResolver(
             configuration.getIngestFlow().getSpatialCoverageCountryTermsPath()
         );
-        var xmlReader = new XmlReaderImpl();
+        var xmlReader = new XmlReader();
         var depositValidator = new VoidDepositValidator();
         //        var depositValidator = new CommonDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getBaseUrl());
-        var depositFactory = new CommonDepositManager(
+        var depositFactory = new DepositManager(
             xmlReader,
             languageResolver,
-            countryResolver);
+            countryResolver
+        );
 
         var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(environment.getObjectMapper());
         var outputWriterFactory = new ZipBagOutputWriterFactory(configuration.getIngestFlow().getRdaBagOutputDir());
@@ -112,7 +113,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             configuration.getIngestFlow().getAutoIngest().getInbox()
         );
 
-        var autoIngestOutbox = new CommonDepositOutbox(configuration.getIngestFlow().getAutoIngest().getOutbox());
+        var autoIngestOutbox = new DepositOutbox(configuration.getIngestFlow().getAutoIngest().getOutbox());
         var inboxListener = new AutoIngestArea(
             taskQueue,
             ingestAreaDirectoryWatcher,

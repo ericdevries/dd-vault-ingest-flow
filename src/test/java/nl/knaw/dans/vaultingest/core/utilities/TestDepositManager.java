@@ -15,19 +15,22 @@
  */
 package nl.knaw.dans.vaultingest.core.utilities;
 
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
-public class TestDepositManager implements DepositManager {
+public class TestDepositManager extends DepositManager {
     private final Deposit deposit;
 
     private boolean saveDepositCalled = false;
     private Deposit.State lastState = null;
     private String lastMessage = null;
 
-    public TestDepositManager(Deposit deposit) {
+    public TestDepositManager(Deposit deposit) throws IOException {
+        super(new XmlReader(), new TestLanguageResolver(), new TestCountryResolver());
         this.deposit = deposit;
     }
 

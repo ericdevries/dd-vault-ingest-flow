@@ -15,6 +15,8 @@
  */
 package nl.knaw.dans.vaultingest.core.domain;
 
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+
 import java.io.IOException;
 import java.nio.file.Path;
 

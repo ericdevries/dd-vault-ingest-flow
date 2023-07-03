@@ -17,7 +17,7 @@ package nl.knaw.dans.vaultingest.core.deposit;
 
 import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.reader.BagReader;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ class CommonDepositBagIntegrationTest {
     @Test
     void getMetadataFiles() throws Exception {
         var bag = getBag();
-        var depositBag = new CommonDepositBag(bag);
+        var depositBag = new DepositBag(bag);
 
         var metadataFiles = depositBag.getMetadataFiles();
 
@@ -44,14 +44,14 @@ class CommonDepositBagIntegrationTest {
     @Test
     void inputStreamForMetadataFile() throws Exception {
         var bag = getBag();
-        var depositBag = new CommonDepositBag(bag);
+        var depositBag = new DepositBag(bag);
 
         try (var file = depositBag.inputStreamForMetadataFile(Path.of("metadata/dataset.xml"))) {
             var data = new String(file.readAllBytes());
 
             // check if it read the complete xml file
             assertDoesNotThrow(() -> {
-                new XmlReaderImpl().readXmlString(data);
+                new XmlReader().readXmlString(data);
             });
 
             assertTrue(data.startsWith("<ddm:DDM"));
@@ -61,7 +61,7 @@ class CommonDepositBagIntegrationTest {
     @Test
     void getMetadataValue() throws Exception {
         var bag = getBag();
-        var depositBag = new CommonDepositBag(bag);
+        var depositBag = new DepositBag(bag);
 
         assertEquals("3212481.4", depositBag.getMetadataValue("Payload-Oxum").get(0));
         assertEquals("2022-10-23", depositBag.getMetadataValue("Bagging-Date").get(0));

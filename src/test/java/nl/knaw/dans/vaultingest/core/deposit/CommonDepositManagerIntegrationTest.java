@@ -16,7 +16,7 @@
 package nl.knaw.dans.vaultingest.core.deposit;
 
 import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -33,8 +33,8 @@ class CommonDepositManagerIntegrationTest {
     void loadDeposit() throws Exception {
         var path = Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath());
         var countryResolver = new FileCountryResolver(path);
-        var manager = new CommonDepositManager(
-            new XmlReaderImpl(),
+        var manager = new DepositManager(
+            new XmlReader(),
             new TestLanguageResolver(),
             countryResolver
         );
@@ -50,8 +50,8 @@ class CommonDepositManagerIntegrationTest {
     void loadDeposit_should_handle_OriginalFilePaths() throws Exception {
         var countryTerms = Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath());
         var countryResolver = new FileCountryResolver(countryTerms);
-        var manager = new CommonDepositManager(
-            new XmlReaderImpl(),
+        var manager = new DepositManager(
+            new XmlReader(),
             new TestLanguageResolver(),
             countryResolver
         );

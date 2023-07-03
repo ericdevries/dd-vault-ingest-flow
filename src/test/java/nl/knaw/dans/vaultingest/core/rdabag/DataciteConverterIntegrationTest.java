@@ -15,13 +15,12 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag;
 
-import nl.knaw.dans.vaultingest.core.deposit.CountryResolver;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
 import nl.knaw.dans.vaultingest.core.rdabag.converter.DataciteConverter;
 import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
@@ -141,6 +140,6 @@ class DataciteConverterIntegrationTest {
         var resource = new DataciteConverter().convert(deposit);
         var xmlString = new DataciteSerializer().serialize(resource);
 
-        return new XmlReaderImpl().readXmlString(xmlString);
+        return new XmlReader().readXmlString(xmlString);
     }
 }

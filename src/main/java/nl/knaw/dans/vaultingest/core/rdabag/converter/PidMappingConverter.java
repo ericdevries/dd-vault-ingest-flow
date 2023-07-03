@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.converter;
 
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.domain.PidMappings;
 
 public class PidMappingConverter {
