@@ -45,7 +45,7 @@ public class VaultMetadata extends Base {
                 .ifPresent(result::add);
 
         // VLT008
-        toBasicTerm(resource, DansDVMetadata.dansSwordToken, deposit.getDepositorId())
+        toBasicTerm(resource, DansDVMetadata.dansDataSupplier, deposit.getDepositorId())
                 .ifPresent(result::add);
 
         return result;

@@ -104,7 +104,6 @@ public class DepositToBagProcess {
 
             deposit.setState(Deposit.State.ACCEPTED, "Deposit accepted");
         } catch (Exception e) {
-            // TODO throw some kind of FAILURE state, which is different from REJECTED
             throw new IllegalStateException("Error writing bag: " + e.getMessage(), e);
         }
 

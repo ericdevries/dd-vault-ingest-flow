@@ -29,4 +29,5 @@ public class DansDVMetadata {
     public static final Property dansOtherId = m.createProperty(NS, "dansOtherId");
     public static final Property dansOtherIdVersion = m.createProperty(NS, "dansOtherIdVersion");
     public static final Property dansSwordToken = m.createProperty(NS, "dansSwordToken");
+    public static final Property dansDataSupplier = m.createProperty(NS, "dansDataSupplier");
 }

@@ -566,7 +566,7 @@ public class OaiOreConverterIntegrationTest {
 
     // VLT007
     // TODO make this work
-    //    @Test
+//        @Test
     void dansSwordToken() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(

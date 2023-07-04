@@ -30,10 +30,15 @@ public class DataciteConverter {
 
     private Resource getResource(Deposit deposit) {
         var resource = new Resource();
-        resource.setTitles(getTitles(deposit));
         resource.setResourceType(getResourceType());
-        resource.setCreators(getCreators(deposit));
+        // DATACITE001
         resource.setIdentifier(getIdentifier(deposit));
+        // DATACITE003
+        resource.setTitles(getTitles(deposit));
+        // DATACITE004, DATACITE005, DATACITE006
+        resource.setCreators(getCreators(deposit));
+
+        //
         resource.setPublisher(getPublisher());
         resource.setDescriptions(getDescriptions(deposit));
         resource.setPublicationYear(getPublicationYear(deposit));
@@ -103,6 +108,7 @@ public class DataciteConverter {
     }
 
     private Resource.Identifier getIdentifier(Deposit deposit) {
+        // TODO mapping file does not explicitly say this, but should it remove the prefix?
         var id = deposit.getDoi().substring(deposit.getDoi().indexOf(':') + 1);
         var identifier = new Resource.Identifier();
         identifier.setIdentifierType("DOI");
