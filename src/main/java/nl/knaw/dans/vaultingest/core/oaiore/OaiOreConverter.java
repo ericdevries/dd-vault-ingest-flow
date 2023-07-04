@@ -44,9 +44,6 @@ public class OaiOreConverter {
         model.add(OtherIds.toRDF(resource, deposit));
         model.add(Authors.toRDF(resource, deposit));
 
-        //        NonMetadata.toAvailable(resource, deposit.getAvailableDate())
-        //            .ifPresent(model::add);
-
         model.add(Descriptions.toRDF(resource, deposit));
         model.add(Subjects.toRDF(resource, deposit));
         model.add(Keywords.toRDF(resource, deposit));
@@ -122,29 +119,10 @@ public class OaiOreConverter {
     Resource createAggregatedResource(Model model, DepositFile depositFile) {
         var resource = model.createResource("urn:uuid:" + depositFile.getId());
 
-        // TODO add access rights and checksum
         model.add(model.createStatement(resource, RDF.type, ORE.AggregatedResource));
         model.add(model.createStatement(resource, SchemaDO.name, depositFile.getPath().toString()));
         model.add(DataFile.toRDF(resource, depositFile));
-        //
-        //        // FIL002A, FIL002B, FIL003, FIL004
-        //        var descriptionText = depositFile.getDescription();
-        //
-        //        if (descriptionText != null) {
-        //            var description = model.createStatement(resource, SchemaDO.description, depositFile.getDescription());
-        //            model.add(description);
-        //        }
-        //
-        //        // FIL002
-        //        var directoryLabel = depositFile.getDirectoryLabel();
-        //
-        //        if (directoryLabel != null) {
-        //            model.add(model.createStatement(resource, DVCore.directoryLabel, directoryLabel.toString()));
-        //        }
-        //
-        //        // FIL005, FIL006, FIL007
-        //        model.add(model.createStatement(resource, DVCore.restricted, Boolean.toString(depositFile.isRestricted())));
-        //
+
         return resource;
     }
 

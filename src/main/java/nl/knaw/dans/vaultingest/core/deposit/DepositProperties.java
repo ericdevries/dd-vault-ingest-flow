@@ -85,4 +85,5 @@ public class DepositProperties {
     public String getBagId() {
         return configuration.getString(DATAVERSE_BAG_ID);
     }
+
 }

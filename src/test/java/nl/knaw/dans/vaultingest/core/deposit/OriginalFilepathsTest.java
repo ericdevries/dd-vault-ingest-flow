@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
-import nl.knaw.dans.vaultingest.core.deposit.OriginalFilepaths;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;

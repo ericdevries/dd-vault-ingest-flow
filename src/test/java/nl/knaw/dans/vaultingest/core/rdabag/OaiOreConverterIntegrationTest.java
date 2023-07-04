@@ -18,10 +18,9 @@ package nl.knaw.dans.vaultingest.core.rdabag;
 import lombok.Builder;
 import lombok.Value;
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
-import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
-import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
 import nl.knaw.dans.vaultingest.core.mappings.vocabulary.*;
 import nl.knaw.dans.vaultingest.core.oaiore.OaiOreConverter;
+import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.SchemaDO;
@@ -624,10 +623,7 @@ public class OaiOreConverterIntegrationTest {
     }
 
     private ModelObject loadModel() throws Exception {
-        var countryResolver = new FileCountryResolver(
-                Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath())
-        );
-        var depositManager = new SimpleCommonDepositManager(countryResolver);
+        var depositManager = new TestSimpleDepositManager();
         var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
         deposit.setNbn("urn:nbn:nl:ui:13-4c-1a2b");
 

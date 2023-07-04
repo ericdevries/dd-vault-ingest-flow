@@ -200,17 +200,7 @@ class DepositToBagProcessTest {
 
     @Test
     void process_should_process_nonUpdate_deposit() throws Exception {
-        var deposit = getBasicDepositAsUpdate();
-        //        var deposit = TestDeposit.builder()
-        //            .id(UUID.randomUUID().toString())
-        //            .payloadFiles(List.of(
-        //                TestDepositFile.builder()
-        //                    .path(Path.of("data/file1.txt"))
-        //                    .checksums(Map.of())
-        //                    .id(UUID.randomUUID().toString())
-        //                    .build()
-        //            ))
-        //            .build();
+        var deposit = getBasicDeposit();
 
         var rdaBagWriter = Mockito.mock(RdaBagWriter.class);
         var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
@@ -231,19 +221,6 @@ class DepositToBagProcessTest {
     @Test
     void process_should_fail_if_update_cannot_be_found() throws Exception {
         var deposit = getBasicDepositAsUpdate();
-        //        var deposit = TestDeposit.builder()
-        //            .id(UUID.randomUUID().toString())
-        //            .update(true)
-        //            .swordToken("sword-token")
-        //            .payloadFiles(List.of(
-        //                TestDepositFile.builder()
-        //                    .path(Path.of("data/file1.txt"))
-        //                    .checksums(Map.of())
-        //                    .id(UUID.randomUUID().toString())
-        //                    .build()
-        //            ))
-        //            .build();
-
         var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
 
@@ -276,30 +253,11 @@ class DepositToBagProcessTest {
                 Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
         );
 
-        // TODO set isUpdate to true and add swordToken
+        var spied = Mockito.spy(deposit);
 
-        return deposit;
+        Mockito.doReturn(true).when(spied).isUpdate();
+        Mockito.doReturn("sword:abc").when(spied).getSwordToken();
+
+        return spied;
     }
-
-    //    private Deposit getBasicDepositAsUpdate() {
-    //        return TestDeposit.builder()
-    //            .id(UUID.randomUUID().toString())
-    //            .doi("doi:10.17026/dans-12345")
-    //            .update(true)
-    //            .swordToken("sword-token")
-    //            .payloadFiles(List.of(
-    //                TestDepositFile.builder()
-    //                    .path(Path.of("data/file1.txt"))
-    //                    .checksums(Map.of())
-    //                    .id(UUID.randomUUID().toString())
-    //                    .accessibleToRights("KNOWN")
-    //                    .build(),
-    //                TestDepositFile.builder()
-    //                    .path(Path.of("data/file2.txt"))
-    //                    .checksums(Map.of())
-    //                    .id(UUID.randomUUID().toString())
-    //                    .build()
-    //            ))
-    //            .build();
-    //    }
 }

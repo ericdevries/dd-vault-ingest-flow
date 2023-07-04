@@ -98,11 +98,11 @@ public class Deposit {
     }
 
     public boolean isUpdate() {
-        return false;
+        return bag.getMetadataValue("Is-Version-Of").size() > 0;
     }
 
     public String getSwordToken() {
-        return null;
+        return bag.getMetadataValue("Is-Version-Of").stream().findFirst().orElse(null);
     }
 
     public String getDepositorId() {

@@ -71,16 +71,13 @@ public class DepositToBagProcess {
             log.info("Moving deposit to outbox");
             outbox.moveDeposit(deposit);
         } catch (InvalidDepositException e) {
-            e.printStackTrace();
             handleFailedDeposit(path, outbox, Deposit.State.REJECTED, e);
         } catch (Throwable e) {
-            e.printStackTrace();
             handleFailedDeposit(path, outbox, Deposit.State.FAILED, e);
         }
     }
 
     void processDeposit(Deposit deposit) throws InvalidDepositException {
-
         if (deposit.isUpdate()) {
             // check if deposit exists in vault catalog
             var catalogDeposit = vaultCatalogService.findDeposit(deposit.getSwordToken())

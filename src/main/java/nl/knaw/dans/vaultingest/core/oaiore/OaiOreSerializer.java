@@ -35,7 +35,9 @@ import org.apache.jena.vocabulary.SchemaDO;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class OaiOreSerializer {
@@ -133,21 +135,13 @@ public class OaiOreSerializer {
     }
 
     private Map<String, String> getUsedNamespaces(Model model) {
-        model.listNameSpaces().forEachRemaining(System.out::println);
+        var usedNamespaces = new HashSet<String>();
+        model.listNameSpaces().forEachRemaining(usedNamespaces::add);
 
-        // TODO filter by used only
-        var namespaces = getNamespaces();
-        return namespaces;
-        //        var used = map.getUsedNamespaces();
-        //        var result = new HashMap<String, String>();
-        //
-        //        for (var namespace : namespaces.entrySet()) {
-        //            if (used.contains(namespace.getValue())) {
-        //                result.put(namespace.getKey(), namespace.getValue());
-        //            }
-        //        }
-        //
-        //        return result;
+        return getNamespaces()
+                .entrySet().stream()
+                .filter(e -> usedNamespaces.contains(e.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private void applyNamespaces(Model model) {

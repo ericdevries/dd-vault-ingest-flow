@@ -17,8 +17,7 @@ package nl.knaw.dans.vaultingest.core.rdabag;
 
 import nl.knaw.dans.vaultingest.core.datacite.DataciteConverter;
 import nl.knaw.dans.vaultingest.core.datacite.DataciteSerializer;
-import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
-import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
+import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
@@ -130,11 +129,7 @@ class DataciteConverterIntegrationTest {
 
     // serialize to XML, then convert to Node, so we can use XPath to test the output
     private Document loadResource() throws Exception {
-        var countryResolver = new FileCountryResolver(
-                Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath())
-        );
-
-        var depositManager = new SimpleCommonDepositManager(countryResolver);
+        var depositManager = new TestSimpleDepositManager();
         var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
 
         var resource = new DataciteConverter().convert(deposit);

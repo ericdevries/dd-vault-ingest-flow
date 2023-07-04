@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class DataFile extends Base {
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static List<Statement> toRDF(Resource resource, DepositFile depositFile) {
         var result = new ArrayList<Statement>();
