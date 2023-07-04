@@ -18,7 +18,7 @@ package nl.knaw.dans.vaultingest.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
-import nl.knaw.dans.vaultingest.core.domain.Outbox;
+import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
 import nl.knaw.dans.vaultingest.core.utilities.InMemoryOutputWriter;
@@ -35,9 +35,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DepositToBagProcessTest {
 
@@ -52,12 +50,12 @@ class DepositToBagProcessTest {
         var depositManager = new TestDepositManager(deposit);
 
         var depositToBagProcess = new DepositToBagProcess(
-            () -> rdaBagWriter,
-            value -> output,
-            vaultCatalogService,
-            depositManager,
-            depositValidator,
-            new IdMinter()
+                () -> rdaBagWriter,
+                value -> output,
+                vaultCatalogService,
+                depositManager,
+                depositValidator,
+                new IdMinter()
         );
 
         var outbox = Mockito.mock(Outbox.class);
@@ -82,12 +80,12 @@ class DepositToBagProcessTest {
 
         var depositManager = new TestDepositManager(null);
         var depositToBagProcess = new DepositToBagProcess(
-            () -> rdaBagWriter,
-            value -> output,
-            vaultCatalogService,
-            depositManager,
-            depositValidator,
-            new IdMinter()
+                () -> rdaBagWriter,
+                value -> output,
+                vaultCatalogService,
+                depositManager,
+                depositValidator,
+                new IdMinter()
         );
 
         var outbox = Mockito.mock(Outbox.class);
@@ -107,17 +105,17 @@ class DepositToBagProcessTest {
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         Mockito.doThrow(new InvalidDepositException("Invalid deposit!"))
-            .when(depositValidator).validate(Mockito.any());
+                .when(depositValidator).validate(Mockito.any());
 
         var deposit = getBasicDeposit();
         var depositManager = new TestDepositManager(deposit);
         var depositToBagProcess = new DepositToBagProcess(
-            () -> rdaBagWriter,
-            value -> output,
-            vaultCatalogService,
-            depositManager,
-            depositValidator,
-            new IdMinter()
+                () -> rdaBagWriter,
+                value -> output,
+                vaultCatalogService,
+                depositManager,
+                depositValidator,
+                new IdMinter()
         );
 
         var outbox = Mockito.mock(Outbox.class);
@@ -137,17 +135,17 @@ class DepositToBagProcessTest {
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         Mockito.when(vaultCatalogService.findDeposit(Mockito.any()))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         var deposit = getBasicDepositAsUpdate();
         var depositManager = new TestDepositManager(deposit);
         var depositToBagProcess = new DepositToBagProcess(
-            () -> rdaBagWriter,
-            value -> output,
-            vaultCatalogService,
-            depositManager,
-            depositValidator,
-            new IdMinter()
+                () -> rdaBagWriter,
+                value -> output,
+                vaultCatalogService,
+                depositManager,
+                depositValidator,
+                new IdMinter()
         );
 
         var outbox = Mockito.mock(Outbox.class);
@@ -166,12 +164,12 @@ class DepositToBagProcessTest {
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
         var depositToBagProcess = new DepositToBagProcess(
-            () -> rdaBagWriter,
-            deposit -> output,
-            vaultCatalogService,
-            depositManager,
-            depositValidator,
-            new IdMinter()
+                () -> rdaBagWriter,
+                deposit -> output,
+                vaultCatalogService,
+                depositManager,
+                depositValidator,
+                new IdMinter()
         );
 
         var deposit = getBasicDeposit();
@@ -179,25 +177,25 @@ class DepositToBagProcessTest {
 
         assertTrue(output.isClosed());
         assertThat(output.getData().keySet())
-            .map(Path::toString)
-            .containsOnly(
-                "bag-info.txt",
-                "bagit.txt",
-                "manifest-sha1.txt",
-                "manifest-md5.txt",
-                "tagmanifest-sha1.txt",
-                "tagmanifest-md5.txt",
-                "metadata/dataset.xml",
-                "metadata/files.xml",
-                "metadata/oai-ore.rdf",
-                "metadata/oai-ore.jsonld",
-                "metadata/pid-mapping.txt",
-                "metadata/datacite.xml",
-                "data/random images/image02.jpeg",
-                "data/random images/image03.jpeg",
-                "data/random images/image01.png",
-                "data/a/deeper/path/With some file.txt"
-            );
+                .map(Path::toString)
+                .containsOnly(
+                        "bag-info.txt",
+                        "bagit.txt",
+                        "manifest-sha1.txt",
+                        "manifest-md5.txt",
+                        "tagmanifest-sha1.txt",
+                        "tagmanifest-md5.txt",
+                        "metadata/dataset.xml",
+                        "metadata/files.xml",
+                        "metadata/oai-ore.rdf",
+                        "metadata/oai-ore.jsonld",
+                        "metadata/pid-mapping.txt",
+                        "metadata/datacite.xml",
+                        "data/random images/image02.jpeg",
+                        "data/random images/image03.jpeg",
+                        "data/random images/image01.png",
+                        "data/a/deeper/path/With some file.txt"
+                );
     }
 
     @Test
@@ -220,10 +218,10 @@ class DepositToBagProcessTest {
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var depositToBagProcess = new DepositToBagProcess(
-            () -> rdaBagWriter,
-            d -> new NullBagOutputWriter(),
-            vaultCatalogService,
-            depositManager, depositValidator, new IdMinter());
+                () -> rdaBagWriter,
+                d -> new NullBagOutputWriter(),
+                vaultCatalogService,
+                depositManager, depositValidator, new IdMinter());
 
         depositToBagProcess.processDeposit(deposit);
 
@@ -250,16 +248,16 @@ class DepositToBagProcessTest {
         var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
 
         Mockito.doReturn(Optional.empty())
-            .when(vaultCatalogService).findDeposit(Mockito.any());
+                .when(vaultCatalogService).findDeposit(Mockito.any());
 
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var depositToBagProcess = new DepositToBagProcess(
-            () -> rdaBagWriter,
-            d -> new NullBagOutputWriter(),
-            vaultCatalogService,
-            depositManager, depositValidator, new IdMinter());
+                () -> rdaBagWriter,
+                d -> new NullBagOutputWriter(),
+                vaultCatalogService,
+                depositManager, depositValidator, new IdMinter());
 
         assertThrows(InvalidDepositException.class, () -> depositToBagProcess.processDeposit(deposit));
     }
@@ -268,14 +266,14 @@ class DepositToBagProcessTest {
         var manager = new TestSimpleDepositManager();
 
         return manager.loadDeposit(
-            Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
+                Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
         );
     }
 
     private Deposit getBasicDepositAsUpdate() throws Exception {
         var manager = new TestSimpleDepositManager();
         var deposit = manager.loadDeposit(
-            Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
+                Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
         );
 
         // TODO set isUpdate to true and add swordToken

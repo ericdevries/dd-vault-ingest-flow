@@ -51,17 +51,16 @@ class ZipBagOutputWriterTest {
 
         try (var zip = new ZipFile(OUTPUT.toFile())) {
             zip.stream()
-                .forEach(entry -> {
-                    var output = new ByteArrayOutputStream();
+                    .forEach(entry -> {
+                        var output = new ByteArrayOutputStream();
 
-                    try {
-                        zip.getInputStream(entry).transferTo(output);
-                        entries.put(entry.getName(), output.toString());
-                    }
-                    catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                        try {
+                            zip.getInputStream(entry).transferTo(output);
+                            entries.put(entry.getName(), output.toString());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
 
         }
 

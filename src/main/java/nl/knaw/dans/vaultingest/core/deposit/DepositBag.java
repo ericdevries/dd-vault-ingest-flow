@@ -19,11 +19,7 @@ import gov.loc.repository.bagit.domain.Bag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -39,16 +35,15 @@ public class DepositBag {
         var path = this.bag.getRootDir();
         try (var list = Files.list(path.resolve("metadata"))) {
             return list
-                .map(path::relativize)
-                .collect(Collectors.toList());
+                    .map(path::relativize)
+                    .collect(Collectors.toList());
         }
     }
 
     public InputStream inputStreamForMetadataFile(Path path) {
         try {
             return new BufferedInputStream(new FileInputStream(bag.getRootDir().resolve(path).toFile()));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

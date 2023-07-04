@@ -19,8 +19,6 @@ import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.reader.BagReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
-import nl.knaw.dans.vaultingest.core.domain.OriginalFilepaths;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -73,19 +71,18 @@ public class DepositManager {
             var depositFiles = getDepositFiles(bagDir, bag, ddm, filesXml, originalFilePaths);
 
             return Deposit.builder()
-                .id(path.getFileName().toString())
-                .path(path)
-                .ddm(ddm)
-                .bag(new DepositBag(bag))
-                .filesXml(filesXml)
-                .depositFiles(depositFiles)
-                .properties(depositProperties)
-                .languageResolver(languageResolver)
-                .countryResolver(countryResolver)
-                .build();
+                    .id(path.getFileName().toString())
+                    .path(path)
+                    .ddm(ddm)
+                    .bag(new DepositBag(bag))
+                    .filesXml(filesXml)
+                    .depositFiles(depositFiles)
+                    .properties(depositProperties)
+                    .languageResolver(languageResolver)
+                    .countryResolver(countryResolver)
+                    .build();
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error loading deposit from disk: path={}", path, e);
             throw new RuntimeException(e);
         }
@@ -96,8 +93,7 @@ public class DepositManager {
 
         try {
             properties.save();
-        }
-        catch (ConfigurationException e) {
+        } catch (ConfigurationException e) {
             log.error("Error saving deposit properties: depositId={}", deposit.getId(), e);
             throw new RuntimeException(e);
         }
@@ -110,8 +106,7 @@ public class DepositManager {
             depositProperties.setStateDescription(message);
 
             depositProperties.save();
-        }
-        catch (ConfigurationException e) {
+        } catch (ConfigurationException e) {
             log.error("Error updating deposit state: path={}, state={}, message={}", path, state, message, e);
             throw new RuntimeException(e);
         }
@@ -120,8 +115,8 @@ public class DepositManager {
     private Path getBagDir(Path path) throws IOException {
         try (var list = Files.list(path)) {
             return list.filter(Files::isDirectory)
-                .findFirst()
-                .orElseThrow();
+                    .findFirst()
+                    .orElseThrow();
         }
     }
 
@@ -133,11 +128,11 @@ public class DepositManager {
         var propertiesFile = path.resolve("deposit.properties");
         var params = new Parameters();
         var paramConfig = params.properties()
-            .setFileName(propertiesFile.toString());
+                .setFileName(propertiesFile.toString());
 
         var builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>
-            (PropertiesConfiguration.class, null, true)
-            .configure(paramConfig);
+                (PropertiesConfiguration.class, null, true)
+                .configure(paramConfig);
 
         return new DepositProperties(builder);
     }
@@ -149,10 +144,10 @@ public class DepositManager {
         if (Files.exists(originalFilepathsFile)) {
             try (var lines = Files.lines(originalFilepathsFile)) {
                 lines.filter(StringUtils::isNotBlank)
-                    .map(line -> line.split("\\s+", 2))
-                    .forEach(line -> result.addMapping(
-                        Path.of(line[1]), Path.of(line[0]))
-                    );
+                        .map(line -> line.split("\\s+", 2))
+                        .forEach(line -> result.addMapping(
+                                Path.of(line[1]), Path.of(line[0]))
+                        );
             }
         }
 
@@ -171,12 +166,11 @@ public class DepositManager {
                     var checksum = entry.getValue();
 
                     manifests.computeIfAbsent(relativePath, k -> new HashMap<>())
-                        .put(alg, checksum);
+                            .put(alg, checksum);
                 }
-            }
-            catch (NoSuchAlgorithmException e) {
+            } catch (NoSuchAlgorithmException e) {
                 log.warn("Bag contains a checksum algorithm that is not supported: algorithm={}",
-                    manifest.getAlgorithm().getMessageDigestName(), e);
+                        manifest.getAlgorithm().getMessageDigestName(), e);
             }
         }
 
@@ -187,21 +181,21 @@ public class DepositManager {
         var manifests = getPrecomputedChecksums(bagDir, bag);
 
         return XPathEvaluator.nodes(filesXml, "/files:files/files:file")
-            .map(node -> {
-                var filePath = node.getAttributes().getNamedItem("filepath").getTextContent();
-                var physicalPath = bagDir.resolve(originalFilepaths.getPhysicalPath(Path.of(filePath)));
-                var checksums = manifests.get(bagDir.relativize(physicalPath));
+                .map(node -> {
+                    var filePath = node.getAttributes().getNamedItem("filepath").getTextContent();
+                    var physicalPath = bagDir.resolve(originalFilepaths.getPhysicalPath(Path.of(filePath)));
+                    var checksums = manifests.get(bagDir.relativize(physicalPath));
 
-                return DepositFile.builder()
-                    .id(UUID.randomUUID().toString())
-                    .physicalPath(physicalPath)
-                    .filesXmlNode(node)
-                    .ddmNode(ddm)
-                    .checksums(checksums)
-                    .build();
-            })
-            .map(m -> (DepositFile) m)
-            .collect(Collectors.toList());
+                    return DepositFile.builder()
+                            .id(UUID.randomUUID().toString())
+                            .physicalPath(physicalPath)
+                            .filesXmlNode(node)
+                            .ddmNode(ddm)
+                            .checksums(checksums)
+                            .build();
+                })
+                .map(m -> (DepositFile) m)
+                .collect(Collectors.toList());
     }
 
 }

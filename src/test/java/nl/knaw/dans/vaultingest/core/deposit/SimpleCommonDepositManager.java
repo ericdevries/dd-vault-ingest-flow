@@ -28,9 +28,9 @@ public class SimpleCommonDepositManager extends DepositManager {
 
     public SimpleCommonDepositManager(CountryResolver countryResolver) throws IOException {
         super(
-            new XmlReader(),
-            new TestLanguageResolver(),
-            countryResolver
+                new XmlReader(),
+                new TestLanguageResolver(),
+                countryResolver
         );
     }
 
@@ -43,8 +43,7 @@ public class SimpleCommonDepositManager extends DepositManager {
             var path = Path.of(resource.getPath());
 
             return super.loadDeposit(path);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error loading deposit", e);
         }
     }

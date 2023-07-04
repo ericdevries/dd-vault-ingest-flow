@@ -44,8 +44,7 @@ public class TestLanguageResolver implements LanguageResolver {
 
         if (language.length() == 2) {
             return iso2.get(language);
-        }
-        else if (language.length() == 3) {
+        } else if (language.length() == 3) {
             return iso3.get(language);
         }
 
@@ -65,8 +64,7 @@ public class TestLanguageResolver implements LanguageResolver {
 
                 return result;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("Could not load csv", e);
             return Map.of();

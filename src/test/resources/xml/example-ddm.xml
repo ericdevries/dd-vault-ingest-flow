@@ -319,7 +319,7 @@
 
         <!-- TRM005 and TRM006 -->
         <dcterms:accessRights>Restricted files accessible under the following conditions: ...</dcterms:accessRights>
-        ().
+
         <dcterms:identifier xsi:type="id-type:DOI">doi:10.5072/DAR/EJ9ZMU</dcterms:identifier>
     </ddm:dcmiMetadata>
 </ddm:DDM>

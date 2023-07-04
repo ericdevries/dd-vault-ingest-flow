@@ -36,8 +36,7 @@ public class InMemoryOutputWriter implements BagOutputWriter {
         try {
             inputStream.transferTo(output);
             data.put(path, output.toString());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

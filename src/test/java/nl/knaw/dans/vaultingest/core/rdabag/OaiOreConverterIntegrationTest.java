@@ -20,21 +20,9 @@ import lombok.Value;
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DVCitation;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DVCore;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansDVMetadata;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansRel;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansRights;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.DansTS;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.Datacite;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.PROV;
-import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreConverter;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.SimpleSelector;
-import org.apache.jena.rdf.model.Statement;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.*;
+import nl.knaw.dans.vaultingest.core.oaiore.OaiOreConverter;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.SchemaDO;
 import org.assertj.core.api.iterable.ThrowingExtractor;
@@ -53,13 +41,13 @@ public class OaiOreConverterIntegrationTest {
     void title() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DCTerms.title, (RDFNode) null)
+                new SimpleSelector(obj.resource, DCTerms.title, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("A bag containing examples for each mapping rule");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("A bag containing examples for each mapping rule");
     }
 
     // CIT002
@@ -67,13 +55,13 @@ public class OaiOreConverterIntegrationTest {
     void alternativeTitles() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DCTerms.alternative, (RDFNode) null)
+                new SimpleSelector(obj.resource, DCTerms.alternative, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("DCTERMS title 1");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("DCTERMS title 1");
     }
 
     // CIT003, CIT004
@@ -81,19 +69,19 @@ public class OaiOreConverterIntegrationTest {
     void otherIds() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.otherId, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.otherId, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.otherIdValue))
-            .containsOnly("1234",
-                "DCTERMS_ID001",
-                "DCTERMS_ID002",
-                "DCTERMS_ID003");
+                .map(getPropertyAsString(DVCitation.otherIdValue))
+                .containsOnly("1234",
+                        "DCTERMS_ID001",
+                        "DCTERMS_ID002",
+                        "DCTERMS_ID003");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.otherIdAgency))
-            .containsOnly(null, "REPO1");
+                .map(getPropertyAsString(DVCitation.otherIdAgency))
+                .containsOnly(null, "REPO1");
     }
 
     // CIT005, CIT006, CIT007
@@ -101,24 +89,24 @@ public class OaiOreConverterIntegrationTest {
     void authors() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.author, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.author, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.authorName))
-            .containsOnly("Unformatted Creator", "I Lastname", "Creator Organization");
+                .map(getPropertyAsString(DVCitation.authorName))
+                .containsOnly("Unformatted Creator", "I Lastname", "Creator Organization");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.authorAffiliation))
-            .containsOnly("Example Org", null);
+                .map(getPropertyAsString(DVCitation.authorAffiliation))
+                .containsOnly("Example Org", null);
 
         assertThat(statements)
-            .map(getPropertyAsString(Datacite.agentIdentifier))
-            .containsOnly(null, "123456789", "0000-1111-2222-3333");
+                .map(getPropertyAsString(Datacite.agentIdentifier))
+                .containsOnly(null, "123456789", "0000-1111-2222-3333");
 
         assertThat(statements)
-            .map(getPropertyAsString(Datacite.agentIdentifierScheme))
-            .containsOnly(null, "ORCID", "VIAF");
+                .map(getPropertyAsString(Datacite.agentIdentifierScheme))
+                .containsOnly(null, "ORCID", "VIAF");
     }
 
     // CIT009, CIT011, CIT012
@@ -126,28 +114,28 @@ public class OaiOreConverterIntegrationTest {
     void descriptions() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.dsDescription, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.dsDescription, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.dsDescriptionValue))
-            .containsOnly("This bags contains one or more examples of each mapping rule.",
-                "Even more descriptions",
-                "some issuing date",
-                "some validation date",
-                "A second description",
-                "some submission date",
-                "some copyright date",
-                "some modified date",
-                "some date",
-                "some acceptance date",
-                "some coverage description",
-                "DCTERMS alt title 1", "DCTERMS title 2", "DCTERMS alt title 2"
-            );
+                .map(getPropertyAsString(DVCitation.dsDescriptionValue))
+                .containsOnly("This bags contains one or more examples of each mapping rule.",
+                        "Even more descriptions",
+                        "some issuing date",
+                        "some validation date",
+                        "A second description",
+                        "some submission date",
+                        "some copyright date",
+                        "some modified date",
+                        "some date",
+                        "some acceptance date",
+                        "some coverage description",
+                        "DCTERMS alt title 1", "DCTERMS title 2", "DCTERMS alt title 2"
+                );
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.dsDescriptionDate))
-            .containsOnlyNulls();
+                .map(getPropertyAsString(DVCitation.dsDescriptionDate))
+                .containsOnlyNulls();
     }
 
     // CIT013
@@ -155,14 +143,14 @@ public class OaiOreConverterIntegrationTest {
     void subjects() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DCTerms.subject, (RDFNode) null)
+                new SimpleSelector(obj.resource, DCTerms.subject, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("Chemistry",
-                "Computer and Information Science");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("Chemistry",
+                        "Computer and Information Science");
     }
 
     // CIT014, CIT015, CIT016
@@ -170,24 +158,24 @@ public class OaiOreConverterIntegrationTest {
     void keywords() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.keyword, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.keyword, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.keywordValue))
-            .containsOnly("Broader Match: buttons (fasteners)",
-                "Old School Latin",
-                "keyword1",
-                "non-military uniform button",
-                "keyword2");
+                .map(getPropertyAsString(DVCitation.keywordValue))
+                .containsOnly("Broader Match: buttons (fasteners)",
+                        "Old School Latin",
+                        "keyword1",
+                        "non-military uniform button",
+                        "keyword2");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.keywordVocabulary))
-            .containsOnly(null, "PAN thesaurus ideaaltypes", "Art and Architecture Thesaurus");
+                .map(getPropertyAsString(DVCitation.keywordVocabulary))
+                .containsOnly(null, "PAN thesaurus ideaaltypes", "Art and Architecture Thesaurus");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.keywordVocabularyURI))
-            .containsOnly(null, "https://data.cultureelerfgoed.nl/term/id/pan/PAN", "http://vocab.getty.edu/aat/");
+                .map(getPropertyAsString(DVCitation.keywordVocabularyURI))
+                .containsOnly(null, "https://data.cultureelerfgoed.nl/term/id/pan/PAN", "http://vocab.getty.edu/aat/");
     }
 
     // CIT017
@@ -195,16 +183,16 @@ public class OaiOreConverterIntegrationTest {
     void publications() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DCTerms.isReferencedBy, (RDFNode) null)
+                new SimpleSelector(obj.resource, DCTerms.isReferencedBy, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(Datacite.resourceIdentifier))
-            .containsOnly("0317-8471");
+                .map(getPropertyAsString(Datacite.resourceIdentifier))
+                .containsOnly("0317-8471");
 
         assertThat(statements)
-            .map(getPropertyAsString(Datacite.resourceIdentifierScheme))
-            .containsOnly("ISSN");
+                .map(getPropertyAsString(Datacite.resourceIdentifierScheme))
+                .containsOnly("ISSN");
     }
 
     // CIT018
@@ -212,13 +200,13 @@ public class OaiOreConverterIntegrationTest {
     void languages() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DCTerms.language, (RDFNode) null)
+                new SimpleSelector(obj.resource, DCTerms.language, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("Basque", "Kalaallisut, Greenlandic", "Western Frisian");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("Basque", "Kalaallisut, Greenlandic", "Western Frisian");
     }
 
     // CIT019
@@ -226,13 +214,13 @@ public class OaiOreConverterIntegrationTest {
     void productionDates() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.productionDate, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.productionDate, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("2015-09-09");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("2015-09-09");
     }
 
     // CIT020, CIT021
@@ -240,16 +228,16 @@ public class OaiOreConverterIntegrationTest {
     void contributors() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DCTerms.contributor, (RDFNode) null)
+                new SimpleSelector(obj.resource, DCTerms.contributor, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.contributorName))
-            .containsOnly("CON van Tributor (Contributing Org)", "Contributing Org");
+                .map(getPropertyAsString(DVCitation.contributorName))
+                .containsOnly("CON van Tributor (Contributing Org)", "Contributing Org");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.contributorType))
-            .containsOnly("ProjectMember", "Sponsor");
+                .map(getPropertyAsString(DVCitation.contributorType))
+                .containsOnly("ProjectMember", "Sponsor");
     }
 
     // TODO CIT022 is still under revision, fix later
@@ -258,16 +246,16 @@ public class OaiOreConverterIntegrationTest {
     void grantNumbers() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, SchemaDO.sponsor, (RDFNode) null)
+                new SimpleSelector(obj.resource, SchemaDO.sponsor, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.grantNumberAgency))
-            .containsOnly("NWO");
+                .map(getPropertyAsString(DVCitation.grantNumberAgency))
+                .containsOnly("NWO");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.grantNumberValue))
-            .containsOnly("54321");
+                .map(getPropertyAsString(DVCitation.grantNumberValue))
+                .containsOnly("54321");
     }
 
     // CIT024
@@ -275,12 +263,12 @@ public class OaiOreConverterIntegrationTest {
     void distributor() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.distributor, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.distributor, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.distributorName))
-            .containsOnly("D. I. Stributor");
+                .map(getPropertyAsString(DVCitation.distributorName))
+                .containsOnly("D. I. Stributor");
     }
 
     // CIT025
@@ -288,13 +276,13 @@ public class OaiOreConverterIntegrationTest {
     void distributionDate() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.distributionDate, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.distributionDate, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("2015-09-09");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("2015-09-09");
     }
 
     // CIT026
@@ -302,16 +290,16 @@ public class OaiOreConverterIntegrationTest {
     void dateOfCollection() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCitation.dateOfCollection, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCitation.dateOfCollection, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.dateOfCollectionStart))
-            .containsOnly("2015-06-01");
+                .map(getPropertyAsString(DVCitation.dateOfCollectionStart))
+                .containsOnly("2015-06-01");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCitation.dateOfCollectionEnd))
-            .containsOnly("2016-12-31");
+                .map(getPropertyAsString(DVCitation.dateOfCollectionEnd))
+                .containsOnly("2016-12-31");
     }
 
     // CIT028
@@ -319,16 +307,16 @@ public class OaiOreConverterIntegrationTest {
     void wasDerivedFrom() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, PROV.wasDerivedFrom, (RDFNode) null)
+                new SimpleSelector(obj.resource, PROV.wasDerivedFrom, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("Sous an ayisyen", "Source 3", "Source 2");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("Sous an ayisyen", "Source 3", "Source 2");
     }
 
-//    // DSET001
+    //    // DSET001
 //    @Test
 //    void doi() throws Exception {
 //        var obj = loadModel();
@@ -347,14 +335,14 @@ public class OaiOreConverterIntegrationTest {
     void available() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DCTerms.available, (RDFNode) null)
+                new SimpleSelector(obj.resource, DCTerms.available, (RDFNode) null)
         ).toList();
 
         // because date is in the past
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .isEmpty();
+                .extracting("object")
+                .map(Object::toString)
+                .isEmpty();
     }
 
     // RIG001
@@ -362,13 +350,13 @@ public class OaiOreConverterIntegrationTest {
     void dansRightHolder() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansRights.dansRightsHolder, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansRights.dansRightsHolder, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("I Lastname");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("I Lastname");
     }
 
     // RIG002
@@ -376,13 +364,13 @@ public class OaiOreConverterIntegrationTest {
     void dansPersonalDataPresent() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansRights.dansPersonalDataPresent, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansRights.dansPersonalDataPresent, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("Yes");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("Yes");
     }
 
     // RIG003
@@ -390,13 +378,13 @@ public class OaiOreConverterIntegrationTest {
     void dansMetadataLanguage() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansRights.dansMetadataLanguage, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansRights.dansMetadataLanguage, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("Georgian", "Haitian, Haitian Creole", "English");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("Georgian", "Haitian, Haitian Creole", "English");
     }
 
     // REL001
@@ -404,13 +392,13 @@ public class OaiOreConverterIntegrationTest {
     void dansAudience() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansRel.dansAudience, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansRel.dansAudience, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("D16500", "D16300", "D16200", "D16400", "D16100", "E16000", "D13400");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("D16500", "D16300", "D16200", "D16400", "D16100", "E16000", "D13400");
     }
 
     // REL002
@@ -418,13 +406,13 @@ public class OaiOreConverterIntegrationTest {
     void dansCollection() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansRel.dansCollection, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansRel.dansCollection, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("https://vocabularies.dans.knaw.nl/collections/ssh/ce21b6fb-4283-4194-9369-b3ff4c3d76e7");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("https://vocabularies.dans.knaw.nl/collections/ssh/ce21b6fb-4283-4194-9369-b3ff4c3d76e7");
     }
 
     // REL003
@@ -432,65 +420,65 @@ public class OaiOreConverterIntegrationTest {
     void dansRelation() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansRel.dansRelation, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansRel.dansRelation, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DansRel.dansRelationType))
-            .map(Object::toString)
-            .containsOnly(
-                "is_required_by",
-                "has_version",
-                "requires",
-                "references",
-                "is_format_of",
-                "is_version_of",
-                "is_referenced_by",
-                "relation",
-                "replaces",
-                "has_part",
-                "conforms_to",
-                "is_part_of",
-                "has_format"
-            );
+                .map(getPropertyAsString(DansRel.dansRelationType))
+                .map(Object::toString)
+                .containsOnly(
+                        "is_required_by",
+                        "has_version",
+                        "requires",
+                        "references",
+                        "is_format_of",
+                        "is_version_of",
+                        "is_referenced_by",
+                        "relation",
+                        "replaces",
+                        "has_part",
+                        "conforms_to",
+                        "is_part_of",
+                        "has_format"
+                );
 
         assertThat(statements)
-            .map(getPropertyAsString(DansRel.dansRelationText))
-            .map(Object::toString)
-            .containsOnly(
-                "Test requires",
-                "Test is required by",
-                "Test has version",
-                "Test conforms to",
-                "Test has format",
-                "Test is part of",
-                "Test references",
-                "Test is referenced by",
-                "Test replaces",
-                "Test relation",
-                "Test has part",
-                "Test is format of",
-                "Test is version of"
-            );
+                .map(getPropertyAsString(DansRel.dansRelationText))
+                .map(Object::toString)
+                .containsOnly(
+                        "Test requires",
+                        "Test is required by",
+                        "Test has version",
+                        "Test conforms to",
+                        "Test has format",
+                        "Test is part of",
+                        "Test references",
+                        "Test is referenced by",
+                        "Test replaces",
+                        "Test relation",
+                        "Test has part",
+                        "Test is format of",
+                        "Test is version of"
+                );
 
         assertThat(statements)
-            .map(getPropertyAsString(DansRel.dansRelationURI))
-            .map(Object::toString)
-            .containsOnly(
-                "https://example.com/isReferencedBy",
-                "https://example.com/replaces",
-                "https://example.com/isRequiredBy",
-                "https://example.com/isVersionOf",
-                "https://example.com/hasVersion",
-                "https://example.com/hasFormat",
-                "https://example.com/conformsTo",
-                "https://example.com/requires",
-                "https://example.com/relation",
-                "https://example.com/isPartOf",
-                "https://example.com/hasPart",
-                "https://example.com/references",
-                "https://example.com/isFormatOf"
-            );
+                .map(getPropertyAsString(DansRel.dansRelationURI))
+                .map(Object::toString)
+                .containsOnly(
+                        "https://example.com/isReferencedBy",
+                        "https://example.com/replaces",
+                        "https://example.com/isRequiredBy",
+                        "https://example.com/isVersionOf",
+                        "https://example.com/hasVersion",
+                        "https://example.com/hasFormat",
+                        "https://example.com/conformsTo",
+                        "https://example.com/requires",
+                        "https://example.com/relation",
+                        "https://example.com/isPartOf",
+                        "https://example.com/hasPart",
+                        "https://example.com/references",
+                        "https://example.com/isFormatOf"
+                );
     }
 
     // TS001
@@ -498,13 +486,13 @@ public class OaiOreConverterIntegrationTest {
     void temporalCoverage() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansTS.dansTemporalCoverage, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansTS.dansTemporalCoverage, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("Het Romeinse Rijk", "De Oudheid");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("Het Romeinse Rijk", "De Oudheid");
     }
 
     // TS006
@@ -512,13 +500,13 @@ public class OaiOreConverterIntegrationTest {
     void spatialCoverageControlled() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansTS.dansSpatialCoverageControlled, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansTS.dansSpatialCoverageControlled, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("South Africa", "Japan");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("South Africa", "Japan");
     }
 
     // TS007
@@ -526,13 +514,13 @@ public class OaiOreConverterIntegrationTest {
     void spatialCoverageText() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansTS.dansSpatialCoverageText, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansTS.dansSpatialCoverageText, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("Roman Empire");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("Roman Empire");
     }
 
     // @VLT003
@@ -540,13 +528,13 @@ public class OaiOreConverterIntegrationTest {
     void dansBagId() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansDVMetadata.dansBagId, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansDVMetadata.dansBagId, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("urn:uuid:0b9bb5ee-3187-4387-bb39-2c09536c79f7");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("urn:uuid:0b9bb5ee-3187-4387-bb39-2c09536c79f7");
     }
 
     // VLT004
@@ -554,13 +542,13 @@ public class OaiOreConverterIntegrationTest {
     void dansNbn() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansDVMetadata.dansNbn, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansDVMetadata.dansNbn, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("urn:nbn:nl:ui:13-4c-1a2b");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("urn:nbn:nl:ui:13-4c-1a2b");
     }
 
     // VLT005
@@ -568,13 +556,13 @@ public class OaiOreConverterIntegrationTest {
     void dansOtherId() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansDVMetadata.dansOtherId, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansDVMetadata.dansOtherId, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("10.17026/dans-z6y-5y2e");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("10.17026/dans-z6y-5y2e");
     }
 
     // VLT007
@@ -583,13 +571,13 @@ public class OaiOreConverterIntegrationTest {
     void dansSwordToken() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DansDVMetadata.dansSwordToken, (RDFNode) null)
+                new SimpleSelector(obj.resource, DansDVMetadata.dansSwordToken, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("1.1");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("1.1");
     }
 
     // TRM001
@@ -597,13 +585,13 @@ public class OaiOreConverterIntegrationTest {
     void license() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, SchemaDO.license, (RDFNode) null)
+                new SimpleSelector(obj.resource, SchemaDO.license, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("http://opensource.org/licenses/MIT");
+                .extracting("object")
+                .map(Object::toString)
+                .containsOnly("http://opensource.org/licenses/MIT");
     }
 
     // TRM002 through TRM006
@@ -611,16 +599,16 @@ public class OaiOreConverterIntegrationTest {
     void fileTermsOfAccess() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, DVCore.fileTermsOfAccess, (RDFNode) null)
+                new SimpleSelector(obj.resource, DVCore.fileTermsOfAccess, (RDFNode) null)
         ).toList();
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCore.fileRequestAccess))
-            .containsOnly("false");
+                .map(getPropertyAsString(DVCore.fileRequestAccess))
+                .containsOnly("No");
 
         assertThat(statements)
-            .map(getPropertyAsString(DVCore.termsOfAccess))
-            .containsOnly("Restricted files accessible under the following conditions: ...");
+                .map(getPropertyAsString(DVCore.termsOfAccess))
+                .containsOnly("Restricted files accessible under the following conditions: ...");
     }
 
     private ThrowingExtractor<Statement, String, RuntimeException> getPropertyAsString(Property property) {
@@ -637,7 +625,7 @@ public class OaiOreConverterIntegrationTest {
 
     private ModelObject loadModel() throws Exception {
         var countryResolver = new FileCountryResolver(
-            Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath())
+                Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath())
         );
         var depositManager = new SimpleCommonDepositManager(countryResolver);
         var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
@@ -646,10 +634,10 @@ public class OaiOreConverterIntegrationTest {
         var model = new OaiOreConverter().convert(deposit);
 
         return ModelObject.builder()
-            .deposit(deposit)
-            .resource(model.getResource(deposit.getNbn()))
-            .model(model)
-            .build();
+                .deposit(deposit)
+                .resource(model.getResource(deposit.getNbn()))
+                .model(model)
+                .build();
     }
 
     @Builder

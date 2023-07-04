@@ -53,8 +53,7 @@ public class DansBagValidatorHealthCheck extends HealthCheck {
                         "Connection to Validate DANS Bag Service could not be established. Service responded with %s",
                         response.getStatusInfo()));
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             return Result.unhealthy("Dans Bag Validator is not available: %s", e.getMessage());
         }
 

@@ -31,8 +31,7 @@ public class StdoutBagOutputWriter implements BagOutputWriter {
             inputStream.read(bytes);
             System.out.write(bytes);
             System.out.println("...");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -32,16 +32,16 @@ public class XmlReader {
         var factory = getFactory();
 
         return factory
-            .newDocumentBuilder()
-            .parse(path.toFile());
+                .newDocumentBuilder()
+                .parse(path.toFile());
     }
 
     public Document readXmlString(String str) throws ParserConfigurationException, IOException, SAXException {
         var factory = getFactory();
 
         return factory
-            .newDocumentBuilder()
-            .parse(new InputSource(new StringReader(str)));
+                .newDocumentBuilder()
+                .parse(new InputSource(new StringReader(str)));
     }
 
     DocumentBuilderFactory getFactory() throws ParserConfigurationException {

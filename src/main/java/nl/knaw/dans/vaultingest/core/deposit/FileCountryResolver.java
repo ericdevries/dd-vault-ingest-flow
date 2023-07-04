@@ -30,11 +30,11 @@ public class FileCountryResolver implements CountryResolver {
 
     public FileCountryResolver(Path countryTermsFile) throws IOException {
         this.countries = Files.readAllLines(countryTermsFile, StandardCharsets.UTF_8)
-            .stream()
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .map(String::toLowerCase)
-            .collect(Collectors.toSet());
+                .stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
     }
 
     @Override

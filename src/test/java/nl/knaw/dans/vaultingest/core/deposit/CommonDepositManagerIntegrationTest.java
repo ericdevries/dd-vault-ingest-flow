@@ -34,9 +34,9 @@ class CommonDepositManagerIntegrationTest {
         var path = Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath());
         var countryResolver = new FileCountryResolver(path);
         var manager = new DepositManager(
-            new XmlReader(),
-            new TestLanguageResolver(),
-            countryResolver
+                new XmlReader(),
+                new TestLanguageResolver(),
+                countryResolver
         );
 
         var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
@@ -51,9 +51,9 @@ class CommonDepositManagerIntegrationTest {
         var countryTerms = Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath());
         var countryResolver = new FileCountryResolver(countryTerms);
         var manager = new DepositManager(
-            new XmlReader(),
-            new TestLanguageResolver(),
-            countryResolver
+                new XmlReader(),
+                new TestLanguageResolver(),
+                countryResolver
         );
 
         var s = getClass().getResource("/input/0b9bb5ee-3187-4387-bb39-2c09536c79f7");
@@ -68,12 +68,12 @@ class CommonDepositManagerIntegrationTest {
 
         // check that the file paths are the original ones, not the renamed ones
         assertThat(files).extracting("path").map(Object::toString)
-            .containsOnly(
-                "data/random images/image01.png",
-                "data/random images/image02.jpeg",
-                "data/random images/image03.jpeg",
-                "data/a/deeper/path/With some file.txt"
-            );
+                .containsOnly(
+                        "data/random images/image01.png",
+                        "data/random images/image02.jpeg",
+                        "data/random images/image03.jpeg",
+                        "data/a/deeper/path/With some file.txt"
+                );
 
         // check that the files are actually readable
         for (var file : files) {

@@ -36,8 +36,8 @@ class CommonDepositBagIntegrationTest {
         var metadataFiles = depositBag.getMetadataFiles();
 
         assertThat(metadataFiles).containsOnly(
-            Path.of("metadata/files.xml"),
-            Path.of("metadata/dataset.xml")
+                Path.of("metadata/files.xml"),
+                Path.of("metadata/dataset.xml")
         );
     }
 

@@ -44,8 +44,7 @@ public class CsvLanguageResolver implements LanguageResolver {
 
         if (language.length() == 2) {
             return iso6391.get(language);
-        }
-        else if (language.length() == 3) {
+        } else if (language.length() == 3) {
             return iso6392.get(language);
         }
 
@@ -63,8 +62,7 @@ public class CsvLanguageResolver implements LanguageResolver {
 
                 return result;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Unable to load csv file from path {}", path);
             throw new IOException("Unable to load csv file from path " + path, e);
         }

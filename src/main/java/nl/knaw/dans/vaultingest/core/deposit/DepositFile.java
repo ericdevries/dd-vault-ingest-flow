@@ -18,8 +18,6 @@ package nl.knaw.dans.vaultingest.core.deposit;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
-import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.w3c.dom.Node;
 
 import java.io.BufferedInputStream;
@@ -37,30 +35,19 @@ public class DepositFile {
     private final String id;
     private final Node filesXmlNode;
     private final Node ddmNode;
-
     private final Path physicalPath;
     private final Map<ManifestAlgorithm, String> checksums;
-    // TODO embargoes
+
+    public Node getDdmNode() {
+        return ddmNode;
+    }
+
+    public Node getFilesXmlNode() {
+        return filesXmlNode;
+    }
 
     public String getId() {
         return id;
-    }
-
-    public boolean isRestricted() {
-        var accessibleToRights = getAccessibleToRights();
-        var accessRights = getAccessRights();
-
-        if (accessibleToRights != null) {
-            // if ANONYMOUS then false else true
-            return !"ANONYMOUS".equals(accessibleToRights);
-        }
-
-        if (accessRights != null) {
-            // if OPEN_ACCESS then false else true
-            return !"OPEN_ACCESS".equals(accessRights);
-        }
-
-        return false;
     }
 
     public Path getDirectoryLabel() {
@@ -81,11 +68,6 @@ public class DepositFile {
         return getFilename();
     }
 
-    public String getDescription() {
-        return XPathEvaluator.strings(filesXmlNode, "dcterms:description")
-            .findFirst().orElse(null);
-    }
-
     public InputStream openInputStream() throws IOException {
         return new BufferedInputStream(new FileInputStream(physicalPath.toFile()));
     }
@@ -96,18 +78,6 @@ public class DepositFile {
 
     private Path getFilePath() {
         return Path.of(getFilePathAttribute());//.substring("data/".length()));
-    }
-
-    public String getAccessibleToRights() {
-        return XPathEvaluator.strings(filesXmlNode, "files:accessibleToRights")
-            .findFirst()
-            .orElse(null);
-    }
-
-    private String getAccessRights() {
-        return XPathEvaluator.strings(ddmNode, "/ddm:DDM/ddm:profile/ddm:accessRights")
-            .findFirst()
-            .orElse(null);
     }
 
     public Map<ManifestAlgorithm, String> getChecksums() {

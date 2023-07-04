@@ -16,12 +16,12 @@
 package nl.knaw.dans.vaultingest.core.rdabag;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.DataciteConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.PidMappingConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
-import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreSerializer;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.PidMappingSerializer;
+import nl.knaw.dans.vaultingest.core.datacite.DataciteConverter;
+import nl.knaw.dans.vaultingest.core.datacite.DataciteSerializer;
+import nl.knaw.dans.vaultingest.core.oaiore.OaiOreConverter;
+import nl.knaw.dans.vaultingest.core.oaiore.OaiOreSerializer;
+import nl.knaw.dans.vaultingest.core.pidmapping.PidMappingConverter;
+import nl.knaw.dans.vaultingest.core.pidmapping.PidMappingSerializer;
 
 public class DefaultRdaBagWriterFactory implements RdaBagWriterFactory {
 
@@ -45,12 +45,12 @@ public class DefaultRdaBagWriterFactory implements RdaBagWriterFactory {
     @Override
     public RdaBagWriter createRdaBagWriter() {
         return new RdaBagWriter(
-            dataciteSerializer,
-            pidMappingSerializer,
-            oaiOreSerializer,
-            dataciteConverter,
-            pidMappingConverter,
-            oaiOreConverter
+                dataciteSerializer,
+                pidMappingSerializer,
+                oaiOreSerializer,
+                dataciteConverter,
+                pidMappingConverter,
+                oaiOreConverter
         );
     }
 }

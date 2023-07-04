@@ -128,9 +128,9 @@ public class Deposit {
 
     public String getDoi() {
         var prefix = ddm.lookupPrefix(XmlNamespaces.NAMESPACE_ID_TYPE);
-        var expr = new String[] {
-            String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix),
-            String.format("/ddm:DDM/ddm:dcmiMetadata/dc:identifier[@xsi:type='%s:DOI']", prefix)
+        var expr = new String[]{
+                String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix),
+                String.format("/ddm:DDM/ddm:dcmiMetadata/dc:identifier[@xsi:type='%s:DOI']", prefix)
         };
 
         var dois = XPathEvaluator.strings(ddm, expr).collect(Collectors.toList());

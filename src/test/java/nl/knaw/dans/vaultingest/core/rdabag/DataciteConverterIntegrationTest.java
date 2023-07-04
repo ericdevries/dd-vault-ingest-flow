@@ -15,10 +15,10 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag;
 
+import nl.knaw.dans.vaultingest.core.datacite.DataciteConverter;
+import nl.knaw.dans.vaultingest.core.datacite.DataciteSerializer;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.DataciteConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
@@ -36,8 +36,8 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:identifier")
-            .collect(Collectors.toList()))
-            .containsOnly("10.17026/dans-z6y-5y2e");
+                .collect(Collectors.toList()))
+                .containsOnly("10.17026/dans-z6y-5y2e");
     }
 
     @Test
@@ -45,20 +45,20 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:creatorName")
-            .collect(Collectors.toList()))
-            .containsOnly("Unformatted Creator", "I Lastname", "Creator Organization");
+                .collect(Collectors.toList()))
+                .containsOnly("Unformatted Creator", "I Lastname", "Creator Organization");
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:affiliation")
-            .collect(Collectors.toList()))
-            .containsOnly("(Example Org)");
+                .collect(Collectors.toList()))
+                .containsOnly("(Example Org)");
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:nameIdentifier")
-            .collect(Collectors.toList()))
-            .containsOnly("0000-1111-2222-3333", "123456789");
+                .collect(Collectors.toList()))
+                .containsOnly("0000-1111-2222-3333", "123456789");
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:creators/datacite:creator/datacite:nameIdentifier/@nameIdentifierScheme")
-            .collect(Collectors.toList()))
-            .containsOnly("ORCID", "VIAF");
+                .collect(Collectors.toList()))
+                .containsOnly("ORCID", "VIAF");
     }
 
     @Test
@@ -66,8 +66,8 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:titles/datacite:title")
-            .collect(Collectors.toList()))
-            .containsOnly("A bag containing examples for each mapping rule");
+                .collect(Collectors.toList()))
+                .containsOnly("A bag containing examples for each mapping rule");
     }
 
     @Test
@@ -75,8 +75,8 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:resourceType/@resourceTypeGeneral")
-            .collect(Collectors.toList()))
-            .containsOnly("Dataset");
+                .collect(Collectors.toList()))
+                .containsOnly("Dataset");
     }
 
     @Test
@@ -84,8 +84,8 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:publisher")
-            .collect(Collectors.toList()))
-            .containsOnly("DANS");
+                .collect(Collectors.toList()))
+                .containsOnly("DANS");
     }
 
 
@@ -94,8 +94,8 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:publicationYear")
-            .collect(Collectors.toList()))
-            .containsOnly("2015");
+                .collect(Collectors.toList()))
+                .containsOnly("2015");
     }
 
     @Test
@@ -103,12 +103,12 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:descriptions/datacite:description")
-            .collect(Collectors.toList()))
-            .containsOnly("This bags contains one or more examples of each mapping rule.");
+                .collect(Collectors.toList()))
+                .containsOnly("This bags contains one or more examples of each mapping rule.");
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:descriptions/datacite:description/@descriptionType")
-            .collect(Collectors.toList()))
-            .containsOnly("Abstract");
+                .collect(Collectors.toList()))
+                .containsOnly("Abstract");
     }
 
     @Test
@@ -116,22 +116,22 @@ class DataciteConverterIntegrationTest {
         var doc = loadResource();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/datacite:contributorName")
-            .collect(Collectors.toList()))
-            .containsOnly("CON van Tributor (Contributing Org)", "Contributing Org");
+                .collect(Collectors.toList()))
+                .containsOnly("CON van Tributor (Contributing Org)", "Contributing Org");
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/datacite:affiliation")
-            .collect(Collectors.toList()))
-            .isEmpty();
+                .collect(Collectors.toList()))
+                .isEmpty();
 
         assertThat(XPathEvaluator.strings(doc, "//datacite:contributors/datacite:contributor/@contributorType")
-            .collect(Collectors.toList()))
-            .containsOnly("ProjectMember", "Sponsor");
+                .collect(Collectors.toList()))
+                .containsOnly("ProjectMember", "Sponsor");
     }
 
     // serialize to XML, then convert to Node, so we can use XPath to test the output
     private Document loadResource() throws Exception {
         var countryResolver = new FileCountryResolver(
-            Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath())
+                Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath())
         );
 
         var depositManager = new SimpleCommonDepositManager(countryResolver);

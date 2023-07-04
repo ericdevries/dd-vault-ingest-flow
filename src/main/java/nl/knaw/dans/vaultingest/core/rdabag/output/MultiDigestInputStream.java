@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.output;
 
-import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
+import nl.knaw.dans.vaultingest.core.deposit.ManifestAlgorithm;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +33,7 @@ public class MultiDigestInputStream extends InputStream {
 
         var input = inputStream;
 
-        for (var alg: algorithms) {
+        for (var alg : algorithms) {
             var digestInputStream = new DigestInputStream(input, alg.getMessageDigestInstance());
             digestInputStreams.put(alg, digestInputStream);
             input = digestInputStream;
@@ -45,7 +45,7 @@ public class MultiDigestInputStream extends InputStream {
     public Map<ManifestAlgorithm, String> getChecksums() {
         var result = new HashMap<ManifestAlgorithm, String>();
 
-        for (var entry: digestInputStreams.entrySet()) {
+        for (var entry : digestInputStreams.entrySet()) {
             result.put(entry.getKey(), bytesToHex(entry.getValue().getMessageDigest().digest()));
         }
 
@@ -54,7 +54,7 @@ public class MultiDigestInputStream extends InputStream {
 
     private String bytesToHex(byte[] digest) {
         var sb = new StringBuilder();
-        for (var b: digest) {
+        for (var b : digest) {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
@@ -77,7 +77,7 @@ public class MultiDigestInputStream extends InputStream {
 
         this.inputStream.close();
 
-        for (var value: digestInputStreams.values()) {
+        for (var value : digestInputStreams.values()) {
             value.close();
         }
     }

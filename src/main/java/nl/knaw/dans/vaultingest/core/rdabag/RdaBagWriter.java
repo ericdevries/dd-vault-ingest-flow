@@ -16,17 +16,17 @@
 package nl.knaw.dans.vaultingest.core.rdabag;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.vaultingest.core.datacite.DataciteConverter;
+import nl.knaw.dans.vaultingest.core.datacite.DataciteSerializer;
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositFile;
-import nl.knaw.dans.vaultingest.core.domain.ManifestAlgorithm;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.DataciteConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.PidMappingConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.oaiore.OaiOreSerializer;
+import nl.knaw.dans.vaultingest.core.deposit.ManifestAlgorithm;
+import nl.knaw.dans.vaultingest.core.oaiore.OaiOreConverter;
+import nl.knaw.dans.vaultingest.core.oaiore.OaiOreSerializer;
+import nl.knaw.dans.vaultingest.core.pidmapping.PidMappingConverter;
+import nl.knaw.dans.vaultingest.core.pidmapping.PidMappingSerializer;
 import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.output.MultiDigestInputStream;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.DataciteSerializer;
-import nl.knaw.dans.vaultingest.core.rdabag.serializer.PidMappingSerializer;
 import org.apache.commons.io.output.NullOutputStream;
 
 import java.io.ByteArrayInputStream;
@@ -54,12 +54,12 @@ public class RdaBagWriter {
     private final List<ManifestAlgorithm> requiredAlgorithms = List.of(ManifestAlgorithm.SHA1, ManifestAlgorithm.MD5);
 
     RdaBagWriter(
-        DataciteSerializer dataciteSerializer,
-        PidMappingSerializer pidMappingSerializer,
-        OaiOreSerializer oaiOreSerializer,
-        DataciteConverter dataciteConverter,
-        PidMappingConverter pidMappingConverter,
-        OaiOreConverter oaiOreConverter
+            DataciteSerializer dataciteSerializer,
+            PidMappingSerializer pidMappingSerializer,
+            OaiOreSerializer oaiOreSerializer,
+            DataciteConverter dataciteConverter,
+            PidMappingConverter pidMappingConverter,
+            OaiOreConverter oaiOreConverter
     ) {
         this.dataciteSerializer = dataciteSerializer;
         this.pidMappingSerializer = pidMappingSerializer;
@@ -106,8 +106,8 @@ public class RdaBagWriter {
             var targetPath = file.getPath();
             var existingChecksums = file.getChecksums();
             var checksumsToCalculate = requiredAlgorithms.stream()
-                .filter(algorithm -> !existingChecksums.containsKey(algorithm))
-                .collect(Collectors.toList());
+                    .filter(algorithm -> !existingChecksums.containsKey(algorithm))
+                    .collect(Collectors.toList());
 
             var allChecksums = new HashMap<>(existingChecksums);
             log.debug("Checksums already present: {}", existingChecksums);
@@ -206,9 +206,9 @@ public class RdaBagWriter {
         var pidMappingsSerialized = pidMappingSerializer.serialize(pidMappings);
 
         checksummedWriteToOutput(
-            pidMappingsSerialized,
-            Path.of("metadata/pid-mapping.txt"),
-            outputWriter
+                pidMappingsSerialized,
+                Path.of("metadata/pid-mapping.txt"),
+                outputWriter
         );
     }
 

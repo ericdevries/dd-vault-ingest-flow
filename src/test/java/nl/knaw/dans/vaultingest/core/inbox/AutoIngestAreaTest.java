@@ -16,7 +16,7 @@
 package nl.knaw.dans.vaultingest.core.inbox;
 
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
-import nl.knaw.dans.vaultingest.core.domain.Outbox;
+import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -30,11 +30,11 @@ class AutoIngestAreaTest {
         var outbox = Mockito.mock(Outbox.class);
 
         var area = new AutoIngestArea(
-            // just run it in the current thread for testing purposes
-            Runnable::run,
-            callback -> callback.onItemCreated(Path.of("fake/path")),
-            process,
-            outbox
+                // just run it in the current thread for testing purposes
+                Runnable::run,
+                callback -> callback.onItemCreated(Path.of("fake/path")),
+                process,
+                outbox
         );
 
         area.start();

@@ -33,11 +33,11 @@ public class TestCountryResolver implements CountryResolver {
         var path = Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath());
 
         this.countries = Files.readAllLines(path, StandardCharsets.UTF_8)
-            .stream()
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .map(String::toLowerCase)
-            .collect(Collectors.toSet());
+                .stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
     }
 
     @Override
