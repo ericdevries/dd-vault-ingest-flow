@@ -6,10 +6,10 @@
         xmlns:dcterms="http://purl.org/dc/terms/"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:id-type="http://easy.dans.knaw.nl/schemas/vocab/identifier-type/">
-<!--        xsi:schemaLocation="-->
-<!--        http://schemas.dans.knaw.nl/dataset/ddm-v2/ -->
-<!--        file:///Users/linda//git/service/data-station/dans-schema/lib/src/main/resources/md/ddm/v2/ddm.xsd-->
-<!--        "-->
+    <!--        xsi:schemaLocation="-->
+    <!--        http://schemas.dans.knaw.nl/dataset/ddm-v2/ -->
+    <!--        file:///Users/linda//git/service/data-station/dans-schema/lib/src/main/resources/md/ddm/v2/ddm.xsd-->
+    <!--        "-->
 
     <ddm:profile>
         <!-- CIT001 -->

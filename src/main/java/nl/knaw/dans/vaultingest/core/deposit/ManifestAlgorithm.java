@@ -45,7 +45,8 @@ public enum ManifestAlgorithm {
         try {
             // MD5 is not required to be implemented
             return MessageDigest.getInstance(name);
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Algorithm " + name + " is not available", e);
         }
     }

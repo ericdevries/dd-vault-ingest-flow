@@ -39,8 +39,8 @@ public class DansBagValidatorHealthCheck extends HealthCheck {
         log.debug("Checking that Dans Bag Validator is available");
 
         try (var response = httpClient.target(pingUrl)
-                .request(MediaType.TEXT_PLAIN)
-                .get()) {
+            .request(MediaType.TEXT_PLAIN)
+            .get()) {
 
             if (response.getStatus() != 200) {
                 var content = response.readEntity(String.class);
@@ -50,10 +50,11 @@ public class DansBagValidatorHealthCheck extends HealthCheck {
                 }
 
                 throw new RuntimeException(String.format(
-                        "Connection to Validate DANS Bag Service could not be established. Service responded with %s",
-                        response.getStatusInfo()));
+                    "Connection to Validate DANS Bag Service could not be established. Service responded with %s",
+                    response.getStatusInfo()));
             }
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             return Result.unhealthy("Dans Bag Validator is not available: %s", e.getMessage());
         }
 

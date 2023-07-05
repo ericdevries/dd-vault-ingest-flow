@@ -36,8 +36,8 @@ public final class XPathEvaluator implements XmlNamespaces {
     private static XPath getXpath() {
         if (xpath == null) {
             xpath = XPathFactory
-                    .newInstance()
-                    .newXPath();
+                .newInstance()
+                .newXPath();
 
             final var namespaceMap = new HashMap<String, String>();
             namespaceMap.put("xml", NAMESPACE_XML);
@@ -81,7 +81,8 @@ public final class XPathEvaluator implements XmlNamespaces {
     public static Stream<Node> nodes(Node node, String... expressions) {
         try {
             return xpathsToStream(node, expressions);
-        } catch (XPathExpressionException e) {
+        }
+        catch (XPathExpressionException e) {
             var message = String.join(", ", expressions);
             throw new RuntimeException(String.format("Error evaluating xpath: %s", message), e);
         }
@@ -90,14 +91,15 @@ public final class XPathEvaluator implements XmlNamespaces {
     public static Stream<String> strings(Node node, String... expressions) {
         try {
             return xpathsToStreamOfStrings(node, expressions);
-        } catch (XPathExpressionException e) {
+        }
+        catch (XPathExpressionException e) {
             var message = String.join(", ", expressions);
             throw new RuntimeException(String.format("Error evaluating xpath: %s", message), e);
         }
     }
 
     private static synchronized Object evaluateXpath(Node node, String expr) throws XPathExpressionException {
-//        getXpath().
+        //        getXpath().
         return getXpath().compile(expr).evaluate(node, XPathConstants.NODESET);
     }
 
@@ -105,7 +107,7 @@ public final class XPathEvaluator implements XmlNamespaces {
         var nodes = (NodeList) evaluateXpath(node, expression);
 
         return IntStream.range(0, nodes.getLength())
-                .mapToObj(nodes::item);
+            .mapToObj(nodes::item);
     }
 
     private static Stream<Node> xpathsToStream(Node node, String... expressions) throws XPathExpressionException {

@@ -16,6 +16,7 @@
 package nl.knaw.dans.vaultingest.core.mappings;
 
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import nl.knaw.dans.vaultingest.core.deposit.LanguageResolver;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -24,27 +25,25 @@ import org.w3c.dom.Document;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Languages extends Base {
 
-    // TODO probably extract language resolving from deposit, make it a first class thing
-    public static List<Statement> toRDF(Resource resource, Deposit deposit) {
-        return toLanguages(resource, getLanguages(deposit.getDdm(), deposit));
+    public static List<Statement> toRDF(Resource resource, Deposit deposit, LanguageResolver languageResolver) {
+        return toLanguages(resource, getLanguages(deposit.getDdm(), languageResolver));
     }
 
-    static List<String> getLanguages(Document document, Deposit deposit) {
+    static List<String> getLanguages(Document document, LanguageResolver languageResolver) {
         // CIT018, ddm:language / @code
         return XPathEvaluator.strings(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/ddm:language[" +
-                                "@encodingScheme='ISO639-1' or " +
-                                "@encodingScheme='ISO639-2']/@code"
-                )
-                .map(deposit::resolveLanguage)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:dcmiMetadata/ddm:language[" +
+                    "@encodingScheme='ISO639-1' or " +
+                    "@encodingScheme='ISO639-2']/@code"
+            )
+            .map(languageResolver::resolve)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toLanguages(Resource resource, Collection<String> languages) {

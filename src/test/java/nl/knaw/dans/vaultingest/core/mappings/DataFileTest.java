@@ -29,9 +29,9 @@ class DataFileTest {
     @Test
     void isRestricted_should_return_false_when_no_information_is_available() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         assertFalse(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
     }
@@ -39,9 +39,9 @@ class DataFileTest {
     @Test
     void isRestricted_should_return_false_when_getAccessRights_equals_OPEN_ACCESS() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-                .ddmNode(getDdmNodeWithAccessRights("OPEN_ACCESS"))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights("OPEN_ACCESS"))
+            .build();
 
         assertFalse(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
     }
@@ -49,9 +49,9 @@ class DataFileTest {
     @Test
     void isRestricted_should_return_true_when_getAccessRights_equals_RANDOM_VALUE() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-                .ddmNode(getDdmNodeWithAccessRights("RANDOM_VALUE"))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights("RANDOM_VALUE"))
+            .build();
 
         assertTrue(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
     }
@@ -60,9 +60,9 @@ class DataFileTest {
     void isRestricted_should_return_true_when_getAccessibleToRights_is_empty() throws Exception {
         // TODO verify an empty accessibleToRights qualifies as restricted
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         assertTrue(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
     }
@@ -70,9 +70,9 @@ class DataFileTest {
     @Test
     void isRestricted_should_return_true_when_getAccessibleToRights_equals_ANYTHING() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANYTHING"))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANYTHING"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         assertTrue(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
     }
@@ -80,9 +80,9 @@ class DataFileTest {
     @Test
     void isRestricted_should_return_false_when_getAccessibleToRights_equals_ANONYMOUS() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANONYMOUS"))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANONYMOUS"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         assertFalse(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
     }
@@ -104,14 +104,13 @@ class DataFileTest {
         return node.getDocumentElement();
     }
 
-
     Node getDdmNodeWithAccessRights(String mode) throws Exception {
         var accessRights = mode != null ? "<ddm:accessRights>" + mode + "</ddm:accessRights>" : "";
         var str = "<ddm:DDM xmlns:ddm='http://schemas.dans.knaw.nl/dataset/ddm-v2/'>"
-                + "    <ddm:profile>"
-                + accessRights
-                + "    </ddm:profile>"
-                + "</ddm:DDM>";
+            + "    <ddm:profile>"
+            + accessRights
+            + "    </ddm:profile>"
+            + "</ddm:DDM>";
 
         var node = new XmlReader().readXmlString(str);
         return node.getDocumentElement();

@@ -43,38 +43,21 @@ public class DatasetAuthor implements DatasetRelation {
     public String getDisplayName() {
         // initials + insertions + surname
         return Stream.of(
-                        this.getInitials(),
-                        this.getInsertions(),
-                        this.getSurname()
-                ).filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(" "));
+                this.getInitials(),
+                this.getInsertions(),
+                this.getSurname()
+            ).filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
     }
 
     public String getContributorName() {
         // titles + initials + insertions + surname
         var name = Stream.of(
-                        this.getInitials(),
-                        this.getInsertions(),
-                        this.getSurname()
-                ).filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(" "));
-
-        if (StringUtils.isNotBlank(this.getAffiliation())) {
-            name += " (" + this.getAffiliation() + ")";
-        }
-
-        return name;
-    }
-
-    public String getRightsHolderDisplayName() {
-        // titles + initials + insertions + surname
-        var name = Stream.of(
-                        this.getTitles(),
-                        this.getInitials(),
-                        this.getInsertions(),
-                        this.getSurname()
-                ).filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(" "));
+                this.getInitials(),
+                this.getInsertions(),
+                this.getSurname()
+            ).filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(" "));
 
         if (StringUtils.isNotBlank(this.getAffiliation())) {
             name += " (" + this.getAffiliation() + ")";
@@ -84,10 +67,10 @@ public class DatasetAuthor implements DatasetRelation {
     }
 
     public Identifier getIdentifier() {
-        var schemes = new Identifier[]{
-                this.orcid,
-                this.isni,
-                this.dai,
+        var schemes = new Identifier[] {
+            this.orcid,
+            this.isni,
+            this.dai,
         };
 
         // return first match
@@ -100,7 +83,4 @@ public class DatasetAuthor implements DatasetRelation {
         return null;
     }
 
-    public boolean isRightsHolder() {
-        return StringUtils.equals(this.getRole(), "RightsHolder");
-    }
 }

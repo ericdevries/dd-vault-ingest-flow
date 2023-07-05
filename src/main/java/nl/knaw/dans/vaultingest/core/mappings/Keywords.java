@@ -53,37 +53,37 @@ public class Keywords extends Base {
     static List<Keyword> getKeywordsWithoutScheme(Document document) {
         // CIT014
         return XPathEvaluator.nodes(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/dcterms:subject[not(@schemeURI) and not(@subjectScheme)]",
-                        "/ddm:DDM/ddm:dcmiMetadata/dc:subject[not(@schemeURI) and not(@subjectScheme)]")
-                .map(node -> Keyword.builder().text(node.getTextContent().trim()).build())
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:dcmiMetadata/dcterms:subject[not(@schemeURI) and not(@subjectScheme)]",
+                "/ddm:DDM/ddm:dcmiMetadata/dc:subject[not(@schemeURI) and not(@subjectScheme)]")
+            .map(node -> Keyword.builder().text(node.getTextContent().trim()).build())
+            .collect(Collectors.toList());
     }
 
     // CIT015
     static List<Keyword> getPanAndAatKeywords(Document document) {
         var expr = "/ddm:DDM/ddm:dcmiMetadata/ddm:subject[" +
-                String.format("(@schemeURI = '%s' and @subjectScheme = '%s')", SCHEME_URI_PAN, SCHEME_PAN) +
-                " or " +
-                String.format("(@schemeURI = '%s' and @subjectScheme = '%s')", SCHEME_URI_AAT, SCHEME_AAT) +
-                "]";
+            String.format("(@schemeURI = '%s' and @subjectScheme = '%s')", SCHEME_URI_PAN, SCHEME_PAN) +
+            " or " +
+            String.format("(@schemeURI = '%s' and @subjectScheme = '%s')", SCHEME_URI_AAT, SCHEME_AAT) +
+            "]";
 
         // CIT014
         return XPathEvaluator.nodes(document, expr)
-                .map(node -> Keyword.builder()
-                        .text(node.getTextContent().trim())
-                        .vocabulary(node.getAttributes().getNamedItem("subjectScheme").getTextContent())
-                        .vocabularyUri(node.getAttributes().getNamedItem("schemeURI").getTextContent())
-                        .build())
-                .collect(Collectors.toList());
+            .map(node -> Keyword.builder()
+                .text(node.getTextContent().trim())
+                .vocabulary(node.getAttributes().getNamedItem("subjectScheme").getTextContent())
+                .vocabularyUri(node.getAttributes().getNamedItem("schemeURI").getTextContent())
+                .build())
+            .collect(Collectors.toList());
     }
 
     // CIT016
     static List<Keyword> getLanguageKeywords(Document document) {
         return XPathEvaluator.strings(document,
-                "/ddm:DDM/ddm:dcmiMetadata/dcterms:language"
+            "/ddm:DDM/ddm:dcmiMetadata/dcterms:language"
         ).map(value -> Keyword.builder()
-                .text(value.trim())
-                .build()
+            .text(value.trim())
+            .build()
         ).collect(Collectors.toList());
     }
 

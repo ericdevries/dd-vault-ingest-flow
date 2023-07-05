@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class TemporalCoverage extends Base {
     public static List<Statement> toRDF(Resource resource, Deposit deposit) {
         return toTemporalCoverages(resource, getTemporalCoverages(deposit.getDdm()));
@@ -34,9 +33,9 @@ public class TemporalCoverage extends Base {
 
     static List<String> getTemporalCoverages(Document ddm) {
         return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:dcmiMetadata/dcterms:temporal")
-                .map(String::trim)
-                .distinct()
-                .collect(Collectors.toList());
+            .map(String::trim)
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toTemporalCoverages(Resource resource, Collection<String> temporalCoverages) {

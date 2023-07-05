@@ -41,12 +41,12 @@ public class DepositToBagProcess {
     private final IdMinter idMinter;
 
     public DepositToBagProcess(
-            RdaBagWriterFactory rdaBagWriterFactory,
-            BagOutputWriterFactory bagOutputWriterFactory,
-            VaultCatalogService vaultCatalogService,
-            DepositManager depositManager,
-            DepositValidator depositValidator,
-            IdMinter idMinter
+        RdaBagWriterFactory rdaBagWriterFactory,
+        BagOutputWriterFactory bagOutputWriterFactory,
+        VaultCatalogService vaultCatalogService,
+        DepositManager depositManager,
+        DepositValidator depositValidator,
+        IdMinter idMinter
     ) {
         this.rdaBagWriter = rdaBagWriterFactory.createRdaBagWriter();
         this.bagOutputWriterFactory = bagOutputWriterFactory;
@@ -70,9 +70,11 @@ public class DepositToBagProcess {
 
             log.info("Moving deposit to outbox");
             outbox.moveDeposit(deposit);
-        } catch (InvalidDepositException e) {
+        }
+        catch (InvalidDepositException e) {
             handleFailedDeposit(path, outbox, Deposit.State.REJECTED, e);
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             handleFailedDeposit(path, outbox, Deposit.State.FAILED, e);
         }
     }
@@ -81,17 +83,18 @@ public class DepositToBagProcess {
         if (deposit.isUpdate()) {
             // check if deposit exists in vault catalog
             var catalogDeposit = vaultCatalogService.findDeposit(deposit.getSwordToken())
-                    .orElseThrow(() -> new InvalidDepositException(String.format("Deposit with sword token %s not found in vault catalog", deposit.getSwordToken())));
+                .orElseThrow(() -> new InvalidDepositException(String.format("Deposit with sword token %s not found in vault catalog", deposit.getSwordToken())));
 
             // compare user id
             if (!StringUtils.equals(deposit.getDepositorId(), catalogDeposit.getDataSupplier())) {
                 throw new InvalidDepositException(String.format(
-                        "Depositor id %s does not match the depositor id %s in the vault catalog", deposit.getDepositorId(), catalogDeposit.getDataSupplier()
+                    "Depositor id %s does not match the depositor id %s in the vault catalog", deposit.getDepositorId(), catalogDeposit.getDataSupplier()
                 ));
             }
 
             deposit.setNbn(catalogDeposit.getNbn());
-        } else {
+        }
+        else {
             // generate nbn for new deposit
             deposit.setNbn(idMinter.mintUrnNbn());
         }
@@ -103,13 +106,13 @@ public class DepositToBagProcess {
             }
 
             deposit.setState(Deposit.State.ACCEPTED, "Deposit accepted");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new IllegalStateException("Error writing bag: " + e.getMessage(), e);
         }
 
         vaultCatalogService.registerDeposit(deposit);
     }
-
 
     void handleFailedDeposit(Path path, Outbox outbox, Deposit.State state, Throwable error) {
         log.error("Deposit on path {} failed with state {}", path, state, error);
@@ -117,13 +120,15 @@ public class DepositToBagProcess {
         try {
             depositManager.updateDepositState(path, state, error.getMessage());
             outbox.move(path, state);
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             log.error("Failed to update deposit state and move deposit to outbox", e);
 
             try {
                 log.info("Just moving deposit to outbox");
                 outbox.move(path, Deposit.State.FAILED);
-            } catch (IOException ioException) {
+            }
+            catch (IOException ioException) {
                 log.error("Failed to move deposit to outbox, nothing left to do", ioException);
             }
         }

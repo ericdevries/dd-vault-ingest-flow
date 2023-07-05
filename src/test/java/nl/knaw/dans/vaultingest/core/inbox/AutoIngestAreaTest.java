@@ -30,11 +30,11 @@ class AutoIngestAreaTest {
         var outbox = Mockito.mock(Outbox.class);
 
         var area = new AutoIngestArea(
-                // just run it in the current thread for testing purposes
-                Runnable::run,
-                callback -> callback.onItemCreated(Path.of("fake/path")),
-                process,
-                outbox
+            // just run it in the current thread for testing purposes
+            Runnable::run,
+            callback -> callback.onItemCreated(Path.of("fake/path")),
+            process,
+            outbox
         );
 
         area.start();

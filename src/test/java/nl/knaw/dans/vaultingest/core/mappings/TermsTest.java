@@ -31,9 +31,9 @@ class TermsTest {
     @Test
     void isRequestAccess_should_return_true_when_no_information_is_available() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
         assertTrue(result);
@@ -42,9 +42,9 @@ class TermsTest {
     @Test
     void isRequestAccess_should_return_false_when_getAccessRights_equals_OPEN_ACCESS() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-                .ddmNode(getDdmNodeWithAccessRights("OPEN_ACCESS"))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights("OPEN_ACCESS"))
+            .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
         assertTrue(result);
@@ -53,9 +53,9 @@ class TermsTest {
     @Test
     void isRequestAccess_should_return_true_when_getAccessRights_equals_RANDOM_VALUE() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
-                .ddmNode(getDdmNodeWithAccessRights("RANDOM_VALUE"))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/invalid/characters/here:*?\"<>|;#.txt"))
+            .ddmNode(getDdmNodeWithAccessRights("RANDOM_VALUE"))
+            .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
         assertTrue(result);
@@ -65,9 +65,9 @@ class TermsTest {
     void isRequestAccess_should_return_true_when_getAccessibleToRights_is_empty() throws Exception {
         // TODO verify an empty accessibleToRights qualifies as restricted
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
         assertTrue(result);
@@ -76,9 +76,9 @@ class TermsTest {
     @Test
     void isRequestAccess_should_return_true_when_getAccessibleToRights_equals_ANYTHING() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANYTHING"))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("ANYTHING"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
         assertTrue(result);
@@ -87,9 +87,9 @@ class TermsTest {
     @Test
     void isRequestAccess_should_return_false_when_getAccessibleToRights_equals_NONE() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("NONE"))
-                .ddmNode(getDdmNodeWithAccessRights(null))
-                .build();
+            .filesXmlNode(getFilesXmlNodeWithAccessibleToRights("NONE"))
+            .ddmNode(getDdmNodeWithAccessRights(null))
+            .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
         assertFalse(result);
@@ -112,14 +112,13 @@ class TermsTest {
         return node.getDocumentElement();
     }
 
-
     Node getDdmNodeWithAccessRights(String mode) throws Exception {
         var accessRights = mode != null ? "<ddm:accessRights>" + mode + "</ddm:accessRights>" : "";
         var str = "<ddm:DDM xmlns:ddm='http://schemas.dans.knaw.nl/dataset/ddm-v2/'>"
-                + "    <ddm:profile>"
-                + accessRights
-                + "    </ddm:profile>"
-                + "</ddm:DDM>";
+            + "    <ddm:profile>"
+            + accessRights
+            + "    </ddm:profile>"
+            + "</ddm:DDM>";
 
         var node = new XmlReader().readXmlString(str);
         return node.getDocumentElement();

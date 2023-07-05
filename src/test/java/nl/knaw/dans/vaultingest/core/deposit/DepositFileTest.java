@@ -28,18 +28,17 @@ class DepositFileTest {
     @Test
     void getDirectoryLabel_should_return_same_path_for_valid_characters() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/only/valid/characters.txt"))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/only/valid/characters.txt"))
+            .build();
 
         assertEquals(Path.of("data/only/valid/"), depositFile.getDirectoryLabel());
     }
 
-
     @Test
     void getFilename_should_return_same_value_for_valid_characters() throws Exception {
         var depositFile = DepositFile.builder()
-                .filesXmlNode(getFilesXmlNode("data/valid/characters.txt"))
-                .build();
+            .filesXmlNode(getFilesXmlNode("data/valid/characters.txt"))
+            .build();
 
         assertEquals(Path.of("characters.txt"), depositFile.getFilename());
     }

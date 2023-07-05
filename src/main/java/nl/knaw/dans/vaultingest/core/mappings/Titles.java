@@ -33,9 +33,9 @@ public class Titles {
 
     static String getTitle(Document ddm) {
         return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/dc:title")
-                .map(String::trim)
-                .findFirst()
-                .orElse(null);
+            .map(String::trim)
+            .findFirst()
+            .orElse(null);
     }
 
     static List<Statement> rdfTitle(Resource resource, String title) {
@@ -47,8 +47,8 @@ public class Titles {
         var literal = model.createLiteral(title);
 
         return List.of(
-                model.createStatement(resource, DCTerms.title, literal),
-                model.createStatement(resource, SchemaDO.name, literal)
+            model.createStatement(resource, DCTerms.title, literal),
+            model.createStatement(resource, SchemaDO.name, literal)
         );
     }
 }

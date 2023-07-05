@@ -28,12 +28,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class SpatialCoverage extends Base {
-    public static List<Statement> toRDF(Resource resource, Deposit deposit) {
+    public static List<Statement> toRDF(Resource resource, Deposit deposit, CountryResolver countryResolver) {
         var result = new ArrayList<Statement>();
-        result.addAll(toSpatialCoverageControlled(resource, getSpatialCoveragesControlled(deposit.getDdm(), deposit.getCountryResolver())));
-        result.addAll(toSpatialCoverageText(resource, getSpatialCoveragesText(deposit.getDdm(), deposit.getCountryResolver())));
+        result.addAll(toSpatialCoverageControlled(resource, getSpatialCoveragesControlled(deposit.getDdm(), countryResolver)));
+        result.addAll(toSpatialCoverageText(resource, getSpatialCoveragesText(deposit.getDdm(), countryResolver)));
 
         return result;
 
@@ -41,18 +40,18 @@ public class SpatialCoverage extends Base {
 
     static List<String> getSpatialCoveragesControlled(Document ddm, CountryResolver countryResolver) {
         return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:dcmiMetadata/dcterms:spatial")
-                .map(String::trim)
-                .distinct()
-                .filter(countryResolver::isControlledValue)
-                .collect(Collectors.toList());
+            .map(String::trim)
+            .distinct()
+            .filter(countryResolver::isControlledValue)
+            .collect(Collectors.toList());
     }
 
     static List<String> getSpatialCoveragesText(Document ddm, CountryResolver countryResolver) {
         return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:dcmiMetadata/dcterms:spatial")
-                .map(String::trim)
-                .distinct()
-                .filter(c -> !countryResolver.isControlledValue(c))
-                .collect(Collectors.toList());
+            .map(String::trim)
+            .distinct()
+            .filter(c -> !countryResolver.isControlledValue(c))
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toSpatialCoverageControlled(Resource resource, Collection<String> spatialCoveragesControlled) {

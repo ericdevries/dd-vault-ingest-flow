@@ -19,7 +19,6 @@ import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 public class TestDepositManager extends DepositManager {
@@ -29,8 +28,8 @@ public class TestDepositManager extends DepositManager {
     private Deposit.State lastState = null;
     private String lastMessage = null;
 
-    public TestDepositManager(Deposit deposit) throws IOException {
-        super(new XmlReader(), new TestLanguageResolver(), new TestCountryResolver());
+    public TestDepositManager(Deposit deposit) {
+        super(new XmlReader());
         this.deposit = deposit;
     }
 

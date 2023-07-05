@@ -39,20 +39,20 @@ public class CollectionDates extends Base {
 
     static List<CollectionDate> getCollectionDates(Document document) {
         return XPathEvaluator.strings(document, "/ddm:DDM/ddm:dcmiMetadata/ddm:datesOfCollection")
-                .map(value -> {
-                    var matches = DATES_OF_COLLECTION_PATTERN.matcher(value.trim());
+            .map(value -> {
+                var matches = DATES_OF_COLLECTION_PATTERN.matcher(value.trim());
 
-                    if (matches.matches()) {
-                        return CollectionDate.builder()
-                                .start(matches.group(1))
-                                .end(matches.group(2))
-                                .build();
-                    }
+                if (matches.matches()) {
+                    return CollectionDate.builder()
+                        .start(matches.group(1))
+                        .end(matches.group(2))
+                        .build();
+                }
 
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                return null;
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
     }
 

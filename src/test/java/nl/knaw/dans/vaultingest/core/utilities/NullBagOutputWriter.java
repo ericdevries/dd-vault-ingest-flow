@@ -30,7 +30,8 @@ public class NullBagOutputWriter implements BagOutputWriter {
 
         try {
             inputStream.transferTo(output);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

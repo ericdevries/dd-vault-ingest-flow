@@ -36,9 +36,9 @@ public class ProductionDate extends Base {
 
     static String getProductionDate(Document document) {
         return XPathEvaluator.strings(document, "/ddm:DDM/ddm:profile/ddm:created")
-                .findFirst()
-                .map(ProductionDate::toYearMonthDayFormat)
-                .orElse(null);
+            .findFirst()
+            .map(ProductionDate::toYearMonthDayFormat)
+            .orElse(null);
     }
 
     static String toYearMonthDayFormat(String text) {

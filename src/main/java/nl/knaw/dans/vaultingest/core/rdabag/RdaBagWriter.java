@@ -54,12 +54,12 @@ public class RdaBagWriter {
     private final List<ManifestAlgorithm> requiredAlgorithms = List.of(ManifestAlgorithm.SHA1, ManifestAlgorithm.MD5);
 
     RdaBagWriter(
-            DataciteSerializer dataciteSerializer,
-            PidMappingSerializer pidMappingSerializer,
-            OaiOreSerializer oaiOreSerializer,
-            DataciteConverter dataciteConverter,
-            PidMappingConverter pidMappingConverter,
-            OaiOreConverter oaiOreConverter
+        DataciteSerializer dataciteSerializer,
+        PidMappingSerializer pidMappingSerializer,
+        OaiOreSerializer oaiOreSerializer,
+        DataciteConverter dataciteConverter,
+        PidMappingConverter pidMappingConverter,
+        OaiOreConverter oaiOreConverter
     ) {
         this.dataciteSerializer = dataciteSerializer;
         this.pidMappingSerializer = pidMappingSerializer;
@@ -106,14 +106,14 @@ public class RdaBagWriter {
             var targetPath = file.getPath();
             var existingChecksums = file.getChecksums();
             var checksumsToCalculate = requiredAlgorithms.stream()
-                    .filter(algorithm -> !existingChecksums.containsKey(algorithm))
-                    .collect(Collectors.toList());
+                .filter(algorithm -> !existingChecksums.containsKey(algorithm))
+                .collect(Collectors.toList());
 
             var allChecksums = new HashMap<>(existingChecksums);
             log.debug("Checksums already present: {}", existingChecksums);
 
             try (var inputStream = file.openInputStream();
-                 var digestInputStream = new MultiDigestInputStream(inputStream, checksumsToCalculate)) {
+                var digestInputStream = new MultiDigestInputStream(inputStream, checksumsToCalculate)) {
 
                 log.info("Writing payload file {} to output", targetPath);
                 outputWriter.writeBagItem(digestInputStream, targetPath);
@@ -206,9 +206,9 @@ public class RdaBagWriter {
         var pidMappingsSerialized = pidMappingSerializer.serialize(pidMappings);
 
         checksummedWriteToOutput(
-                pidMappingsSerialized,
-                Path.of("metadata/pid-mapping.txt"),
-                outputWriter
+            pidMappingsSerialized,
+            Path.of("metadata/pid-mapping.txt"),
+            outputWriter
         );
     }
 

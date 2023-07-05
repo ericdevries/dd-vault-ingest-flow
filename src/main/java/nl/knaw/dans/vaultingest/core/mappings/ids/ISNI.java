@@ -22,7 +22,7 @@ public class ISNI extends Identifier {
 
     @Override
     public String getScheme() {
-        return "DAI";
+        return "ISNI";
     }
 
     @Override

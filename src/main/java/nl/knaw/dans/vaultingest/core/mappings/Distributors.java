@@ -37,12 +37,12 @@ public class Distributors extends Base {
         var filter = "[text() != 'DANS' and text() != 'DANS/KNAW' and text() != 'DANS-KNAW']";
 
         return XPathEvaluator.strings(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/dcterms:publisher" + filter,
-                        "/ddm:DDM/ddm:dcmiMetadata/dc:publisher" + filter)
-                .map(value -> Distributor.builder()
-                        .name(value)
-                        .build())
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:dcmiMetadata/dcterms:publisher" + filter,
+                "/ddm:DDM/ddm:dcmiMetadata/dc:publisher" + filter)
+            .map(value -> Distributor.builder()
+                .name(value)
+                .build())
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toDistributors(Resource resource, Collection<Distributor> distributors) {

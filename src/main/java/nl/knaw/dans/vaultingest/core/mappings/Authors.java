@@ -74,43 +74,43 @@ public class Authors extends Base {
 
     static List<DatasetAuthor> getAuthors(Document ddm) {
         return XPathEvaluator.nodes(ddm,
-                        "/ddm:DDM/ddm:profile/dcx-dai:creatorDetails/dcx-dai:author")
-                .map(Authors::parseAuthor)
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:profile/dcx-dai:creatorDetails/dcx-dai:author")
+            .map(Authors::parseAuthor)
+            .collect(Collectors.toList());
     }
 
     static DatasetAuthor parseAuthor(Node node) {
         return DatasetAuthor.builder()
-                .titles(getFirstValue(node, "dcx-dai:titles"))
-                .initials(getFirstValue(node, "dcx-dai:initials"))
-                .insertions(getFirstValue(node, "dcx-dai:insertions"))
-                .surname(getFirstValue(node, "dcx-dai:surname"))
-                .dai(getDAI(node))
-                .isni(getISNI(node))
-                .orcid(getORCID(node))
-                .role(getFirstValue(node, "dcx-dai:role"))
-                .affiliation(getFirstValue(node, "dcx-dai:organization/dcx-dai:name"))
-                .build();
+            .titles(getFirstValue(node, "dcx-dai:titles"))
+            .initials(getFirstValue(node, "dcx-dai:initials"))
+            .insertions(getFirstValue(node, "dcx-dai:insertions"))
+            .surname(getFirstValue(node, "dcx-dai:surname"))
+            .dai(getDAI(node))
+            .isni(getISNI(node))
+            .orcid(getORCID(node))
+            .role(getFirstValue(node, "dcx-dai:role"))
+            .affiliation(getFirstValue(node, "dcx-dai:organization/dcx-dai:name"))
+            .build();
     }
 
     static List<DatasetCreator> getCreators(Document ddm) {
         return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/dc:creator")
-                .map(String::trim)
-                .map(author -> DatasetCreator.builder()
-                        .name(author)
-                        .build()
-                )
-                .collect(Collectors.toList());
+            .map(String::trim)
+            .map(author -> DatasetCreator.builder()
+                .name(author)
+                .build()
+            )
+            .collect(Collectors.toList());
     }
 
     static List<DatasetOrganization> getOrganizations(Document ddm) {
         return XPathEvaluator.nodes(ddm,
-                        "/ddm:DDM/ddm:profile/dcx-dai:creatorDetails/dcx-dai:organization")
-                .map(node -> DatasetOrganization.builder()
-                        .name(getFirstValue(node, "dcx-dai:name"))
-                        .isni(getISNI(node))
-                        .viaf(getVIAF(node))
-                        .build())
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:profile/dcx-dai:creatorDetails/dcx-dai:organization")
+            .map(node -> DatasetOrganization.builder()
+                .name(getFirstValue(node, "dcx-dai:name"))
+                .isni(getISNI(node))
+                .viaf(getVIAF(node))
+                .build())
+            .collect(Collectors.toList());
     }
 }

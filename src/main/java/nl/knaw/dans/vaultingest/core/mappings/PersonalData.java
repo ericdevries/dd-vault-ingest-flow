@@ -30,11 +30,11 @@ public class PersonalData extends Base {
 
     static boolean isPersonalDataPresent(Document document) {
         return XPathEvaluator.nodes(document, "/ddm:DDM/ddm:profile/ddm:personalData[@present = 'Yes']")
-                .findAny().isPresent();
+            .findAny().isPresent();
     }
 
     static Statement toDansPersonalDataPresent(Resource resource, boolean isPersonalDataPresent) {
         return toBasicTerm(resource, DansRights.dansPersonalDataPresent, isPersonalDataPresent ? "Yes" : "No")
-                .orElseThrow(() -> new RuntimeException("Unexpected error; statement should always be created"));
+            .orElseThrow(() -> new RuntimeException("Unexpected error; statement should always be created"));
     }
 }

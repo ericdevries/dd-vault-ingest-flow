@@ -18,7 +18,16 @@ package nl.knaw.dans.vaultingest.core.oaiore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.vaultingest.core.mappings.vocabulary.*;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DVCitation;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DVCore;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansArchaeology;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansDVMetadata;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansRel;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansRights;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansTS;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.Datacite;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.ORE;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.PROV;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -49,10 +58,10 @@ public class OaiOreSerializer {
     }
 
     public String serializeAsRdf(Model model) {
-        var topLevelResources = new Resource[]{
-                ORE.AggregatedResource,
-                ORE.Aggregation,
-                ORE.ResourceMap,
+        var topLevelResources = new Resource[] {
+            ORE.AggregatedResource,
+            ORE.Aggregation,
+            ORE.ResourceMap,
         };
 
         applyNamespaces(model);
@@ -64,10 +73,10 @@ public class OaiOreSerializer {
         var output = new ByteArrayOutputStream();
 
         RDFWriter.create()
-                .format(RDFFormat.RDFXML_ABBREV)
-                .set(SysRIOT.sysRdfWriterProperties, properties)
-                .source(model)
-                .output(output);
+            .format(RDFFormat.RDFXML_ABBREV)
+            .set(SysRIOT.sysRdfWriterProperties, properties)
+            .source(model)
+            .output(output);
 
         return output.toString();
     }
@@ -79,25 +88,25 @@ public class OaiOreSerializer {
 
         var namespaces = namespacesAsJsonObject(getUsedNamespaces(model));
         var contextStr = "{ \"@context\": [\n" +
-                "    \"https://w3id.org/ore/context\",\n" +
-                namespaces +
-                "  ],\n" +
-                "\n" +
-                "   \"describes\": {\n" +
-                "     \"@type\": \"Aggregation\",\n" +
-                "     \"isDescribedBy\":  { \"@embed\": false } ,\n" +
-                "     \"aggregates\":  { \"@embed\": true }  ,\n" +
-                "     \"proxies\":  { \"@embed\": true }\n" +
-                "   }\n" +
-                " }";
+            "    \"https://w3id.org/ore/context\",\n" +
+            namespaces +
+            "  ],\n" +
+            "\n" +
+            "   \"describes\": {\n" +
+            "     \"@type\": \"Aggregation\",\n" +
+            "     \"isDescribedBy\":  { \"@embed\": false } ,\n" +
+            "     \"aggregates\":  { \"@embed\": true }  ,\n" +
+            "     \"proxies\":  { \"@embed\": true }\n" +
+            "   }\n" +
+            " }";
 
         context.set(JsonLD10Writer.JSONLD_FRAME, contextStr);
 
         var writer = RDFWriter.create()
-                .format(RDFFormat.JSONLD10_FRAME_PRETTY)
-                .source(DatasetFactory.wrap(model).asDatasetGraph())
-                .context(context)
-                .build();
+            .format(RDFFormat.JSONLD10_FRAME_PRETTY)
+            .source(DatasetFactory.wrap(model).asDatasetGraph())
+            .context(context)
+            .build();
 
         var outputWriter = new StringWriter();
         writer.output(outputWriter);
@@ -108,7 +117,8 @@ public class OaiOreSerializer {
     private String namespacesAsJsonObject(Map<String, String> namespaces) {
         try {
             return objectMapper.writeValueAsString(namespaces);
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             log.error("Error serializing namespaces to JSON", e);
             throw new RuntimeException(e);
         }
@@ -139,9 +149,9 @@ public class OaiOreSerializer {
         model.listNameSpaces().forEachRemaining(usedNamespaces::add);
 
         return getNamespaces()
-                .entrySet().stream()
-                .filter(e -> usedNamespaces.contains(e.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .entrySet().stream()
+            .filter(e -> usedNamespaces.contains(e.getValue()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private void applyNamespaces(Model model) {

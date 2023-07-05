@@ -15,14 +15,21 @@
  */
 package nl.knaw.dans.vaultingest.core.datacite;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.mappings.Datacite;
-import nl.knaw.dans.vaultingest.domain.*;
+import nl.knaw.dans.vaultingest.domain.Affiliation;
+import nl.knaw.dans.vaultingest.domain.DescriptionType;
+import nl.knaw.dans.vaultingest.domain.NameIdentifier;
+import nl.knaw.dans.vaultingest.domain.Resource;
+import nl.knaw.dans.vaultingest.domain.ResourceType;
 
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class DataciteConverter {
+    private static final DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
 
     public Resource convert(Deposit deposit) {
         return getResource(deposit);
@@ -37,25 +44,22 @@ public class DataciteConverter {
         resource.setTitles(getTitles(deposit));
         // DATACITE004, DATACITE005, DATACITE006
         resource.setCreators(getCreators(deposit));
-
-        //
-        resource.setPublisher(getPublisher());
+        // DATACITE008, DATACITE009, DATACITE010, DATACITE011, DATACITE012
         resource.setDescriptions(getDescriptions(deposit));
+        // DATACITE015
         resource.setPublicationYear(getPublicationYear(deposit));
-        resource.setContributors(getContributors(deposit));
 
         return resource;
     }
 
     private String getPublicationYear(Deposit deposit) {
-        // TODO verify what date to use; I assumed distribution date
-        try {
-            var value = Datacite.getDistributionDate(deposit);
-            var date = new SimpleDateFormat("yyyy-MM-dd").parse(value);
-            return new SimpleDateFormat("yyyy").format(date);
-        } catch (Exception e) {
+        var date = Datacite.getPublicationDate(deposit);
+
+        if (date == null) {
             return null;
         }
+
+        return date.format(yearFormatter);
     }
 
     private Resource.Titles getTitles(Deposit deposit) {
@@ -109,7 +113,13 @@ public class DataciteConverter {
 
     private Resource.Identifier getIdentifier(Deposit deposit) {
         // TODO mapping file does not explicitly say this, but should it remove the prefix?
-        var id = deposit.getDoi().substring(deposit.getDoi().indexOf(':') + 1);
+        //        var id = deposit.getDoi().substring(deposit.getDoi().indexOf(':') + 1);
+        var id = deposit.getDoi();
+
+        if (id == null) {
+            return null;
+        }
+
         var identifier = new Resource.Identifier();
         identifier.setIdentifierType("DOI");
         identifier.setValue(id);
@@ -117,49 +127,19 @@ public class DataciteConverter {
         return identifier;
     }
 
-    private Resource.Publisher getPublisher() {
-        var publisher = new Resource.Publisher();
-        // TODO get from configuration
-        publisher.setValue("DANS");
-        return publisher;
-    }
-
     private Resource.Descriptions getDescriptions(Deposit deposit) {
         var descriptions = new Resource.Descriptions();
-        var value = Datacite.getDescription(deposit);
 
-        value.ifPresent(d -> {
-            var description = new Resource.Descriptions.Description();
-            description.setDescriptionType(DescriptionType.ABSTRACT);
-            description.getContent().add(d.getValue());
-            descriptions.getDescription().add(description);
-        });
+        Datacite.getDescriptions(deposit)
+            .forEach(item -> {
+                var description = new Resource.Descriptions.Description();
+                description.setDescriptionType(DescriptionType.ABSTRACT);
+                description.getContent().add(item.getValue());
+                descriptions.getDescription().add(description);
+
+            });
 
         return descriptions;
-    }
-
-    private Resource.Contributors getContributors(Deposit deposit) {
-        var contributors = new Resource.Contributors();
-        var value = Datacite.getContributors(deposit);
-
-        for (var item : value) {
-            var contributor = new Resource.Contributors.Contributor();
-            var name = new Resource.Contributors.Contributor.ContributorName();
-            name.setValue(item.getName());
-            contributor.setContributorName(name);
-            contributor.setContributorType(getContributorType(item.getType()));
-            contributors.getContributor().add(contributor);
-        }
-
-        return contributors;
-    }
-
-    private ContributorType getContributorType(String type) {
-        try {
-            return ContributorType.fromValue(type);
-        } catch (Exception e) {
-            return ContributorType.OTHER;
-        }
     }
 
 }

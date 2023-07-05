@@ -39,14 +39,14 @@ public class GrantNumbers extends Base {
         var idType = getIdTypeNamespace(document);
 
         return XPathEvaluator.strings(document,
-                        String.format(
-                                "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type = '%s:NWO-PROJECTNR']", idType)
-                )
-                .map(value -> GrantNumber.builder()
-                        .agency("NWO")
-                        .value(value)
-                        .build())
-                .collect(Collectors.toList());
+                String.format(
+                    "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type = '%s:NWO-PROJECTNR']", idType)
+            )
+            .map(value -> GrantNumber.builder()
+                .agency("NWO")
+                .value(value)
+                .build())
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toGrantNumbers(Resource resource, Collection<GrantNumber> grantNumbers) {

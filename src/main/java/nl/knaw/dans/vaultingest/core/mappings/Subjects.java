@@ -61,9 +61,9 @@ public class Subjects extends Base {
     // CIT013
     static List<String> getSubjects(Document document) {
         var results = XPathEvaluator.strings(document,
-                        "/ddm:DDM/ddm:profile/ddm:audience")
-                .map(Subjects::getSubject)
-                .collect(Collectors.toSet());
+                "/ddm:DDM/ddm:profile/ddm:audience")
+            .map(Subjects::getSubject)
+            .collect(Collectors.toSet());
 
         if (results.contains("Other") && results.size() > 1) {
             results.remove("Other");
@@ -74,10 +74,10 @@ public class Subjects extends Base {
 
     private static String getSubject(String code) {
         return narcisToSubject.keySet().stream()
-                .filter(code::startsWith)
-                .max((a, b) -> Comparators.max(a.length(), b.length()))
-                .map(narcisToSubject::get)
-                .orElse("Other");
+            .filter(code::startsWith)
+            .max((a, b) -> Comparators.max(a.length(), b.length()))
+            .map(narcisToSubject::get)
+            .orElse("Other");
     }
 
     static List<Statement> toSubjects(Resource resource, Collection<String> subjects) {

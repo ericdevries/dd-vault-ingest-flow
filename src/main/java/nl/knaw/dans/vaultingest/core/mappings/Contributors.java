@@ -38,31 +38,31 @@ public class Contributors extends Base {
     static List<Contributor> getContributors(Document document) {
         // CIT020
         var authors = XPathEvaluator.nodes(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/dcx-dai:contributorDetails/" +
-                                "dcx-dai:author[dcx-dai:role != 'RightsHolder']")
-                .map(item -> {
-                    var author = Authors.parseAuthor(item);
-                    var name = author.getContributorName();
+                "/ddm:DDM/ddm:dcmiMetadata/dcx-dai:contributorDetails/" +
+                    "dcx-dai:author[dcx-dai:role != 'RightsHolder']")
+            .map(item -> {
+                var author = Authors.parseAuthor(item);
+                var name = author.getContributorName();
 
-                    return Contributor.builder()
-                            .type(author.getRole())
-                            .name(name)
-                            .build();
-                });
+                return Contributor.builder()
+                    .type(author.getRole())
+                    .name(name)
+                    .build();
+            });
 
         // CIT021
         var organizations = XPathEvaluator.nodes(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/dcx-dai:contributorDetails/" +
-                                "dcx-dai:organization[dcx-dai:role != 'RightsHolder' and dcx-dai:role != 'Funder']")
-                .map(item -> {
-                    var role = getFirstValue(item, "dcx-dai:role");
-                    var name = getFirstValue(item, "dcx-dai:name");
+                "/ddm:DDM/ddm:dcmiMetadata/dcx-dai:contributorDetails/" +
+                    "dcx-dai:organization[dcx-dai:role != 'RightsHolder' and dcx-dai:role != 'Funder']")
+            .map(item -> {
+                var role = getFirstValue(item, "dcx-dai:role");
+                var name = getFirstValue(item, "dcx-dai:name");
 
-                    return Contributor.builder()
-                            .type(role)
-                            .name(name)
-                            .build();
-                });
+                return Contributor.builder()
+                    .type(role)
+                    .name(name)
+                    .build();
+            });
 
         return Stream.concat(authors, organizations).collect(Collectors.toList());
     }

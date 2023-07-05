@@ -16,6 +16,7 @@
 package nl.knaw.dans.vaultingest.core.mappings;
 
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import nl.knaw.dans.vaultingest.core.deposit.LanguageResolver;
 import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansRights;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.apache.jena.rdf.model.Resource;
@@ -24,24 +25,22 @@ import org.w3c.dom.Document;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
 
 public class MetadataLanguages extends Base {
 
-    public static List<Statement> toRDF(Resource resource, Deposit deposit) {
-        return toLanguages(resource, getMetadataLanguages(deposit.getDdm(), deposit));
+    public static List<Statement> toRDF(Resource resource, Deposit deposit, LanguageResolver languageResolver) {
+        return toLanguages(resource, getMetadataLanguages(deposit.getDdm(), languageResolver));
     }
 
-    static List<String> getMetadataLanguages(Document document, Deposit deposit) {
+    static List<String> getMetadataLanguages(Document document, LanguageResolver languageResolver) {
         // RIG003
         return XPathEvaluator.strings(document, "//@xml:lang")
-                .distinct()
-                .map(deposit::resolveLanguage)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+            .distinct()
+            .map(languageResolver::resolve)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toLanguages(Resource resource, Collection<String> metadataLanguages) {

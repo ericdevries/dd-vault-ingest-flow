@@ -46,40 +46,36 @@ public abstract class AbstractDepositValidator implements DepositValidator {
         var bagDir = getBagDir(depositDir);
 
         var command = new ValidateCommand()
-                .bagLocation(bagDir.toString())
-                .packageType(getPackageType());
+            .bagLocation(bagDir.toString())
+            .packageType(getPackageType());
 
         log.debug("Validating bag {} with command {}", bagDir, command);
 
         try (var multipart = new FormDataMultiPart()
-                .field("command", command, MediaType.APPLICATION_JSON_TYPE)) {
+            .field("command", command, MediaType.APPLICATION_JSON_TYPE)) {
 
             try (var response = httpClient.target(serviceUri)
-                    .request()
-                    .post(Entity.entity(multipart, multipart.getMediaType()))) {
+                .request()
+                .post(Entity.entity(multipart, multipart.getMediaType()))) {
 
-                if (response.getStatus() == 200) {
-                    var entity = response.readEntity(ValidateOk.class);
-                    throw formatValidationError(entity);
-                } else {
-                    throw new RuntimeException(String.format(
-                            "DANS Bag Validation failed (%s): %s",
-                            response.getStatusInfo(), response.readEntity(String.class)));
+                if (response.getStatus() != 200) {
+                    throw formatValidationError(response.readEntity(ValidateOk.class));
                 }
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             log.error("Unable to create multipart form data object", e);
         }
     }
 
     private InvalidDepositException formatValidationError(ValidateOk result) {
         var violations = result.getRuleViolations().stream()
-                .map(r -> String.format("- [%s] %s", r.getRule(), r.getViolation()))
-                .collect(Collectors.joining("\n"));
+            .map(r -> String.format("- [%s] %s", r.getRule(), r.getViolation()))
+            .collect(Collectors.joining("\n"));
 
         return new InvalidDepositException(String.format(
-                "Bag was not valid according to Profile Version %s. Violations: %s",
-                result.getProfileVersion(), violations)
+            "Bag was not valid according to Profile Version %s. Violations: %s",
+            result.getProfileVersion(), violations)
         );
     }
 
@@ -88,9 +84,10 @@ public abstract class AbstractDepositValidator implements DepositValidator {
     protected Path getBagDir(Path path) throws InvalidDepositException {
         try (var list = Files.list(path)) {
             return list.filter(Files::isDirectory)
-                    .findFirst()
-                    .orElseThrow();
-        } catch (IOException e) {
+                .findFirst()
+                .orElseThrow();
+        }
+        catch (IOException e) {
             throw new InvalidDepositException("Unable to find bag directory", e);
         }
     }

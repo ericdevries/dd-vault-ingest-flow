@@ -31,7 +31,8 @@ public class DataciteSerializer {
             var writer = new StringWriter();
             marshaller.marshal(resource, writer);
             return writer.toString();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // TODO throw proper checked exception
             throw new RuntimeException(e.getMessage(), e);
         }

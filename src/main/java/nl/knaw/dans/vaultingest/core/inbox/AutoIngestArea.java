@@ -29,10 +29,10 @@ public class AutoIngestArea {
     private final Outbox outbox;
 
     public AutoIngestArea(
-            Executor executor,
-            IngestAreaWatcher ingestAreaWatcher,
-            DepositToBagProcess depositToBagProcess,
-            Outbox outbox
+        Executor executor,
+        IngestAreaWatcher ingestAreaWatcher,
+        DepositToBagProcess depositToBagProcess,
+        Outbox outbox
     ) {
         this.executor = executor;
         this.ingestAreaWatcher = ingestAreaWatcher;

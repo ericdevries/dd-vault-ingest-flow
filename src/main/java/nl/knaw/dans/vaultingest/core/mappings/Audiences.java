@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class Audiences extends Base {
 
     public static List<Statement> toRDF(Resource resource, Deposit deposit) {
@@ -36,9 +35,9 @@ public class Audiences extends Base {
 
     static List<String> getAudiences(Document document) {
         var results = XPathEvaluator.strings(document,
-                        "/ddm:DDM/ddm:profile/ddm:audience")
-                .map(String::trim)
-                .collect(Collectors.toSet());
+                "/ddm:DDM/ddm:profile/ddm:audience")
+            .map(String::trim)
+            .collect(Collectors.toSet());
 
         return List.copyOf(results);
     }

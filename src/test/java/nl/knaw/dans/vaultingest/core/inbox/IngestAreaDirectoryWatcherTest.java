@@ -22,12 +22,13 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IngestAreaDirectoryWatcherTest {
 
     private final Path PATH = Path.of("target/" + this.getClass().getSimpleName() + "/inbox");
-
 
     @BeforeEach
     void setUp() throws Exception {
@@ -38,7 +39,7 @@ class IngestAreaDirectoryWatcherTest {
     @Test
     void start_should_callback() throws Exception {
         var watcher = new IngestAreaDirectoryWatcher(10, PATH);
-        var hasBeenCalled = new boolean[]{false};
+        var hasBeenCalled = new boolean[] { false };
         watcher.start(p -> {
             var result = PATH.toAbsolutePath().relativize(p.toAbsolutePath());
             assertEquals(Path.of("1"), result);

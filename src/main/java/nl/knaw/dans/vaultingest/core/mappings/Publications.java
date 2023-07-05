@@ -40,20 +40,20 @@ public class Publications extends Base {
         var idType = getIdTypeNamespace(document);
 
         return XPathEvaluator.nodes(document, String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[" +
-                        "@xsi:type = '%s:ISSN' or @xsi:type = '%s:ISBN'" +
-                        "]", idType, idType))
-                .map(node -> {
-                    var idTypeValue = node.getAttributes()
-                            .getNamedItem("xsi:type").getTextContent()
-                            .trim()
-                            .replaceAll("id-type:", "");
+                "@xsi:type = '%s:ISSN' or @xsi:type = '%s:ISBN'" +
+                "]", idType, idType))
+            .map(node -> {
+                var idTypeValue = node.getAttributes()
+                    .getNamedItem("xsi:type").getTextContent()
+                    .trim()
+                    .replaceAll("id-type:", "");
 
-                    return Publication.builder()
-                            .idType(idTypeValue)
-                            .idNumber(node.getTextContent().trim())
-                            .build();
-                })
-                .collect(Collectors.toList());
+                return Publication.builder()
+                    .idType(idTypeValue)
+                    .idNumber(node.getTextContent().trim())
+                    .build();
+            })
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toPublications(Resource resource, Collection<Publication> publications) {

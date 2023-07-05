@@ -21,10 +21,14 @@ import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.vaultingest.client.VoidDepositValidator;
+import nl.knaw.dans.vaultingest.client.DepositValidator;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
-import nl.knaw.dans.vaultingest.core.deposit.*;
+import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
+import nl.knaw.dans.vaultingest.core.deposit.DepositOutbox;
+import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
@@ -61,69 +65,68 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
         createDirectories(configuration);
 
         var dansBagValidatorClient = new JerseyClientBuilder(environment)
-                .withProvider(MultiPartFeature.class)
-                .using(configuration.getValidateDansBag().getHttpClient())
-                .build(getName());
+            .withProvider(MultiPartFeature.class)
+            .using(configuration.getValidateDansBag().getHttpClient())
+            .build(getName());
 
         var languageResolver = new CsvLanguageResolver(
-                configuration.getIngestFlow().getLanguages().getIso6391(),
-                configuration.getIngestFlow().getLanguages().getIso6392()
+            configuration.getIngestFlow().getLanguages().getIso6391(),
+            configuration.getIngestFlow().getLanguages().getIso6392()
         );
 
         var countryResolver = new FileCountryResolver(
-                configuration.getIngestFlow().getSpatialCoverageCountryTermsPath()
+            configuration.getIngestFlow().getSpatialCoverageCountryTermsPath()
         );
         var xmlReader = new XmlReader();
-        var depositValidator = new VoidDepositValidator();
-        //        var depositValidator = new CommonDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getBaseUrl());
-        var depositFactory = new DepositManager(
-                xmlReader,
-                languageResolver,
-                countryResolver
-        );
+        var depositValidator = new DepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
+        var depositFactory = new DepositManager(xmlReader);
 
-        var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(environment.getObjectMapper());
+        var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(
+            environment.getObjectMapper(),
+            languageResolver,
+            countryResolver
+        );
         var outputWriterFactory = new ZipBagOutputWriterFactory(configuration.getIngestFlow().getRdaBagOutputDir());
 
         var depositToBagProcess = new DepositToBagProcess(
-                rdaBagWriterFactory,
-                outputWriterFactory,
-                new VaultCatalogService() {
+            rdaBagWriterFactory,
+            outputWriterFactory,
+            new VaultCatalogService() {
 
-                    @Override
-                    public void registerDeposit(Deposit deposit) {
-                        log.info("Registering deposit: {}", deposit);
-                    }
+                @Override
+                public void registerDeposit(Deposit deposit) {
+                    log.info("Registering deposit: {}", deposit);
+                }
 
-                    @Override
-                    public Optional<VaultCatalogDeposit> findDeposit(String swordToken) {
-                        return Optional.empty();
-                    }
-                },
-                depositFactory, depositValidator, new IdMinter());
+                @Override
+                public Optional<VaultCatalogDeposit> findDeposit(String swordToken) {
+                    return Optional.empty();
+                }
+            },
+            depositFactory, depositValidator, new IdMinter());
 
         var taskQueue = configuration.getIngestFlow().getTaskQueue().build(environment);
 
         var ingestAreaDirectoryWatcher = new IngestAreaDirectoryWatcher(
-                500,
-                configuration.getIngestFlow().getAutoIngest().getInbox()
+            500,
+            configuration.getIngestFlow().getAutoIngest().getInbox()
         );
 
         var autoIngestOutbox = new DepositOutbox(configuration.getIngestFlow().getAutoIngest().getOutbox());
         var inboxListener = new AutoIngestArea(
-                taskQueue,
-                ingestAreaDirectoryWatcher,
-                depositToBagProcess,
-                autoIngestOutbox
+            taskQueue,
+            ingestAreaDirectoryWatcher,
+            depositToBagProcess,
+            autoIngestOutbox
         );
 
         inboxListener.start();
 
         environment.healthChecks().register(
-                "DansBagValidator",
-                new DansBagValidatorHealthCheck(
-                        dansBagValidatorClient, configuration.getValidateDansBag().getPingUrl()
-                )
+            "DansBagValidator",
+            new DansBagValidatorHealthCheck(
+                dansBagValidatorClient, configuration.getValidateDansBag().getPingUrl()
+            )
         );
     }
 

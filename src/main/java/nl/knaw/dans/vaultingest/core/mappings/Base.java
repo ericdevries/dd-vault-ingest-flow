@@ -54,7 +54,7 @@ public class Base {
         // the example doesnt use dcx-dai:VIAF, should be looked into
         //        return XPathEvaluator.strings(node, "dcx-dai:VIAF").map(VIAF::new).findFirst().orElse(null);
         return XPathEvaluator.strings(node, "dcx-dai:identifier[@scheme='VIAF']/@value")
-                .map(VIAF::new).findFirst().orElse(null);
+            .map(VIAF::new).findFirst().orElse(null);
     }
 
     static String getIdTypeNamespace(Document document) {
@@ -71,9 +71,9 @@ public class Base {
 
         for (var value : values) {
             result.add(model.createStatement(
-                    resource,
-                    property,
-                    value
+                resource,
+                property,
+                value
             ));
         }
 
@@ -88,9 +88,9 @@ public class Base {
         var model = resource.getModel();
 
         return Optional.of(model.createStatement(
-                resource,
-                property,
-                value
+            resource,
+            property,
+            value
         ));
     }
 
@@ -107,9 +107,9 @@ public class Base {
             mapper.map(element, value);
 
             result.add(model.createStatement(
-                    resource,
-                    property,
-                    element
+                resource,
+                property,
+                element
             ));
         }
 

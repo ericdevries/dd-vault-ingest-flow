@@ -30,23 +30,23 @@ public class VaultMetadata extends Base {
 
         // VLT003
         toBasicTerm(resource, DansDVMetadata.dansBagId, deposit.getBagId())
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         // VLT004 and also VLT004(A), nbn is set during the loading
         toBasicTerm(resource, DansDVMetadata.dansNbn, deposit.getNbn())
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         // VLT005A
         toBasicTerm(resource, DansDVMetadata.dansOtherId, deposit.getDoi())
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         // VLT007
         toBasicTerm(resource, DansDVMetadata.dansSwordToken, deposit.getSwordToken())
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         // VLT008
         toBasicTerm(resource, DansDVMetadata.dansDataSupplier, deposit.getDepositorId())
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         return result;
     }

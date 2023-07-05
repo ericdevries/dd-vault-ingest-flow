@@ -40,8 +40,8 @@ public class IngestAreaDirectoryWatcher implements IngestAreaWatcher {
     public void start(IngestAreaItemCreated callback) {
         log.debug("Starting listener; path = {}", directory);
         var filter = FileFilterUtils.and(
-                FileFilterUtils.directoryFileFilter(),
-                FileFilterUtils.asFileFilter(f -> f.getParentFile().equals(directory.toFile()))
+            FileFilterUtils.directoryFileFilter(),
+            FileFilterUtils.asFileFilter(f -> f.getParentFile().equals(directory.toFile()))
         );
 
         var observer = new FileAlterationObserver(directory.toFile(), filter);
@@ -55,7 +55,8 @@ public class IngestAreaDirectoryWatcher implements IngestAreaWatcher {
         try {
             log.debug("Starting FileAlterationMonitor for directory {}", directory);
             monitor.start();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new IllegalStateException(String.format("Could not start monitoring %s", directory), e);
         }
     }
@@ -65,7 +66,8 @@ public class IngestAreaDirectoryWatcher implements IngestAreaWatcher {
             try (var files = Files.list(directory)) {
                 files.filter(Files::isDirectory).forEach(dir -> callback.onItemCreated(dir.toAbsolutePath()));
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new IllegalStateException(String.format("Could not list %s", directory), e);
         }
     }

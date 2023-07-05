@@ -31,10 +31,10 @@ public class OriginalFilepaths {
         // return the logical path if there is a mapping for the given path
         // otherwise, just the path
         return mappings.stream()
-                .filter(mapping -> mapping.getPhysicalPath().equals(physicalPath))
-                .map(Mapping::getLogicalPath)
-                .findFirst()
-                .orElse(physicalPath);
+            .filter(mapping -> mapping.getPhysicalPath().equals(physicalPath))
+            .map(Mapping::getLogicalPath)
+            .findFirst()
+            .orElse(physicalPath);
     }
 
     public Path getPhysicalPath(Path logicalPath) {
@@ -42,10 +42,10 @@ public class OriginalFilepaths {
         // otherwise, just the path
         // note this does not check if paths exist
         return mappings.stream()
-                .filter(mapping -> mapping.getLogicalPath().equals(logicalPath))
-                .map(Mapping::getPhysicalPath)
-                .findFirst()
-                .orElse(logicalPath);
+            .filter(mapping -> mapping.getLogicalPath().equals(logicalPath))
+            .map(Mapping::getPhysicalPath)
+            .findFirst()
+            .orElse(logicalPath);
     }
 
     public void addMapping(Path logicalPath, Path physicalPath) {

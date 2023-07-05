@@ -33,12 +33,12 @@ public class InCollection extends Base {
 
     static List<String> getInCollections(Document document) {
         var results = XPathEvaluator.strings(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/ddm:inCollection" +
-                                "[@subjectScheme = 'DANS Collection' and @schemeURI = 'https://vocabularies.dans.knaw.nl/collections']" +
-                                "/@valueURI")
-                .map(String::trim)
-                .distinct()
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:dcmiMetadata/ddm:inCollection" +
+                    "[@subjectScheme = 'DANS Collection' and @schemeURI = 'https://vocabularies.dans.knaw.nl/collections']" +
+                    "/@valueURI")
+            .map(String::trim)
+            .distinct()
+            .collect(Collectors.toList());
 
         return List.copyOf(results);
     }

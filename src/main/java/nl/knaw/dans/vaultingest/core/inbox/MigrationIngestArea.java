@@ -30,10 +30,10 @@ public class MigrationIngestArea {
     private final Outbox outbox;
 
     public MigrationIngestArea(
-            ExecutorService executorService,
-            DepositToBagProcess depositToBagProcess,
-            Path inboxPath,
-            Outbox outbox
+        ExecutorService executorService,
+        DepositToBagProcess depositToBagProcess,
+        Path inboxPath,
+        Outbox outbox
     ) {
         this.executorService = executorService;
         this.depositToBagProcess = depositToBagProcess;
@@ -47,7 +47,7 @@ public class MigrationIngestArea {
         // FIXME the current ingestflow has support for batches too, this is not currently implemented
         if (!path.startsWith(inboxPath)) {
             throw new IllegalArgumentException(
-                    String.format("Input directory must be subdirectory of %s. Provide correct absolute path or a path relative to this directory.", inboxPath));
+                String.format("Input directory must be subdirectory of %s. Provide correct absolute path or a path relative to this directory.", inboxPath));
         }
 
         log.info("Deposit found in inbox; path = {}", depositPath);

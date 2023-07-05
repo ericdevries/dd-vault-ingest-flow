@@ -67,12 +67,9 @@ public class Terms extends Base {
         // TRM003
         var accessRights = DataFile.getAccessRights(ddm);
 
-        if ("NO_ACCESS".equals(accessRights)) {
-            return false;
-        }
+        return !"NO_ACCESS".equals(accessRights);
 
         // TRM004
-        return true;
     }
 
     static String getTermsOfAccess(Document ddm, Collection<DepositFile> files) {
@@ -89,9 +86,9 @@ public class Terms extends Base {
         }
 
         var accessRights = XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:dcmiMetadata/dcterms:accessRights")
-                .map(String::trim)
-                .findFirst()
-                .orElse(null);
+            .map(String::trim)
+            .findFirst()
+            .orElse(null);
 
         if (containsNone) {
             return accessRights != null ? accessRights : "N/a";
@@ -101,9 +98,9 @@ public class Terms extends Base {
         var knownOrRestrictive = Set.of("RESTRICTED_REQUEST", "KNOWN");
 
         var accessibleToRights = files.stream()
-                .map(f -> DataFile.getAccessibleToRights(f.getFilesXmlNode()))
-                .filter(Objects::nonNull)
-                .anyMatch(knownOrRestrictive::contains);
+            .map(f -> DataFile.getAccessibleToRights(f.getFilesXmlNode()))
+            .filter(Objects::nonNull)
+            .anyMatch(knownOrRestrictive::contains);
 
         if (accessibleToRights) {
             return accessRights != null ? accessRights : "";

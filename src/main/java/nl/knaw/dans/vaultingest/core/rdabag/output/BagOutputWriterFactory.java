@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.output;
 
-
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 
 import java.io.IOException;

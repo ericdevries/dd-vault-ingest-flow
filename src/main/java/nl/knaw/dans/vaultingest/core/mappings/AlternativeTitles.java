@@ -35,11 +35,11 @@ public class AlternativeTitles {
 
     static List<String> getAlternativeTitles(Document ddm) {
         return XPathEvaluator.strings(ddm,
-                        "/ddm:DDM/ddm:dcmiMetadata/dcterms:title",
-                        "/ddm:DDM/ddm:dcmiMetadata/dc:title",
-                        "/ddm:DDM/ddm:dcmiMetadata/dcterms:alternative")
-                .map(String::trim)
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:dcmiMetadata/dcterms:title",
+                "/ddm:DDM/ddm:dcmiMetadata/dc:title",
+                "/ddm:DDM/ddm:dcmiMetadata/dcterms:alternative")
+            .map(String::trim)
+            .collect(Collectors.toList());
     }
 
     static Optional<Statement> toAlternativeTitle(Resource resource, Collection<String> titles) {
@@ -50,11 +50,11 @@ public class AlternativeTitles {
         var model = resource.getModel();
 
         return titles.stream()
-                .map(title -> model.createStatement(
-                        resource,
-                        DCTerms.alternative,
-                        model.createLiteral(title)
-                ))
-                .findFirst();
+            .map(title -> model.createStatement(
+                resource,
+                DCTerms.alternative,
+                model.createLiteral(title)
+            ))
+            .findFirst();
     }
 }

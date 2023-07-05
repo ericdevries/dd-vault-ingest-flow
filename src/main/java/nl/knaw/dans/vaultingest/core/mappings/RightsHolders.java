@@ -35,7 +35,7 @@ public class RightsHolders extends Base {
     static List<String> getOtherIds(Document document) {
         // RIG001
         return XPathEvaluator.strings(document, "/ddm:DDM/ddm:dcmiMetadata/dcterms:rightsHolder")
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toDansRightsHolders(Resource resource, Collection<String> rightsHolders) {

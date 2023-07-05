@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class Sources extends Base {
 
     public static List<Statement> toRDF(Resource resource, Deposit deposit) {
@@ -35,9 +34,9 @@ public class Sources extends Base {
 
     static List<String> getSources(Document document) {
         return XPathEvaluator.strings(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/dcterms:source")
-                .map(String::trim)
-                .collect(Collectors.toList());
+                "/ddm:DDM/ddm:dcmiMetadata/dcterms:source")
+            .map(String::trim)
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toDataSources(Resource resource, Collection<String> sources) {

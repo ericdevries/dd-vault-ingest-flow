@@ -42,9 +42,9 @@ public class DatasetOrganization implements DatasetRelation {
     }
 
     public Identifier getIdentifier() {
-        var schemes = new Identifier[]{
-                this.isni,
-                this.viaf
+        var schemes = new Identifier[] {
+            this.isni,
+            this.viaf
         };
 
         // return first match

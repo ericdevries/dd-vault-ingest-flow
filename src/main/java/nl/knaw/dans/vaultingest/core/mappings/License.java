@@ -35,11 +35,11 @@ public class License extends Base {
         var dctermsNamespace = document.lookupPrefix(XmlNamespaces.NAMESPACE_DCTERMS);
 
         return XPathEvaluator.strings(document,
-                        String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:license[@xsi:type='%s:URI']", dctermsNamespace)
-                )
-                .map(String::trim)
-                .findFirst()
-                .orElse(null);
+                String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:license[@xsi:type='%s:URI']", dctermsNamespace)
+            )
+            .map(String::trim)
+            .findFirst()
+            .orElse(null);
     }
 
     static Optional<Statement> toLicense(Resource resource, String license) {

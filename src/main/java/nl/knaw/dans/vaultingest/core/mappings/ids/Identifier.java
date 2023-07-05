@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public abstract class Identifier {
     private final String id;
     private final Pattern pattern = Pattern
-            .compile("https?://.*/([-0-9]+[0-9Xx])$");
+        .compile("https?://.*/([-0-9]+[0-9Xx])$");
 
     protected Identifier(String id) {
         this.id = id;
@@ -43,9 +43,9 @@ public abstract class Identifier {
             if (m.find()) {
                 String s = m.group(1).replaceAll("-", "");
                 return StringUtils
-                        .leftPad(s, 16, '0')
-                        .replaceAll("(\\d\\d\\d\\d)", "$1-")
-                        .replaceAll("-$", "");
+                    .leftPad(s, 16, '0')
+                    .replaceAll("(\\d\\d\\d\\d)", "$1-")
+                    .replaceAll("-$", "");
             }
         }
         return value;

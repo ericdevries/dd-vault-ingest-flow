@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -36,8 +35,6 @@ public class Deposit {
     private final String id;
     private final Document ddm;
     private final Document filesXml;
-    private final LanguageResolver languageResolver;
-    private final CountryResolver countryResolver;
     private final List<DepositFile> depositFiles;
     private final Path path;
     private final DepositProperties properties;
@@ -81,14 +78,6 @@ public class Deposit {
         return bag.getMetadataValue(key);
     }
 
-    public Optional<String> resolveLanguage(String languageCode) {
-        return Optional.ofNullable(languageResolver.resolve(languageCode));
-    }
-
-    public CountryResolver getCountryResolver() {
-        return countryResolver;
-    }
-
     public String getNbn() {
         return nbn;
     }
@@ -128,9 +117,9 @@ public class Deposit {
 
     public String getDoi() {
         var prefix = ddm.lookupPrefix(XmlNamespaces.NAMESPACE_ID_TYPE);
-        var expr = new String[]{
-                String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix),
-                String.format("/ddm:DDM/ddm:dcmiMetadata/dc:identifier[@xsi:type='%s:DOI']", prefix)
+        var expr = new String[] {
+            String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type='%s:DOI']", prefix),
+            String.format("/ddm:DDM/ddm:dcmiMetadata/dc:identifier[@xsi:type='%s:DOI']", prefix)
         };
 
         var dois = XPathEvaluator.strings(ddm, expr).collect(Collectors.toList());

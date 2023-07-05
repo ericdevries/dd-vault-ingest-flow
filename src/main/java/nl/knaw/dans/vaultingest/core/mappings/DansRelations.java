@@ -56,22 +56,22 @@ public class DansRelations extends Base {
 
     static List<DansRelation> getDansRelations(Document document) {
         var queries = labelToType.keySet().stream()
-                .map(name -> "/ddm:DDM/ddm:dcmiMetadata/ddm:" + name)
-                .toArray(String[]::new);
+            .map(name -> "/ddm:DDM/ddm:dcmiMetadata/ddm:" + name)
+            .toArray(String[]::new);
 
         return XPathEvaluator.nodes(document.getDocumentElement(), queries)
-                .map(item -> {
-                    var label = labelToType.get(item.getLocalName());
-                    var text = item.getTextContent();
-                    var uri = XPathEvaluator.strings(item, "@href").findFirst().orElse(null);
+            .map(item -> {
+                var label = labelToType.get(item.getLocalName());
+                var text = item.getTextContent();
+                var uri = XPathEvaluator.strings(item, "@href").findFirst().orElse(null);
 
-                    return DansRelation.builder()
-                            .type(label)
-                            .text(text)
-                            .uri(uri)
-                            .build();
-                })
-                .collect(Collectors.toList());
+                return DansRelation.builder()
+                    .type(label)
+                    .text(text)
+                    .uri(uri)
+                    .build();
+            })
+            .collect(Collectors.toList());
     }
 
     static List<Statement> toDansRelations(Resource resource, Collection<DansRelation> relations) {

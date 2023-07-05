@@ -38,30 +38,30 @@ public class DataFile extends Base {
 
         // FIL001A
         toBasicTerm(resource, SchemaDO.name, depositFile.getPath().toString())
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         // FIL002A
         var directoryLabel = Optional.ofNullable(depositFile.getDirectoryLabel())
-                .map(Path::toString)
-                .orElse(null);
+            .map(Path::toString)
+            .orElse(null);
 
         toBasicTerm(resource, DVCore.directoryLabel, directoryLabel)
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         // FIL004A
         toBasicTerm(resource, SchemaDO.description, getDescription(depositFile.getFilesXmlNode()))
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         // FIL005, FIL006
         toBasicTerm(resource, DVCore.restricted, getRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()))
-                .ifPresent(result::add);
+            .ifPresent(result::add);
 
         return result;
     }
 
     static String getDescription(Node filesXmlNode) {
         return XPathEvaluator.strings(filesXmlNode, "dcterms:description")
-                .findFirst().orElse(null);
+            .findFirst().orElse(null);
     }
 
     static String getRestricted(Node filesXmlNode, Node ddm) {
@@ -87,24 +87,24 @@ public class DataFile extends Base {
 
     static String getAccessibleToRights(Node filesXmlNode) {
         return XPathEvaluator.strings(filesXmlNode, "files:accessibleToRights")
-                .findFirst()
-                .orElse(null);
+            .findFirst()
+            .orElse(null);
     }
 
     static String getAccessRights(Node ddm) {
         return XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/ddm:accessRights")
-                .map(String::trim)
-                .findFirst()
-                .orElse(null);
+            .map(String::trim)
+            .findFirst()
+            .orElse(null);
     }
 
     // TODO add mapping if FIL008 is mapped in the document
     static String getEmbargo(Node ddm) {
         var value = XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/ddm:available")
-                .findFirst()
-                .map(String::trim)
-                .map(formatter::parse)
-                .orElse(null);
+            .findFirst()
+            .map(String::trim)
+            .map(formatter::parse)
+            .orElse(null);
 
         if (value != null) {
             var now = OffsetDateTime.now();

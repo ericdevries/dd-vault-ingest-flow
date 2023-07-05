@@ -32,5 +32,4 @@ public class DAI extends Identifier {
         return "https://dai.nl/";
     }
 
-
 }

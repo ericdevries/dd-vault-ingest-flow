@@ -40,30 +40,30 @@ public class OtherIds extends Base {
 
         // CIT003, data from bag
         organizationIdentifiers
-                .stream()
-                .filter(value -> {
-                    var parts = value.split(":", 2);
-                    return parts.length == 2 && StringUtils.isNotBlank(parts[0]) && StringUtils.isNotBlank(parts[1]);
-                })
-                .map(value -> {
-                    var parts = value.split(":", 2);
-                    return OtherId.builder()
-                            .agency(parts[0])
-                            .value(parts[1])
-                            .build();
-                })
-                .findFirst()
-                .ifPresent(results::add);
+            .stream()
+            .filter(value -> {
+                var parts = value.split(":", 2);
+                return parts.length == 2 && StringUtils.isNotBlank(parts[0]) && StringUtils.isNotBlank(parts[1]);
+            })
+            .map(value -> {
+                var parts = value.split(":", 2);
+                return OtherId.builder()
+                    .agency(parts[0])
+                    .value(parts[1])
+                    .build();
+            })
+            .findFirst()
+            .ifPresent(results::add);
 
         // CIT004, data from ddm
         XPathEvaluator.strings(document,
-                        "/ddm:DDM/ddm:dcmiMetadata/ddm:identifier[not(@xsi:type)]",
-                        "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[not(@xsi:type)]")
-                .map(identifier -> OtherId.builder()
-                        .value(identifier)
-                        .build()
-                )
-                .forEach(results::add);
+                "/ddm:DDM/ddm:dcmiMetadata/ddm:identifier[not(@xsi:type)]",
+                "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[not(@xsi:type)]")
+            .map(identifier -> OtherId.builder()
+                .value(identifier)
+                .build()
+            )
+            .forEach(results::add);
 
         return results;
     }

@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.output;
 
-
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 
 import java.io.IOException;
@@ -33,6 +32,7 @@ public class ZipBagOutputWriterFactory implements BagOutputWriterFactory {
     public BagOutputWriter createBagOutputWriter(Deposit deposit) throws IOException {
         var doi = Objects.requireNonNull(deposit.getDoi(), "Deposit DOI is null");
         // TODO version should be coming from the deposit, or should it?
+        // this is to be determined by Jan and Linda
         var output = outputDir.resolve(outputFilename(doi, "1.0"));
         return new ZipBagOutputWriter(output);
     }

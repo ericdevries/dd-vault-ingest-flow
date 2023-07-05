@@ -41,9 +41,9 @@ public class AvailableDate extends Base {
 
     static LocalDate getAvailableDate(Document document) {
         return XPathEvaluator.strings(document, "/ddm:DDM/ddm:profile/ddm:available")
-                .findFirst()
-                .map(AvailableDate::toYearMonthDayFormat)
-                .orElse(null);
+            .findFirst()
+            .map(AvailableDate::toYearMonthDayFormat)
+            .orElse(null);
     }
 
     static LocalDate toYearMonthDayFormat(String text) {

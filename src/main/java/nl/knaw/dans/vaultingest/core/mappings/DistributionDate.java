@@ -36,9 +36,9 @@ public class DistributionDate extends Base {
 
     static String getDistributionDate(Document document) {
         return XPathEvaluator.strings(document, "/ddm:DDM/ddm:profile/ddm:available")
-                .findFirst()
-                .map(DistributionDate::toYearMonthDayFormat)
-                .orElse(null);
+            .findFirst()
+            .map(DistributionDate::toYearMonthDayFormat)
+            .orElse(null);
     }
 
     static String toYearMonthDayFormat(String text) {
