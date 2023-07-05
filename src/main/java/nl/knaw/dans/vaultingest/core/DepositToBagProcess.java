@@ -24,7 +24,7 @@ import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriterFactory;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
+import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class DepositToBagProcess {
 
     private final RdaBagWriter rdaBagWriter;
     private final BagOutputWriterFactory bagOutputWriterFactory;
-    private final VaultCatalogService vaultCatalogService;
+    private final VaultCatalogRepository vaultCatalogService;
     private final DepositManager depositManager;
     private final DepositValidator depositValidator;
     private final IdMinter idMinter;
@@ -43,7 +43,7 @@ public class DepositToBagProcess {
     public DepositToBagProcess(
         RdaBagWriterFactory rdaBagWriterFactory,
         BagOutputWriterFactory bagOutputWriterFactory,
-        VaultCatalogService vaultCatalogService,
+        VaultCatalogRepository vaultCatalogService,
         DepositManager depositManager,
         DepositValidator depositValidator,
         IdMinter idMinter
@@ -79,10 +79,10 @@ public class DepositToBagProcess {
         }
     }
 
-    void processDeposit(Deposit deposit) throws InvalidDepositException {
+    void processDeposit(Deposit deposit) throws InvalidDepositException, IOException {
         if (deposit.isUpdate()) {
             // check if deposit exists in vault catalog
-            var catalogDeposit = vaultCatalogService.findDeposit(deposit.getSwordToken())
+            var catalogDeposit = vaultCatalogService.findDeposit(deposit.getIsVersionOf())
                 .orElseThrow(() -> new InvalidDepositException(String.format("Deposit with sword token %s not found in vault catalog", deposit.getSwordToken())));
 
             // compare user id

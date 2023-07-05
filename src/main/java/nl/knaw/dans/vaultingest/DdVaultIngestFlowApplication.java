@@ -22,10 +22,11 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.client.DepositValidator;
+import nl.knaw.dans.vaultingest.client.OcflObjectVersionApi;
+import nl.knaw.dans.vaultingest.client.VaultCatalogClient;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
 import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
-import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
 import nl.knaw.dans.vaultingest.core.deposit.DepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
@@ -33,15 +34,12 @@ import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.output.ZipBagOutputWriterFactory;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogDeposit;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import nl.knaw.dans.vaultingest.health.DansBagValidatorHealthCheck;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Optional;
 
 @Slf4j
 public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowConfiguration> {
@@ -86,24 +84,22 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             languageResolver,
             countryResolver
         );
+
         var outputWriterFactory = new ZipBagOutputWriterFactory(configuration.getIngestFlow().getRdaBagOutputDir());
+
+        var ocflObjectVersionApi = new OcflObjectVersionApi();
+        ocflObjectVersionApi.setCustomBaseUrl(configuration.getVaultCatalog().getUrl().toString());
+
+        var vaultCatalogRepository = new VaultCatalogClient(ocflObjectVersionApi);
 
         var depositToBagProcess = new DepositToBagProcess(
             rdaBagWriterFactory,
             outputWriterFactory,
-            new VaultCatalogService() {
-
-                @Override
-                public void registerDeposit(Deposit deposit) {
-                    log.info("Registering deposit: {}", deposit);
-                }
-
-                @Override
-                public Optional<VaultCatalogDeposit> findDeposit(String swordToken) {
-                    return Optional.empty();
-                }
-            },
-            depositFactory, depositValidator, new IdMinter());
+            vaultCatalogRepository,
+            depositFactory,
+            depositValidator,
+            new IdMinter()
+        );
 
         var taskQueue = configuration.getIngestFlow().getTaskQueue().build(environment);
 

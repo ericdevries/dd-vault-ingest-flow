@@ -579,8 +579,7 @@ public class OaiOreConverterIntegrationTest {
     }
 
     // VLT007
-    // TODO make this work
-    //        @Test
+    @Test
     void dansSwordToken() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
@@ -590,7 +589,7 @@ public class OaiOreConverterIntegrationTest {
         assertThat(statements)
             .extracting("object")
             .map(Object::toString)
-            .containsOnly("1.1");
+            .containsOnly("sword:0b9bb5ee-3187-4387-bb39-2c09536c79f7");
     }
 
     // TRM001

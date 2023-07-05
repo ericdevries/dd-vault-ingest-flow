@@ -29,6 +29,8 @@ public class DepositProperties {
     private static final String STATE_DESCRIPTION = "state.description";
     private static final String IDENTIFIER_DOI = "identifier.doi";
     private static final String DEPOSITOR_ID = "depositor.userId";
+    private static final String DATAVERSE_SWORD_TOKEN = "dataverse.sword-token";
+
     private final Configuration configuration;
     private final FileBasedConfigurationBuilder<FileBasedConfiguration> builder;
 
@@ -86,4 +88,7 @@ public class DepositProperties {
         return configuration.getString(DATAVERSE_BAG_ID);
     }
 
+    public String getSwordToken() {
+        return configuration.getString(DATAVERSE_SWORD_TOKEN);
+    }
 }

@@ -90,8 +90,12 @@ public class Deposit {
         return bag.getMetadataValue("Is-Version-Of").size() > 0;
     }
 
-    public String getSwordToken() {
+    public String getIsVersionOf() {
         return bag.getMetadataValue("Is-Version-Of").stream().findFirst().orElse(null);
+    }
+
+    public String getSwordToken() {
+        return properties.getSwordToken();
     }
 
     public String getDepositorId() {

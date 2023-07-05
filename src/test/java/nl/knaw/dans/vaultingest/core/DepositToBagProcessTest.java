@@ -29,7 +29,7 @@ import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
+import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -47,7 +47,7 @@ class DepositToBagProcessTest {
     void process_should_handle_deposit_correctly() throws Exception {
         var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var deposit = getBasicDeposit();
@@ -79,7 +79,7 @@ class DepositToBagProcessTest {
     void process_should_move_deposit_to_failed_outbox_when_DepositManager_throws_exception() throws Exception {
         var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var depositManager = new TestDepositManager(null);
@@ -105,7 +105,7 @@ class DepositToBagProcessTest {
     void process_should_move_deposit_to_REJECTED_outbox_when_validator_throws_exception() throws Exception {
         var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         Mockito.doThrow(new InvalidDepositException("Invalid deposit!"))
@@ -135,7 +135,7 @@ class DepositToBagProcessTest {
     void process_should_move_deposit_to_REJECTED_outbox_when_vaultCatalog_returns_no_result_for_update() throws Exception {
         var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         Mockito.when(vaultCatalogService.findDeposit(Mockito.any()))
@@ -164,7 +164,7 @@ class DepositToBagProcessTest {
     void processDeposit() throws Exception {
         var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
         var depositToBagProcess = new DepositToBagProcess(
@@ -207,7 +207,7 @@ class DepositToBagProcessTest {
         var deposit = getBasicDeposit();
 
         var rdaBagWriter = Mockito.mock(RdaBagWriter.class);
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
@@ -226,7 +226,7 @@ class DepositToBagProcessTest {
     void process_should_fail_if_update_cannot_be_found() throws Exception {
         var deposit = getBasicDepositAsUpdate();
         var rdaBagWriter = getWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
 
         Mockito.doReturn(Optional.empty())
             .when(vaultCatalogService).findDeposit(Mockito.any());

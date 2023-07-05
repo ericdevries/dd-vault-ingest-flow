@@ -17,11 +17,12 @@ package nl.knaw.dans.vaultingest.core.vaultcatalog;
 
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 
+import java.io.IOException;
 import java.util.Optional;
 
-public interface VaultCatalogService {
+public interface VaultCatalogRepository {
 
-    void registerDeposit(Deposit deposit);
+    void registerDeposit(Deposit deposit) throws IOException;
 
-    Optional<VaultCatalogDeposit> findDeposit(String swordToken);
+    Optional<VaultCatalogDeposit> findDeposit(String swordToken) throws IOException;
 }
