@@ -16,7 +16,7 @@
 package nl.knaw.dans.vaultingest.core.inbox;
 
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
-import nl.knaw.dans.vaultingest.core.domain.Outbox;
+import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ZipBagOutputWriterTest {
 
-    Path OUTPUT = Path.of("target/test", getClass().getSimpleName(), "output.zip");
+    final Path OUTPUT = Path.of("target/test", getClass().getSimpleName(), "output.zip");
 
     @BeforeEach
     void setUp() throws IOException {

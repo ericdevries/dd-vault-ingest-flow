@@ -17,7 +17,7 @@ package nl.knaw.dans.vaultingest.core.inbox;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
-import nl.knaw.dans.vaultingest.core.domain.Outbox;
+import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;

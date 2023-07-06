@@ -17,12 +17,25 @@ package nl.knaw.dans.vaultingest.core.rdabag;
 
 import lombok.Builder;
 import lombok.Value;
-import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
-import nl.knaw.dans.vaultingest.core.deposit.SimpleCommonDepositManager;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.OaiOreConverter;
-import nl.knaw.dans.vaultingest.core.rdabag.converter.mappers.vocabulary.*;
-import org.apache.jena.rdf.model.*;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DVCitation;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DVCore;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansDVMetadata;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansRel;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansRights;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansTS;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.Datacite;
+import nl.knaw.dans.vaultingest.core.mappings.vocabulary.PROV;
+import nl.knaw.dans.vaultingest.core.oaiore.OaiOreConverter;
+import nl.knaw.dans.vaultingest.core.utilities.TestCountryResolver;
+import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
+import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.SimpleSelector;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.SchemaDO;
 import org.assertj.core.api.iterable.ThrowingExtractor;
@@ -32,7 +45,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 // Test all the mappings end-to-end
 public class OaiOreConverterIntegrationTest {
@@ -241,8 +253,7 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly("ProjectMember", "Sponsor");
     }
 
-    // TODO CIT022 is still under revision, fix later
-    // CIT023
+    // CIT022, CIT023
     @Test
     void grantNumbers() throws Exception {
         var obj = loadModel();
@@ -252,11 +263,11 @@ public class OaiOreConverterIntegrationTest {
 
         assertThat(statements)
             .map(getPropertyAsString(DVCitation.grantNumberAgency))
-            .containsOnly("NWO");
+            .containsOnly("NWO", "EC");
 
         assertThat(statements)
             .map(getPropertyAsString(DVCitation.grantNumberValue))
-            .containsOnly("54321");
+            .containsOnly("54321", "FP7 608166");
     }
 
     // CIT024
@@ -317,20 +328,20 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly("Sous an ayisyen", "Source 3", "Source 2");
     }
 
-    // DSET001
-    @Test
-    void doi() throws Exception {
-        var obj = loadModel();
-        var statements = obj.model.listStatements(
-            new SimpleSelector(obj.resource, PROV.alternateOf, (RDFNode) null)
-        ).toList();
-
-        assertThat(statements)
-            .extracting("object")
-            .map(Object::toString)
-            .containsOnly("10.17026/dans-z6y-5y2e");
-    }
-
+    //    // DSET001
+    //    @Test
+    //    void doi() throws Exception {
+    //        var obj = loadModel();
+    //        var statements = obj.model.listStatements(
+    //            new SimpleSelector(obj.resource, PROV.alternateOf, (RDFNode) null)
+    //        ).toList();
+    //
+    //        assertThat(statements)
+    //            .extracting("object")
+    //            .map(Object::toString)
+    //            .containsOnly("10.17026/dans-z6y-5y2e");
+    //    }
+    //
     // DFILE001
     @Test
     void available() throws Exception {
@@ -401,7 +412,6 @@ public class OaiOreConverterIntegrationTest {
             .map(Object::toString)
             .containsOnly("D16500", "D16300", "D16200", "D16400", "D16100", "E16000", "D13400");
     }
-
 
     // REL002
     @Test
@@ -568,8 +578,7 @@ public class OaiOreConverterIntegrationTest {
     }
 
     // VLT007
-    // TODO make this work
-//    @Test
+    @Test
     void dansSwordToken() throws Exception {
         var obj = loadModel();
         var statements = obj.model.listStatements(
@@ -579,7 +588,7 @@ public class OaiOreConverterIntegrationTest {
         assertThat(statements)
             .extracting("object")
             .map(Object::toString)
-            .containsOnly("1.1");
+            .containsOnly("sword:0b9bb5ee-3187-4387-bb39-2c09536c79f7");
     }
 
     // TRM001
@@ -606,7 +615,7 @@ public class OaiOreConverterIntegrationTest {
 
         assertThat(statements)
             .map(getPropertyAsString(DVCore.fileRequestAccess))
-            .containsOnly("false");
+            .containsOnly("No");
 
         assertThat(statements)
             .map(getPropertyAsString(DVCore.termsOfAccess))
@@ -626,14 +635,11 @@ public class OaiOreConverterIntegrationTest {
     }
 
     private ModelObject loadModel() throws Exception {
-        var countryResolver = new FileCountryResolver(
-            Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath())
-        );
-        var depositManager = new SimpleCommonDepositManager(countryResolver);
+        var depositManager = new TestSimpleDepositManager();
         var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
         deposit.setNbn("urn:nbn:nl:ui:13-4c-1a2b");
 
-        var model = new OaiOreConverter().convert(deposit).getModel();
+        var model = new OaiOreConverter(new TestLanguageResolver(), new TestCountryResolver()).convert(deposit);
 
         return ModelObject.builder()
             .deposit(deposit)

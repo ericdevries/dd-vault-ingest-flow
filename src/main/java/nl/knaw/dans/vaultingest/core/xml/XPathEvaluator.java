@@ -99,7 +99,7 @@ public final class XPathEvaluator implements XmlNamespaces {
     }
 
     private static synchronized Object evaluateXpath(Node node, String expr) throws XPathExpressionException {
-//        getXpath().
+        //        getXpath().
         return getXpath().compile(expr).evaluate(node, XPathConstants.NODESET);
     }
 
@@ -113,7 +113,7 @@ public final class XPathEvaluator implements XmlNamespaces {
     private static Stream<Node> xpathsToStream(Node node, String... expressions) throws XPathExpressionException {
         var items = new ArrayList<Stream<Node>>();
 
-        for (var expr: expressions) {
+        for (var expr : expressions) {
             var item = xpathToStream(node, expr);
             items.add(item);
         }

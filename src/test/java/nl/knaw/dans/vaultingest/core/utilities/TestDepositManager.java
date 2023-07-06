@@ -15,12 +15,13 @@
  */
 package nl.knaw.dans.vaultingest.core.utilities;
 
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 
 import java.nio.file.Path;
 
-public class TestDepositManager implements DepositManager {
+public class TestDepositManager extends DepositManager {
     private final Deposit deposit;
 
     private boolean saveDepositCalled = false;
@@ -28,6 +29,7 @@ public class TestDepositManager implements DepositManager {
     private String lastMessage = null;
 
     public TestDepositManager(Deposit deposit) {
+        super(new XmlReader());
         this.deposit = deposit;
     }
 

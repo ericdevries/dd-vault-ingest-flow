@@ -16,37 +16,38 @@
 package nl.knaw.dans.vaultingest.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.Outbox;
-import nl.knaw.dans.vaultingest.core.domain.ids.DAI;
-import nl.knaw.dans.vaultingest.core.domain.metadata.DatasetAuthor;
-import nl.knaw.dans.vaultingest.core.domain.metadata.Description;
+import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
-import nl.knaw.dans.vaultingest.core.utilities.*;
+import nl.knaw.dans.vaultingest.core.utilities.InMemoryOutputWriter;
+import nl.knaw.dans.vaultingest.core.utilities.NullBagOutputWriter;
+import nl.knaw.dans.vaultingest.core.utilities.TestCountryResolver;
+import nl.knaw.dans.vaultingest.core.utilities.TestDepositManager;
+import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
+import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
+import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DepositToBagProcessTest {
 
     @Test
     void process_should_handle_deposit_correctly() throws Exception {
-        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
+        var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var deposit = getBasicDeposit();
@@ -76,9 +77,9 @@ class DepositToBagProcessTest {
 
     @Test
     void process_should_move_deposit_to_failed_outbox_when_DepositManager_throws_exception() throws Exception {
-        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
+        var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var depositManager = new TestDepositManager(null);
@@ -102,9 +103,9 @@ class DepositToBagProcessTest {
 
     @Test
     void process_should_move_deposit_to_REJECTED_outbox_when_validator_throws_exception() throws Exception {
-        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
+        var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         Mockito.doThrow(new InvalidDepositException("Invalid deposit!"))
@@ -130,12 +131,11 @@ class DepositToBagProcessTest {
         assertEquals("Invalid deposit!", depositManager.getLastMessage());
     }
 
-
     @Test
     void process_should_move_deposit_to_REJECTED_outbox_when_vaultCatalog_returns_no_result_for_update() throws Exception {
-        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
+        var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         Mockito.when(vaultCatalogService.findDeposit(Mockito.any()))
@@ -162,9 +162,9 @@ class DepositToBagProcessTest {
 
     @Test
     void processDeposit() throws Exception {
-        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
+        var rdaBagWriter = getWriter();
         var output = new InMemoryOutputWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
         var depositToBagProcess = new DepositToBagProcess(
@@ -176,41 +176,7 @@ class DepositToBagProcessTest {
             new IdMinter()
         );
 
-        var deposit = TestDeposit.builder()
-            .id(UUID.randomUUID().toString())
-            .doi("doi:10.17026/dans-12345")
-            .title("The beautiful title")
-            .descriptions(List.of(
-                Description.builder().value("Description 1").build(),
-                Description.builder().value("Description 2").build()
-            ))
-            .authors(List.of(
-                DatasetAuthor.builder()
-                    .initials("EJ")
-                    .name("Eric")
-                    .affiliation("Affiliation 1")
-                    .dai(new DAI("123456"))
-                    .build()
-            ))
-            .subject("Something about science")
-            .rightsHolder(List.of("John Rights"))
-            .requestAccess(true)
-            .termsOfAccess(List.of("Terms of access"))
-            .payloadFiles(List.of(
-                TestDepositFile.builder()
-                    .path(Path.of("data/file1.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .accessibleToRights("KNOWN")
-                    .build(),
-                TestDepositFile.builder()
-                    .path(Path.of("data/file2.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .build()
-            ))
-            .build();
-
+        var deposit = getBasicDeposit();
         depositToBagProcess.processDeposit(deposit);
 
         assertTrue(output.isClosed());
@@ -223,32 +189,25 @@ class DepositToBagProcessTest {
                 "manifest-md5.txt",
                 "tagmanifest-sha1.txt",
                 "tagmanifest-md5.txt",
-                "data/file1.txt",
-                "data/file2.txt",
                 "metadata/dataset.xml",
                 "metadata/files.xml",
                 "metadata/oai-ore.rdf",
                 "metadata/oai-ore.jsonld",
                 "metadata/pid-mapping.txt",
-                "metadata/datacite.xml"
+                "metadata/datacite.xml",
+                "data/random images/image02.jpeg",
+                "data/random images/image03.jpeg",
+                "data/random images/image01.png",
+                "data/a/deeper/path/With some file.txt"
             );
     }
 
     @Test
     void process_should_process_nonUpdate_deposit() throws Exception {
-        var deposit = TestDeposit.builder()
-            .id(UUID.randomUUID().toString())
-            .payloadFiles(List.of(
-                TestDepositFile.builder()
-                    .path(Path.of("data/file1.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .build()
-            ))
-            .build();
+        var deposit = getBasicDeposit();
 
         var rdaBagWriter = Mockito.mock(RdaBagWriter.class);
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
@@ -264,22 +223,10 @@ class DepositToBagProcessTest {
     }
 
     @Test
-    void process_should_fail_if_update_cannot_be_found() {
-        var deposit = TestDeposit.builder()
-            .id(UUID.randomUUID().toString())
-            .update(true)
-            .swordToken("sword-token")
-            .payloadFiles(List.of(
-                TestDepositFile.builder()
-                    .path(Path.of("data/file1.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .build()
-            ))
-            .build();
-
-        var rdaBagWriter = new DefaultRdaBagWriterFactory(new ObjectMapper()).createRdaBagWriter();
-        var vaultCatalogService = Mockito.mock(VaultCatalogService.class);
+    void process_should_fail_if_update_cannot_be_found() throws Exception {
+        var deposit = getBasicDepositAsUpdate();
+        var rdaBagWriter = getWriter();
+        var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
 
         Mockito.doReturn(Optional.empty())
             .when(vaultCatalogService).findDeposit(Mockito.any());
@@ -296,45 +243,33 @@ class DepositToBagProcessTest {
         assertThrows(InvalidDepositException.class, () -> depositToBagProcess.processDeposit(deposit));
     }
 
-    private TestDeposit getBasicDeposit() {
-        return TestDeposit.builder()
-            .id(UUID.randomUUID().toString())
-            .doi("doi:10.17026/dans-12345")
-            .payloadFiles(List.of(
-                TestDepositFile.builder()
-                    .path(Path.of("data/file1.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .accessibleToRights("KNOWN")
-                    .build(),
-                TestDepositFile.builder()
-                    .path(Path.of("data/file2.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .build()
-            ))
-            .build();
+    private Deposit getBasicDeposit() {
+        var manager = new TestSimpleDepositManager();
+
+        return manager.loadDeposit(
+            Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
+        );
     }
 
-    private TestDeposit getBasicDepositAsUpdate() {
-        return TestDeposit.builder()
-            .id(UUID.randomUUID().toString())
-            .doi("doi:10.17026/dans-12345")
-            .update(true)
-            .swordToken("sword-token")
-            .payloadFiles(List.of(
-                TestDepositFile.builder()
-                    .path(Path.of("data/file1.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .accessibleToRights("KNOWN")
-                    .build(),
-                TestDepositFile.builder()
-                    .path(Path.of("data/file2.txt"))
-                    .checksums(Map.of())
-                    .id(UUID.randomUUID().toString())
-                    .build()
-            ))
-            .build();
+    private Deposit getBasicDepositAsUpdate() {
+        var manager = new TestSimpleDepositManager();
+        var deposit = manager.loadDeposit(
+            Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
+        );
+
+        var spied = Mockito.spy(deposit);
+
+        Mockito.doReturn(true).when(spied).isUpdate();
+        Mockito.doReturn("sword:abc").when(spied).getSwordToken();
+
+        return spied;
+    }
+
+    private RdaBagWriter getWriter() throws Exception {
+        return new DefaultRdaBagWriterFactory(
+            new ObjectMapper(),
+            new TestLanguageResolver(),
+            new TestCountryResolver()
+        ).createRdaBagWriter();
     }
 }

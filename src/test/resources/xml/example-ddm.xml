@@ -6,10 +6,10 @@
         xmlns:dcterms="http://purl.org/dc/terms/"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:id-type="http://easy.dans.knaw.nl/schemas/vocab/identifier-type/">
-<!--        xsi:schemaLocation="-->
-<!--        http://schemas.dans.knaw.nl/dataset/ddm-v2/ -->
-<!--        file:///Users/linda//git/service/data-station/dans-schema/lib/src/main/resources/md/ddm/v2/ddm.xsd-->
-<!--        "-->
+    <!--        xsi:schemaLocation="-->
+    <!--        http://schemas.dans.knaw.nl/dataset/ddm-v2/ -->
+    <!--        file:///Users/linda//git/service/data-station/dans-schema/lib/src/main/resources/md/ddm/v2/ddm.xsd-->
+    <!--        "-->
 
     <ddm:profile>
         <!-- CIT001 -->
@@ -150,6 +150,14 @@
 
         <!-- CIT022 -->
         <!-- Rule under revision -->
+        <ddm:funding>
+            <ddm:funderName>EC</ddm:funderName>
+            <ddm:funderIdentifier funderIdentifierType="Crossref Funder ID">"https://doi.org/10.13039/501100000780</ddm:funderIdentifier>
+            <ddm:funderIdentifier funderIdentifierType="ISNI">0000 0001 2170 6158</ddm:funderIdentifier>
+            <ddm:fundingProgramme>FP7</ddm:fundingProgramme>
+            <ddm:awardNumber awardURI="info:eu-repo/grantAgreement/EC/FP7/608166">608166</ddm:awardNumber>
+            <ddm:awardTitle xml:lang="eng" acronym="RAIN">Risk Analysis of Infrastructure Networks in response to extreme weather</ddm:awardTitle>
+        </ddm:funding>
 
         <!-- CIT023 -->
         <dcterms:identifier xsi:type="id-type:NWO-PROJECTNR">54321</dcterms:identifier>
@@ -320,5 +328,6 @@
         <!-- TRM005 and TRM006 -->
         <dcterms:accessRights>Restricted files accessible under the following conditions: ...</dcterms:accessRights>
 
+        <dcterms:identifier xsi:type="id-type:DOI">doi:10.5072/DAR/EJ9ZMU</dcterms:identifier>
     </ddm:dcmiMetadata>
 </ddm:DDM>

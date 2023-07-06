@@ -21,27 +21,25 @@ import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.vaultingest.client.DepositValidator;
+import nl.knaw.dans.vaultingest.client.OcflObjectVersionApi;
+import nl.knaw.dans.vaultingest.client.VaultCatalogClient;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
-import nl.knaw.dans.vaultingest.core.deposit.CommonDepositManager;
-import nl.knaw.dans.vaultingest.core.deposit.CommonDepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
+import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
+import nl.knaw.dans.vaultingest.core.deposit.DepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
 import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.output.ZipBagOutputWriterFactory;
-import nl.knaw.dans.vaultingest.core.validator.VoidDepositValidator;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogDeposit;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
-import nl.knaw.dans.vaultingest.core.xml.XmlReaderImpl;
+import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import nl.knaw.dans.vaultingest.health.DansBagValidatorHealthCheck;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Optional;
 
 @Slf4j
 public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowConfiguration> {
@@ -62,8 +60,6 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
 
     @Override
     public void run(final DdVaultIngestFlowConfiguration configuration, final Environment environment) throws IOException {
-        createDirectories(configuration);
-
         var dansBagValidatorClient = new JerseyClientBuilder(environment)
             .withProvider(MultiPartFeature.class)
             .using(configuration.getValidateDansBag().getHttpClient())
@@ -77,33 +73,31 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
         var countryResolver = new FileCountryResolver(
             configuration.getIngestFlow().getSpatialCoverageCountryTermsPath()
         );
-        var xmlReader = new XmlReaderImpl();
-        var depositValidator = new VoidDepositValidator();
-        //        var depositValidator = new CommonDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getBaseUrl());
-        var depositFactory = new CommonDepositManager(
-            xmlReader,
-            languageResolver,
-            countryResolver);
+        var xmlReader = new XmlReader();
+        var depositValidator = new DepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
+        var depositFactory = new DepositManager(xmlReader);
 
-        var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(environment.getObjectMapper());
+        var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(
+            environment.getObjectMapper(),
+            languageResolver,
+            countryResolver
+        );
+
         var outputWriterFactory = new ZipBagOutputWriterFactory(configuration.getIngestFlow().getRdaBagOutputDir());
+
+        var ocflObjectVersionApi = new OcflObjectVersionApi();
+        ocflObjectVersionApi.setCustomBaseUrl(configuration.getVaultCatalog().getUrl().toString());
+
+        var vaultCatalogRepository = new VaultCatalogClient(ocflObjectVersionApi);
 
         var depositToBagProcess = new DepositToBagProcess(
             rdaBagWriterFactory,
             outputWriterFactory,
-            new VaultCatalogService() {
-
-                @Override
-                public void registerDeposit(Deposit deposit) {
-                    log.info("Registering deposit: {}", deposit);
-                }
-
-                @Override
-                public Optional<VaultCatalogDeposit> findDeposit(String swordToken) {
-                    return Optional.empty();
-                }
-            },
-            depositFactory, depositValidator, new IdMinter());
+            vaultCatalogRepository,
+            depositFactory,
+            depositValidator,
+            new IdMinter()
+        );
 
         var taskQueue = configuration.getIngestFlow().getTaskQueue().build(environment);
 
@@ -112,7 +106,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             configuration.getIngestFlow().getAutoIngest().getInbox()
         );
 
-        var autoIngestOutbox = new CommonDepositOutbox(configuration.getIngestFlow().getAutoIngest().getOutbox());
+        var autoIngestOutbox = new DepositOutbox(configuration.getIngestFlow().getAutoIngest().getOutbox());
         var inboxListener = new AutoIngestArea(
             taskQueue,
             ingestAreaDirectoryWatcher,
@@ -128,13 +122,5 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
                 dansBagValidatorClient, configuration.getValidateDansBag().getPingUrl()
             )
         );
-    }
-
-    void createDirectories(DdVaultIngestFlowConfiguration config) throws IOException {
-        Files.createDirectories(config.getIngestFlow().getAutoIngest().getInbox());
-        Files.createDirectories(config.getIngestFlow().getAutoIngest().getOutbox());
-        Files.createDirectories(config.getIngestFlow().getMigration().getInbox());
-        Files.createDirectories(config.getIngestFlow().getMigration().getOutbox());
-        Files.createDirectories(config.getIngestFlow().getRdaBagOutputDir());
     }
 }

@@ -81,7 +81,7 @@ public class IngestAreaDirectoryWatcher implements IngestAreaWatcher {
 
         @Override
         public void onStart(FileAlterationObserver observer) {
-            // TODO implement the duplicate logic
+            // TODO implement the duplicate logic?
         }
 
         @Override

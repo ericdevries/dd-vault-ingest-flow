@@ -16,15 +16,15 @@
 package nl.knaw.dans.vaultingest.core;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
-import nl.knaw.dans.vaultingest.core.domain.Deposit;
-import nl.knaw.dans.vaultingest.core.domain.Outbox;
+import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriterFactory;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
-import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogService;
+import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class DepositToBagProcess {
 
     private final RdaBagWriter rdaBagWriter;
     private final BagOutputWriterFactory bagOutputWriterFactory;
-    private final VaultCatalogService vaultCatalogService;
+    private final VaultCatalogRepository vaultCatalogService;
     private final DepositManager depositManager;
     private final DepositValidator depositValidator;
     private final IdMinter idMinter;
@@ -43,7 +43,7 @@ public class DepositToBagProcess {
     public DepositToBagProcess(
         RdaBagWriterFactory rdaBagWriterFactory,
         BagOutputWriterFactory bagOutputWriterFactory,
-        VaultCatalogService vaultCatalogService,
+        VaultCatalogRepository vaultCatalogService,
         DepositManager depositManager,
         DepositValidator depositValidator,
         IdMinter idMinter
@@ -79,11 +79,10 @@ public class DepositToBagProcess {
         }
     }
 
-    void processDeposit(Deposit deposit) throws InvalidDepositException {
-
+    void processDeposit(Deposit deposit) throws InvalidDepositException, IOException {
         if (deposit.isUpdate()) {
             // check if deposit exists in vault catalog
-            var catalogDeposit = vaultCatalogService.findDeposit(deposit.getSwordToken())
+            var catalogDeposit = vaultCatalogService.findDeposit(deposit.getIsVersionOf())
                 .orElseThrow(() -> new InvalidDepositException(String.format("Deposit with sword token %s not found in vault catalog", deposit.getSwordToken())));
 
             // compare user id
@@ -109,13 +108,11 @@ public class DepositToBagProcess {
             deposit.setState(Deposit.State.ACCEPTED, "Deposit accepted");
         }
         catch (Exception e) {
-            // TODO throw some kind of FAILURE state, which is different from REJECTED
             throw new IllegalStateException("Error writing bag: " + e.getMessage(), e);
         }
 
         vaultCatalogService.registerDeposit(deposit);
     }
-
 
     void handleFailedDeposit(Path path, Outbox outbox, Deposit.State state, Throwable error) {
         log.error("Deposit on path {} failed with state {}", path, state, error);
