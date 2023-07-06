@@ -98,7 +98,7 @@ public class DataFile extends Base {
             .orElse(null);
     }
 
-    // TODO add mapping if FIL008 is mapped in the document
+    // TODO add mapping if FIL008 is mapped in the document (see Ingest Flow Mapping Rules)
     static String getEmbargo(Node ddm) {
         var value = XPathEvaluator.strings(ddm, "/ddm:DDM/ddm:profile/ddm:available")
             .findFirst()

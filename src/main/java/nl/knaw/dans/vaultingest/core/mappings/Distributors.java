@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 public class Distributors extends Base {
 
+    // CIT024
     public static List<Statement> toRDF(Resource resource, Deposit deposit) {
         return toDistributors(resource, getDistributors(deposit.getDdm()));
     }

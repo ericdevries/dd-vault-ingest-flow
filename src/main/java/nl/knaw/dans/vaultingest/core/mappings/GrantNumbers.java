@@ -16,7 +16,9 @@
 package nl.knaw.dans.vaultingest.core.mappings;
 
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import nl.knaw.dans.vaultingest.core.mappings.metadata.Funder;
 import nl.knaw.dans.vaultingest.core.mappings.metadata.GrantNumber;
+import nl.knaw.dans.vaultingest.core.mappings.metadata.NWOGrantNumber;
 import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DVCitation;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import org.apache.jena.rdf.model.Resource;
@@ -24,26 +26,43 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.SchemaDO;
 import org.w3c.dom.Document;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GrantNumbers extends Base {
-    // CIT024
     public static List<Statement> toRDF(Resource resource, Deposit deposit) {
-        return toGrantNumbers(resource, getGrantNumbers(deposit.getDdm()));
+        var grantNumbers = new ArrayList<GrantNumber>();
+
+        grantNumbers.addAll(getGrantNumbers(deposit.getDdm()));
+        grantNumbers.addAll(getFunders(deposit.getDdm()));
+
+        return toGrantNumbers(resource, grantNumbers);
     }
 
+    // CIT022
+    static List<GrantNumber> getFunders(Document document) {
+        return XPathEvaluator.nodes(document, "/ddm:DDM/ddm:dcmiMetadata/ddm:funding")
+            .map(node -> Funder.builder()
+                .funderName(getFirstValue(node, "ddm:funderName"))
+                .fundingProgramme(getFirstValue(node, "ddm:fundingProgramme"))
+                .awardNumber(getFirstValue(node, "ddm:awardNumber"))
+                .awardTitle(getFirstValue(node, "ddm:awardTitle"))
+                .build())
+            .collect(Collectors.toList());
+
+    }
+
+    // CIT023
     static List<GrantNumber> getGrantNumbers(Document document) {
-        // TODO CIT023 is under revision
         var idType = getIdTypeNamespace(document);
 
         return XPathEvaluator.strings(document,
                 String.format(
                     "/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[@xsi:type = '%s:NWO-PROJECTNR']", idType)
             )
-            .map(value -> GrantNumber.builder()
-                .agency("NWO")
+            .map(value -> NWOGrantNumber.builder()
                 .value(value)
                 .build())
             .collect(Collectors.toList());

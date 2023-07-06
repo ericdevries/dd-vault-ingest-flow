@@ -58,8 +58,13 @@ public class Publications extends Base {
 
     static List<Statement> toPublications(Resource resource, Collection<Publication> publications) {
         return toComplexTerms(resource, DCTerms.isReferencedBy, publications, (element, publication) -> {
-            element.addProperty(Datacite.resourceIdentifier, publication.getIdNumber());
-            element.addProperty(Datacite.resourceIdentifierScheme, publication.getIdType());
+            if (publication.getIdNumber() != null) {
+                element.addProperty(Datacite.resourceIdentifier, publication.getIdNumber());
+            }
+
+            if (publication.getIdType() != null) {
+                element.addProperty(Datacite.resourceIdentifierScheme, publication.getIdType());
+            }
         });
     }
 }

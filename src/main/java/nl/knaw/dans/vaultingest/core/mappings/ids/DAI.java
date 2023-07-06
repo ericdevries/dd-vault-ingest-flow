@@ -29,6 +29,8 @@ public class DAI extends Identifier {
     @Override
     public String getSchemeURI() {
         // TODO verify
+        // there seems to be no website, but wikipedia says it is ISNI.
+        // https://en.wikipedia.org/wiki/Digital_Author_Identifier
         return "https://dai.nl/";
     }
 

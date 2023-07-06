@@ -253,8 +253,7 @@ public class OaiOreConverterIntegrationTest {
             .containsOnly("ProjectMember", "Sponsor");
     }
 
-    // TODO CIT022 is still under revision, fix later
-    // CIT023
+    // CIT022, CIT023
     @Test
     void grantNumbers() throws Exception {
         var obj = loadModel();
@@ -264,11 +263,11 @@ public class OaiOreConverterIntegrationTest {
 
         assertThat(statements)
             .map(getPropertyAsString(DVCitation.grantNumberAgency))
-            .containsOnly("NWO");
+            .containsOnly("NWO", "EC");
 
         assertThat(statements)
             .map(getPropertyAsString(DVCitation.grantNumberValue))
-            .containsOnly("54321");
+            .containsOnly("54321", "FP7 608166");
     }
 
     // CIT024

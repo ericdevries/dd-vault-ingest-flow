@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.pidmapping;
+package nl.knaw.dans.vaultingest.core.mappings.metadata;
 
-import nl.knaw.dans.vaultingest.core.deposit.Deposit;
+import lombok.Builder;
+import lombok.Value;
 
-public class PidMappingConverter {
+@Value
+@Builder
+public class NWOGrantNumber implements GrantNumber {
+    String value;
 
-    public PidMappings convert(Deposit deposit) {
-        var dataPath = "data/";
-        var mappings = new PidMappings();
-
-        var doi = deposit.getDoi();
-
-        if (doi != null) {
-            mappings.addMapping(doi, dataPath);
-        }
-
-        for (var file : deposit.getPayloadFiles()) {
-            var path = file.getPath().toString();
-            mappings.addMapping("file:///" + file.getId(), path);
-        }
-
-        return mappings;
+    @Override
+    public String getAgency() {
+        return "NWO";
     }
 }

@@ -112,8 +112,6 @@ public class DataciteConverter {
     }
 
     private Resource.Identifier getIdentifier(Deposit deposit) {
-        // TODO mapping file does not explicitly say this, but should it remove the prefix?
-        //        var id = deposit.getDoi().substring(deposit.getDoi().indexOf(':') + 1);
         var id = deposit.getDoi();
 
         if (id == null) {
