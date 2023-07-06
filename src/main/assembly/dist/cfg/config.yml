@@ -33,6 +33,7 @@ ingestFlow:
   languages:
     iso6391: /etc/opt/dans.knaw.nl/dd-vault-ingest-flow/iso639-1-to-dv.csv
     iso6392: /etc/opt/dans.knaw.nl/dd-vault-ingest-flow/iso639-2-to-dv.csv
+  spatialCoverageCountryTermsPath: /etc/opt/dans.knaw.nl/dd-vault-ingest-flow/spatial-coverage-country-terms.txt
   taskQueue:
     nameFormat: "vault-ingest-worker-%d"
     maxQueueSize: 5000
@@ -71,4 +72,4 @@ validateDansBag:
     maxConnectionsPerRoute: 128
     keepAlive: 0ms
     retries: 0
-    userAgent: dd-ingest-flow
+    userAgent: dd-vault-ingest-flow

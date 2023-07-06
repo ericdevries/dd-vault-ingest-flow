@@ -33,6 +33,7 @@ ingestFlow:
   languages:
     iso6391: etc/iso639-1-to-dv.csv
     iso6392: etc/iso639-2-to-dv.csv
+  spatialCoverageCountryTermsPath: etc/spatial-coverage-country-terms.txt
   taskQueue:
     nameFormat: "vault-ingest-worker-%d"
     maxQueueSize: 5000
@@ -74,4 +75,4 @@ validateDansBag:
     maxConnectionsPerRoute: 128
     keepAlive: 0ms
     retries: 0
-    userAgent: dd-ingest-flow
+    userAgent: dd-vault-ingest-flow
