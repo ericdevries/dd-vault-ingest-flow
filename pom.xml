@@ -176,6 +176,7 @@
                 <version>6.6.0</version>
                 <executions>
                     <execution>
+                        <id>generate-dd-vault-catalog-api</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -204,13 +205,6 @@
                             </configOptions>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.openapitools</groupId>
-                <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>6.6.0</version>
-                <executions>
                     <execution>
                         <id>generate-dd-validate-dans-bag-api</id>
                         <goals>
