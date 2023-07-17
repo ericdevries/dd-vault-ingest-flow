@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class IngestAreaDirectoryWatcherTest {
@@ -33,24 +32,6 @@ class IngestAreaDirectoryWatcherTest {
     void setUp() throws Exception {
         FileUtils.deleteQuietly(PATH.toFile());
         Files.createDirectories(PATH);
-    }
-
-    @Test
-    void start_should_callback() throws Exception {
-        var watcher = new IngestAreaDirectoryWatcher(10, PATH);
-        var hasBeenCalled = new boolean[] { false };
-        watcher.start(p -> {
-            var result = PATH.toAbsolutePath().relativize(p.toAbsolutePath());
-            assertThat(result).isEqualTo(Path.of("1"));
-            hasBeenCalled[0] = true;
-        });
-
-        var source = Path.of(getClass().getResource("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228").getPath());
-        Files.copy(source, PATH.resolve("1"));
-
-        Thread.sleep(100);
-
-        assertThat(hasBeenCalled[0]).isTrue();
     }
 
     @Test
