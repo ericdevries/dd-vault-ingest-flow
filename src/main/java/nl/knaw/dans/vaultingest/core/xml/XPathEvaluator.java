@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.xml;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -23,7 +24,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.stream.IntStream;
@@ -99,7 +99,6 @@ public final class XPathEvaluator implements XmlNamespaces {
     }
 
     private static synchronized Object evaluateXpath(Node node, String expr) throws XPathExpressionException {
-        //        getXpath().
         return getXpath().compile(expr).evaluate(node, XPathConstants.NODESET);
     }
 
@@ -111,14 +110,8 @@ public final class XPathEvaluator implements XmlNamespaces {
     }
 
     private static Stream<Node> xpathsToStream(Node node, String... expressions) throws XPathExpressionException {
-        var items = new ArrayList<Stream<Node>>();
-
-        for (var expr : expressions) {
-            var item = xpathToStream(node, expr);
-            items.add(item);
-        }
-
-        return items.stream().flatMap(i -> i);
+        var expression = StringUtils.join(expressions, " | ");
+        return xpathToStream(node, expression);
     }
 
     private static Stream<String> xpathsToStreamOfStrings(Node node, String... expressions) throws XPathExpressionException {

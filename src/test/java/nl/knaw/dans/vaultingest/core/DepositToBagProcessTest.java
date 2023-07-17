@@ -21,25 +21,23 @@ import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
 import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
+import nl.knaw.dans.vaultingest.core.utilities.CountryResolverFactory;
 import nl.knaw.dans.vaultingest.core.utilities.InMemoryOutputWriter;
+import nl.knaw.dans.vaultingest.core.utilities.LanguageResolverFactory;
 import nl.knaw.dans.vaultingest.core.utilities.NullBagOutputWriter;
-import nl.knaw.dans.vaultingest.core.utilities.TestCountryResolver;
 import nl.knaw.dans.vaultingest.core.utilities.TestDepositManager;
-import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
-import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DepositToBagProcessTest {
 
@@ -51,7 +49,7 @@ class DepositToBagProcessTest {
         var depositValidator = Mockito.mock(DepositValidator.class);
 
         var deposit = getBasicDeposit();
-        var depositManager = new TestDepositManager(deposit);
+        var depositManager = TestDepositManager.ofDeposit(deposit);
 
         var depositToBagProcess = new DepositToBagProcess(
             () -> rdaBagWriter,
@@ -68,11 +66,11 @@ class DepositToBagProcessTest {
 
         Mockito.verify(outbox).moveDeposit(Mockito.any());
 
-        assertTrue(output.isClosed());
-        assertTrue(depositManager.isSaveDepositCalled());
+        assertThat(output.isClosed()).isTrue();
+        assertThat(depositManager.isSaveDepositCalled()).isTrue();
 
-        assertEquals(Deposit.State.ACCEPTED, deposit.getState());
-        assertEquals("Deposit accepted", deposit.getStateDescription());
+        assertThat(deposit.getState()).isEqualTo(Deposit.State.ACCEPTED);
+        assertThat(deposit.getStateDescription()).isEqualTo("Deposit accepted");
     }
 
     @Test
@@ -82,7 +80,9 @@ class DepositToBagProcessTest {
         var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
-        var depositManager = new TestDepositManager(null);
+        var depositManager = Mockito.spy(TestDepositManager.ofDeposit(null));
+        Mockito.doThrow(new RuntimeException("error")).when(depositManager).loadDeposit(Mockito.any());
+
         var depositToBagProcess = new DepositToBagProcess(
             () -> rdaBagWriter,
             value -> output,
@@ -97,8 +97,8 @@ class DepositToBagProcessTest {
         depositToBagProcess.process(Path.of("input/path/"), outbox);
         Mockito.verify(outbox).move(Path.of("input/path/"), Deposit.State.FAILED);
 
-        assertEquals(Deposit.State.FAILED, depositManager.getLastState());
-        assertTrue(depositManager.getLastMessage().length() > 0);
+        assertThat(depositManager.getLastState()).isEqualTo(Deposit.State.FAILED);
+        assertThat(depositManager.getLastMessage()).isNotEmpty();
     }
 
     @Test
@@ -112,7 +112,7 @@ class DepositToBagProcessTest {
             .when(depositValidator).validate(Mockito.any());
 
         var deposit = getBasicDeposit();
-        var depositManager = new TestDepositManager(deposit);
+        var depositManager = TestDepositManager.ofDeposit(deposit);
         var depositToBagProcess = new DepositToBagProcess(
             () -> rdaBagWriter,
             value -> output,
@@ -127,8 +127,8 @@ class DepositToBagProcessTest {
         depositToBagProcess.process(Path.of("input/path/"), outbox);
         Mockito.verify(outbox).move(Path.of("input/path/"), Deposit.State.REJECTED);
 
-        assertEquals(Deposit.State.REJECTED, depositManager.getLastState());
-        assertEquals("Invalid deposit!", depositManager.getLastMessage());
+        assertThat(depositManager.getLastState()).isEqualTo(Deposit.State.REJECTED);
+        assertThat(depositManager.getLastMessage()).isEqualTo("Invalid deposit!");
     }
 
     @Test
@@ -142,7 +142,7 @@ class DepositToBagProcessTest {
             .thenReturn(Optional.empty());
 
         var deposit = getBasicDepositAsUpdate();
-        var depositManager = new TestDepositManager(deposit);
+        var depositManager = TestDepositManager.ofDeposit(deposit);
         var depositToBagProcess = new DepositToBagProcess(
             () -> rdaBagWriter,
             value -> output,
@@ -157,7 +157,7 @@ class DepositToBagProcessTest {
         depositToBagProcess.process(Path.of("input/path/"), outbox);
         Mockito.verify(outbox).move(Path.of("input/path/"), Deposit.State.REJECTED);
 
-        assertEquals(Deposit.State.REJECTED, depositManager.getLastState());
+        assertThat(depositManager.getLastState()).isEqualTo(Deposit.State.REJECTED);
     }
 
     @Test
@@ -179,7 +179,7 @@ class DepositToBagProcessTest {
         var deposit = getBasicDeposit();
         depositToBagProcess.processDeposit(deposit);
 
-        assertTrue(output.isClosed());
+        assertThat(output.isClosed()).isTrue();
         assertThat(output.getData().keySet())
             .map(Path::toString)
             .containsOnly(
@@ -219,7 +219,7 @@ class DepositToBagProcessTest {
 
         depositToBagProcess.processDeposit(deposit);
 
-        assertEquals(Deposit.State.ACCEPTED, deposit.getState());
+        assertThat(deposit.getState()).isEqualTo(Deposit.State.ACCEPTED);
     }
 
     @Test
@@ -240,22 +240,18 @@ class DepositToBagProcessTest {
             vaultCatalogService,
             depositManager, depositValidator, new IdMinter());
 
-        assertThrows(InvalidDepositException.class, () -> depositToBagProcess.processDeposit(deposit));
+        assertThatThrownBy(() -> depositToBagProcess.processDeposit(deposit))
+            .isInstanceOf(InvalidDepositException.class);
     }
 
     private Deposit getBasicDeposit() {
-        var manager = new TestSimpleDepositManager();
-
-        return manager.loadDeposit(
-            Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
-        );
+        var manager = new TestDepositManager();
+        return manager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
     }
 
     private Deposit getBasicDepositAsUpdate() {
-        var manager = new TestSimpleDepositManager();
-        var deposit = manager.loadDeposit(
-            Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/")
-        );
+        var manager = new TestDepositManager();
+        var deposit = manager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
 
         var spied = Mockito.spy(deposit);
 
@@ -268,8 +264,8 @@ class DepositToBagProcessTest {
     private RdaBagWriter getWriter() throws Exception {
         return new DefaultRdaBagWriterFactory(
             new ObjectMapper(),
-            new TestLanguageResolver(),
-            new TestCountryResolver()
+            LanguageResolverFactory.getInstance(),
+            CountryResolverFactory.getInstance()
         ).createRdaBagWriter();
     }
 }
