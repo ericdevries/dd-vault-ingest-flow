@@ -21,8 +21,9 @@ import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.vaultcatalog.client.ApiClient;
+import nl.knaw.dans.vaultcatalog.client.OcflObjectVersionApi;
 import nl.knaw.dans.vaultingest.client.DepositValidator;
-import nl.knaw.dans.vaultingest.client.OcflObjectVersionApi;
 import nl.knaw.dans.vaultingest.client.VaultCatalogClient;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
@@ -39,7 +40,6 @@ import nl.knaw.dans.vaultingest.health.DansBagValidatorHealthCheck;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import java.io.IOException;
-import java.nio.file.Files;
 
 @Slf4j
 public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowConfiguration> {
@@ -85,9 +85,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
 
         var outputWriterFactory = new ZipBagOutputWriterFactory(configuration.getIngestFlow().getRdaBagOutputDir());
 
-        var ocflObjectVersionApi = new OcflObjectVersionApi();
-        ocflObjectVersionApi.setCustomBaseUrl(configuration.getVaultCatalog().getUrl().toString());
-
+        var ocflObjectVersionApi = createOcflObjectVersionApi(configuration, environment);
         var vaultCatalogRepository = new VaultCatalogClient(ocflObjectVersionApi);
 
         var depositToBagProcess = new DepositToBagProcess(
@@ -122,5 +120,17 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
                 dansBagValidatorClient, configuration.getValidateDansBag().getPingUrl()
             )
         );
+    }
+
+    OcflObjectVersionApi createOcflObjectVersionApi(DdVaultIngestFlowConfiguration configuration, Environment environment) {
+        var client = new JerseyClientBuilder(environment)
+            .using(configuration.getVaultCatalog().getHttpClient())
+            .build("vault-catalog");
+
+        var apiClient = new ApiClient();
+        apiClient.setHttpClient(client);
+        apiClient.setBasePath(configuration.getVaultCatalog().getUrl().toString());
+
+        return new OcflObjectVersionApi(apiClient);
     }
 }
