@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class OriginalFilepathsTest {
 
@@ -39,7 +39,7 @@ class OriginalFilepathsTest {
         var pathOnDisk = Path.of("data/123456789");
         var pathInBag = Path.of("data/in/a/nice/way");
 
-        assertEquals(pathInBag, paths.getLogicalPath(pathOnDisk));
+        assertThat(paths.getLogicalPath(pathOnDisk)).isEqualTo(pathInBag);
     }
 
     @Test
@@ -48,7 +48,7 @@ class OriginalFilepathsTest {
 
         // the file on disk would be called data/in/a/nice/way
         var pathInBag = Path.of("data/in/a/nice/way");
-        assertEquals(pathInBag, paths.getLogicalPath(pathInBag));
+        assertThat(paths.getLogicalPath(pathInBag)).isEqualTo(pathInBag);
     }
 
     @Test
@@ -59,7 +59,7 @@ class OriginalFilepathsTest {
         var pathInBag = Path.of("data/in/another path/ with spaces");
         var pathOnDisk = Path.of("data/abc-def");
 
-        assertEquals(pathInBag, paths.getLogicalPath(pathOnDisk));
+        assertThat(paths.getLogicalPath(pathOnDisk)).isEqualTo(pathInBag);
     }
 
     @Test
@@ -70,7 +70,7 @@ class OriginalFilepathsTest {
         var pathOnDisk = Path.of("data/123456789");
         var pathInBag = Path.of("data/in/a/nice/way");
 
-        assertEquals(pathOnDisk, paths.getPhysicalPath(pathInBag));
+        assertThat(paths.getPhysicalPath(pathInBag)).isEqualTo(pathOnDisk);
     }
 
     @Test
@@ -79,6 +79,6 @@ class OriginalFilepathsTest {
 
         // the file on disk would be called data/in/a/nice/way
         var pathOnDisk = Path.of("data/no/mapping/here");
-        assertEquals(pathOnDisk, paths.getPhysicalPath(pathOnDisk));
+        assertThat(paths.getPhysicalPath(pathOnDisk)).isEqualTo(pathOnDisk);
     }
 }

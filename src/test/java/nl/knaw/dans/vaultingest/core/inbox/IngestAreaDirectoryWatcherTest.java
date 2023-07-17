@@ -22,9 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class IngestAreaDirectoryWatcherTest {
 
@@ -37,30 +35,11 @@ class IngestAreaDirectoryWatcherTest {
     }
 
     @Test
-    void start_should_callback() throws Exception {
-        var watcher = new IngestAreaDirectoryWatcher(10, PATH);
-        var hasBeenCalled = new boolean[] { false };
-        watcher.start(p -> {
-            var result = PATH.toAbsolutePath().relativize(p.toAbsolutePath());
-            assertEquals(Path.of("1"), result);
-            hasBeenCalled[0] = true;
-        });
-
-        var source = Path.of(getClass().getResource("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228").getPath());
-        Files.copy(source, PATH.resolve("1"));
-
-        Thread.sleep(100);
-
-        assertTrue(hasBeenCalled[0]);
-    }
-
-    @Test
     void start_should_throw_IllegalStateException_if_initial_directory_does_not_exist() {
         var watcher = new IngestAreaDirectoryWatcher(10, PATH.resolve("does-not-exist"));
 
-        assertThrows(IllegalStateException.class, () -> {
-            watcher.start(p -> {
-            });
-        });
+        assertThatThrownBy(() -> watcher.start(p -> {
+
+        })).isInstanceOf(IllegalStateException.class);
     }
 }

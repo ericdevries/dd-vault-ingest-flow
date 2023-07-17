@@ -17,31 +17,35 @@ package nl.knaw.dans.vaultingest.core.utilities;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.deposit.CountryResolver;
+import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Slf4j
-public class TestCountryResolver implements CountryResolver {
-    private final Set<String> countries;
+public class CountryResolverFactory {
+    private static CountryResolver instance;
 
-    public TestCountryResolver() throws IOException {
-        var path = Path.of(getClass().getResource("/debug-etc/spatial-coverage-country-terms.txt").getPath());
+    public static CountryResolver getInstance() throws Exception {
+        if (instance == null) {
+            try {
+                var path = Path.of(
+                    Objects.requireNonNull(
+                        CountryResolverFactory.class
+                            .getResource("/debug-etc/spatial-coverage-country-terms.txt")
+                    ).getPath()
+                );
 
-        this.countries = Files.readAllLines(path, StandardCharsets.UTF_8)
-            .stream()
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .map(String::toLowerCase)
-            .collect(Collectors.toSet());
-    }
+                instance = new FileCountryResolver(path);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                log.error("Could not load csv", e);
+                throw e;
+            }
+        }
 
-    @Override
-    public boolean isControlledValue(String country) {
-        return country != null && countries.contains(country.toLowerCase());
+        return instance;
     }
 }

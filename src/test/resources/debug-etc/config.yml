@@ -11,6 +11,7 @@ server:
     - type: http
       port: 20361
 
+
 health:
   delayedShutdownHandlerEnabled: false
   initialOverallState: false

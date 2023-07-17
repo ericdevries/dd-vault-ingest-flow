@@ -21,8 +21,7 @@ import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DataFileTest {
 
@@ -33,7 +32,7 @@ class DataFileTest {
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
 
-        assertFalse(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
+        assertThat(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode())).isFalse();
     }
 
     @Test
@@ -43,7 +42,7 @@ class DataFileTest {
             .ddmNode(getDdmNodeWithAccessRights("OPEN_ACCESS"))
             .build();
 
-        assertFalse(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
+        assertThat(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode())).isFalse();
     }
 
     @Test
@@ -53,18 +52,17 @@ class DataFileTest {
             .ddmNode(getDdmNodeWithAccessRights("RANDOM_VALUE"))
             .build();
 
-        assertTrue(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
+        assertThat(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode())).isTrue();
     }
 
     @Test
     void isRestricted_should_return_true_when_getAccessibleToRights_is_empty() throws Exception {
-        // TODO verify an empty accessibleToRights qualifies as restricted
         var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
 
-        assertTrue(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
+        assertThat(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode())).isTrue();
     }
 
     @Test
@@ -74,7 +72,7 @@ class DataFileTest {
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
 
-        assertTrue(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
+        assertThat(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode())).isTrue();
     }
 
     @Test
@@ -84,7 +82,7 @@ class DataFileTest {
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
 
-        assertFalse(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode()));
+        assertThat(DataFile.isRestricted(depositFile.getFilesXmlNode(), depositFile.getDdmNode())).isFalse();
     }
 
     Node getFilesXmlNode(String path) throws Exception {

@@ -17,7 +17,7 @@ package nl.knaw.dans.vaultingest.core.rdabag;
 
 import nl.knaw.dans.vaultingest.core.datacite.DataciteConverter;
 import nl.knaw.dans.vaultingest.core.datacite.DataciteSerializer;
-import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
+import nl.knaw.dans.vaultingest.core.utilities.TestDepositManager;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import org.junit.jupiter.api.Test;
@@ -115,8 +115,8 @@ class DataciteConverterIntegrationTest {
 
     // serialize to XML, then convert to Node, so we can use XPath to test the output
     private Document loadResource() throws Exception {
-        var depositManager = new TestSimpleDepositManager();
-        var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
+        var manager = new TestDepositManager();
+        var deposit = manager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
 
         var resource = new DataciteConverter().convert(deposit);
         var xmlString = new DataciteSerializer().serialize(resource);

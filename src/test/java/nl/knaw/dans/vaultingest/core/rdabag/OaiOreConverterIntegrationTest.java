@@ -27,9 +27,9 @@ import nl.knaw.dans.vaultingest.core.mappings.vocabulary.DansTS;
 import nl.knaw.dans.vaultingest.core.mappings.vocabulary.Datacite;
 import nl.knaw.dans.vaultingest.core.mappings.vocabulary.PROV;
 import nl.knaw.dans.vaultingest.core.oaiore.OaiOreConverter;
-import nl.knaw.dans.vaultingest.core.utilities.TestCountryResolver;
-import nl.knaw.dans.vaultingest.core.utilities.TestLanguageResolver;
-import nl.knaw.dans.vaultingest.core.utilities.TestSimpleDepositManager;
+import nl.knaw.dans.vaultingest.core.utilities.CountryResolverFactory;
+import nl.knaw.dans.vaultingest.core.utilities.LanguageResolverFactory;
+import nl.knaw.dans.vaultingest.core.utilities.TestDepositManager;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -635,11 +635,14 @@ public class OaiOreConverterIntegrationTest {
     }
 
     private ModelObject loadModel() throws Exception {
-        var depositManager = new TestSimpleDepositManager();
+        var depositManager = new TestDepositManager();
         var deposit = depositManager.loadDeposit(Path.of("/input/integration-test-complete-bag/c169676f-5315-4d86-bde0-a62dbc915228/"));
         deposit.setNbn("urn:nbn:nl:ui:13-4c-1a2b");
 
-        var model = new OaiOreConverter(new TestLanguageResolver(), new TestCountryResolver()).convert(deposit);
+        var model = new OaiOreConverter(
+            LanguageResolverFactory.getInstance(),
+            CountryResolverFactory.getInstance()
+        ).convert(deposit);
 
         return ModelObject.builder()
             .deposit(deposit)
