@@ -23,8 +23,7 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TermsTest {
 
@@ -36,7 +35,7 @@ class TermsTest {
             .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -47,7 +46,7 @@ class TermsTest {
             .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -58,19 +57,18 @@ class TermsTest {
             .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
     void isRequestAccess_should_return_true_when_getAccessibleToRights_is_empty() throws Exception {
-        // TODO verify an empty accessibleToRights qualifies as restricted
         var depositFile = DepositFile.builder()
             .filesXmlNode(getFilesXmlNodeWithAccessibleToRights(""))
             .ddmNode(getDdmNodeWithAccessRights(null))
             .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -81,7 +79,7 @@ class TermsTest {
             .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -92,7 +90,7 @@ class TermsTest {
             .build();
 
         var result = Terms.isRequestAccess(depositFile.getDdmNode().getOwnerDocument(), List.of(depositFile));
-        assertFalse(result);
+        assertThat(result).isFalse();
     }
 
     Node getFilesXmlNode(String path) throws Exception {

@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.zip.ZipFile;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ZipBagOutputWriterTest {
 
@@ -62,11 +62,10 @@ class ZipBagOutputWriterTest {
                         throw new RuntimeException(e);
                     }
                 });
-
         }
 
-        assertEquals("test", entries.get("test.txt"));
-        assertEquals("in a folder", entries.get("a/folder/test.txt"));
-        assertEquals("something else", entries.get("/no_extension"));
+        assertThat(entries.get("test.txt")).isEqualTo("test");
+        assertThat(entries.get("a/folder/test.txt")).isEqualTo("in a folder");
+        assertThat(entries.get("/no_extension")).isEqualTo("something else");
     }
 }

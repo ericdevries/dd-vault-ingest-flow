@@ -21,7 +21,7 @@ import org.w3c.dom.Node;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DepositFileTest {
 
@@ -31,7 +31,7 @@ class DepositFileTest {
             .filesXmlNode(getFilesXmlNode("data/only/valid/characters.txt"))
             .build();
 
-        assertEquals(Path.of("data/only/valid/"), depositFile.getDirectoryLabel());
+        assertThat(depositFile.getDirectoryLabel()).isEqualTo(Path.of("data/only/valid/"));
     }
 
     @Test
@@ -40,11 +40,11 @@ class DepositFileTest {
             .filesXmlNode(getFilesXmlNode("data/valid/characters.txt"))
             .build();
 
-        assertEquals(Path.of("characters.txt"), depositFile.getFilename());
+        assertThat(depositFile.getFilename()).isEqualTo(Path.of("characters.txt"));
     }
 
     Node getFilesXmlNode(String path) throws Exception {
-        var node = new XmlReader().readXmlString("<file  xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
+        var node = new XmlReader().readXmlString("<file xmlns=\"http://easy.dans.knaw.nl/schemas/bag/metadata/files/\" />");
         node.getDocumentElement().setAttribute("filepath", path);
 
         return node.getDocumentElement();

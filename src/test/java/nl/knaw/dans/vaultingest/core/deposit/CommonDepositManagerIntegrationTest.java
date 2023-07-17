@@ -23,8 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommonDepositManagerIntegrationTest {
 
@@ -36,7 +34,7 @@ class CommonDepositManagerIntegrationTest {
         assert s != null;
 
         var deposit = manager.loadDeposit(Path.of(s.getPath()));
-        assertEquals("0b9bb5ee-3187-4387-bb39-2c09536c79f7", deposit.getId());
+        assertThat(deposit.getId()).isEqualTo("0b9bb5ee-3187-4387-bb39-2c09536c79f7");
     }
 
     @Test
@@ -48,7 +46,7 @@ class CommonDepositManagerIntegrationTest {
         var path = Path.of(s.getPath());
 
         // first verify there is actually an original-filepaths.txt file
-        assertTrue(Files.exists(path.resolve("audiences/original-filepaths.txt")));
+        assertThat(Files.exists(path.resolve("audiences/original-filepaths.txt"))).isTrue();
 
         var deposit = manager.loadDeposit(path);
         var files = deposit.getPayloadFiles();
@@ -70,7 +68,7 @@ class CommonDepositManagerIntegrationTest {
                 input.transferTo(stream);
             }
 
-            assertTrue(stream.size() > 0);
+            assertThat(stream.size()).isGreaterThan(0);
         }
     }
 }
