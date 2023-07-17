@@ -22,15 +22,22 @@ import nl.knaw.dans.vaultingest.core.xml.XmlReader;
 import java.nio.file.Path;
 
 public class TestDepositManager extends DepositManager {
-    private final Deposit deposit;
-
+    private Deposit deposit;
     private boolean saveDepositCalled = false;
     private Deposit.State lastState = null;
     private String lastMessage = null;
 
-    public TestDepositManager(Deposit deposit) {
+    public TestDepositManager() {
+        super(new XmlReader());
+    }
+
+    private TestDepositManager(Deposit deposit) {
         super(new XmlReader());
         this.deposit = deposit;
+    }
+
+    public static TestDepositManager ofDeposit(Deposit deposit) {
+        return new TestDepositManager(deposit);
     }
 
     public Deposit.State getLastState() {
@@ -43,11 +50,14 @@ public class TestDepositManager extends DepositManager {
 
     @Override
     public Deposit loadDeposit(Path path) {
-        if (deposit == null) {
-            throw new RuntimeException("No deposit set");
+        if (this.deposit != null) {
+            return this.deposit;
         }
 
-        return deposit;
+        var resource = getClass().getResource(path.toString());
+        assert resource != null;
+        var resourcePath = Path.of(resource.getPath());
+        return super.loadDeposit(resourcePath);
     }
 
     @Override

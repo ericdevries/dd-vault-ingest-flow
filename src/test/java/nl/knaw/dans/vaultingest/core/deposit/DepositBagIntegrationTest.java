@@ -24,9 +24,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 class DepositBagIntegrationTest {
 
@@ -52,11 +50,11 @@ class DepositBagIntegrationTest {
             var data = new String(file.readAllBytes());
 
             // check if it read the complete xml file
-            assertDoesNotThrow(() -> {
+            assertThatNoException().isThrownBy(() -> {
                 new XmlReader().readXmlString(data);
             });
 
-            assertTrue(data.startsWith("<ddm:DDM"));
+            assertThat(data).startsWith("<ddm:DDM");
         }
     }
 
@@ -65,14 +63,13 @@ class DepositBagIntegrationTest {
         var bag = getBag();
         var depositBag = new DepositBag(bag);
 
-        assertEquals("3212481.4", depositBag.getMetadataValue("Payload-Oxum").get(0));
-        assertEquals("2022-10-23", depositBag.getMetadataValue("Bagging-Date").get(0));
-        assertEquals("3.1 MB", depositBag.getMetadataValue("Bag-Size").get(0));
-        assertEquals("2016-11-12T23:41:11.000+00:00", depositBag.getMetadataValue("Created").get(0));
-        assertEquals("REPO1:1234", depositBag.getMetadataValue("Has-Organizational-Identifier").get(0));
-        assertEquals("1.1", depositBag.getMetadataValue("Has-Organizational-Identifier-Version").get(0));
-
-        assertEquals(0, depositBag.getMetadataValue("Does-Not-Exist").size());
+        assertThat(depositBag.getMetadataValue("Payload-Oxum")).containsOnly("3212481.4");
+        assertThat(depositBag.getMetadataValue("Bagging-Date")).containsOnly("2022-10-23");
+        assertThat(depositBag.getMetadataValue("Bag-Size")).containsOnly("3.1 MB");
+        assertThat(depositBag.getMetadataValue("Created")).containsOnly("2016-11-12T23:41:11.000+00:00");
+        assertThat(depositBag.getMetadataValue("Has-Organizational-Identifier")).containsOnly("REPO1:1234");
+        assertThat(depositBag.getMetadataValue("Has-Organizational-Identifier-Version")).containsOnly("1.1");
+        assertThat(depositBag.getMetadataValue("Does-Not-Exist")).isEmpty();
     }
 
     Bag getBag() throws Exception {

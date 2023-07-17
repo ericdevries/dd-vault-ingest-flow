@@ -26,6 +26,7 @@ import org.w3c.dom.Document;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Publications extends Base {
@@ -36,12 +37,16 @@ public class Publications extends Base {
 
     static List<Publication> getPublications(Document document) {
         // CIT017
-        // TODO the spec says dc:identifier, but example uses dcterms:identifier
         var idType = getIdTypeNamespace(document);
 
-        return XPathEvaluator.nodes(document, String.format("/ddm:DDM/ddm:dcmiMetadata/dcterms:identifier[" +
-                "@xsi:type = '%s:ISSN' or @xsi:type = '%s:ISBN'" +
-                "]", idType, idType))
+        // identifier might have dcterms or dc as prefix, query both
+        var queries = Set.of("dcterms", "dc").stream().map(prefix ->
+                String.format("/ddm:DDM/ddm:dcmiMetadata/%s:identifier[" +
+                    "@xsi:type = '%s:ISSN' or @xsi:type = '%s:ISBN'" +
+                    "]", prefix, idType, idType))
+            .toArray(String[]::new);
+
+        return XPathEvaluator.nodes(document, queries)
             .map(node -> {
                 var idTypeValue = node.getAttributes()
                     .getNamedItem("xsi:type").getTextContent()
