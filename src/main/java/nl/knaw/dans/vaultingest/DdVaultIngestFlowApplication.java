@@ -130,7 +130,6 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             migrationDepositManager
         );
 
-        // Migration stuff
         var migrationIngestArea = new MigrationIngestArea(
             taskQueue,
             migrationDepositToBagProcess,
@@ -139,8 +138,6 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
         );
 
         inboxListener.start();
-
-        migrationIngestArea.ingest(Path.of("batch1"), true, false);
 
         environment.healthChecks().register(
             "DansBagValidator",

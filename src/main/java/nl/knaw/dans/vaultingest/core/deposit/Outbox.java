@@ -25,4 +25,7 @@ public interface Outbox {
     void move(Path path, Deposit.State state) throws IOException;
 
     Outbox withBatchDirectory(Path subPath) throws IOException;
+
+    void init(boolean allowNonEmpty) throws IOException;
+
 }

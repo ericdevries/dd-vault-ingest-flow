@@ -67,6 +67,7 @@ public class MigrationIngestArea {
         try {
             var input = getDeposits(isBatch, path);
             var output = getOutboxPath(isBatch, path);
+            output.init(!isBatch || continuePrevious);
 
             for (var in : input) {
                 executorService.execute(() -> depositToBagProcess.process(in, output));
@@ -74,6 +75,7 @@ public class MigrationIngestArea {
         }
         catch (IOException e) {
             log.error("Error while processing deposit", e);
+            throw new IllegalStateException(String.format("Error while processing deposit: %s", e.getMessage()), e);
         }
     }
 

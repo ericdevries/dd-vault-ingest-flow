@@ -54,4 +54,9 @@ public class TestOutbox implements Outbox {
     public Outbox withBatchDirectory(Path subPath) throws IOException {
         return new TestOutbox(outboxPath.resolve(subPath));
     }
+
+    @Override
+    public void init(boolean allowNonEmpty) throws IOException {
+
+    }
 }
