@@ -25,7 +25,6 @@ import nl.knaw.dans.vaultcatalog.client.ApiClient;
 import nl.knaw.dans.vaultcatalog.client.OcflObjectVersionApi;
 import nl.knaw.dans.vaultingest.client.DepositValidator;
 import nl.knaw.dans.vaultingest.client.MigrationDepositValidator;
-import nl.knaw.dans.vaultingest.client.OcflObjectVersionApi;
 import nl.knaw.dans.vaultingest.client.VaultCatalogClient;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
@@ -44,7 +43,6 @@ import nl.knaw.dans.vaultingest.health.DansBagValidatorHealthCheck;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 @Slf4j
 public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowConfiguration> {
