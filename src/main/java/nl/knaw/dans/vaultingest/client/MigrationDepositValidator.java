@@ -15,7 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.client;
 
-import nl.knaw.dans.validatedansbag.api.ValidateCommand;
+import nl.knaw.dans.validatedansbag.api.ValidateCommandDto;
 
 import javax.ws.rs.client.Client;
 import java.net.URI;
@@ -27,7 +27,8 @@ public class MigrationDepositValidator extends AbstractDepositValidator {
     }
 
     @Override
-    protected ValidateCommand.PackageTypeEnum getPackageType() {
-        return ValidateCommand.PackageTypeEnum.MIGRATION;
+    protected ValidateCommandDto.PackageTypeEnum getPackageType() {
+        return ValidateCommandDto.PackageTypeEnum.MIGRATION;
     }
+
 }
