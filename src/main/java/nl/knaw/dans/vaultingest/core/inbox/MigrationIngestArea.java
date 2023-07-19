@@ -46,7 +46,6 @@ public class MigrationIngestArea {
         this.outbox = outbox;
     }
 
-    // TODO add continuePrevious to do partial batches
     public void ingest(Path inputPath, boolean isBatch, boolean continuePrevious) {
         var path = getAbsolutePath(inputPath);
 
