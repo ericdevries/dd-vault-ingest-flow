@@ -16,8 +16,10 @@
 package nl.knaw.dans.vaultingest.client;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.vaultingest.api.OcflObjectVersionDto;
-import nl.knaw.dans.vaultingest.api.OcflObjectVersionParametersDto;
+import nl.knaw.dans.vaultcatalog.api.OcflObjectVersionDto;
+import nl.knaw.dans.vaultcatalog.api.OcflObjectVersionParametersDto;
+import nl.knaw.dans.vaultcatalog.client.ApiException;
+import nl.knaw.dans.vaultcatalog.client.OcflObjectVersionApi;
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogDeposit;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
@@ -60,7 +62,6 @@ public class VaultCatalogClient implements VaultCatalogRepository {
             log.error("Error while registering deposit: {}", e.getMessage(), e);
             throw new IOException(e.getResponseBody(), e);
         }
-
     }
 
     @Override

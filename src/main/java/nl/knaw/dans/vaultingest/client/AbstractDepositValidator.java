@@ -16,8 +16,8 @@
 package nl.knaw.dans.vaultingest.client;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.validatedansbag.api.ValidateCommand;
-import nl.knaw.dans.validatedansbag.api.ValidateOk;
+import nl.knaw.dans.validatedansbag.api.ValidateCommandDto;
+import nl.knaw.dans.validatedansbag.api.ValidateOkDto;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -45,7 +45,7 @@ public abstract class AbstractDepositValidator implements DepositValidator {
     public void validate(Path depositDir) throws InvalidDepositException {
         var bagDir = getBagDir(depositDir);
 
-        var command = new ValidateCommand()
+        var command = new ValidateCommandDto()
             .bagLocation(bagDir.toString())
             .packageType(getPackageType());
 
@@ -59,7 +59,7 @@ public abstract class AbstractDepositValidator implements DepositValidator {
                 .post(Entity.entity(multipart, multipart.getMediaType()))) {
 
                 if (response.getStatus() != 200) {
-                    throw formatValidationError(response.readEntity(ValidateOk.class));
+                    throw formatValidationError(response.readEntity(ValidateOkDto.class));
                 }
             }
         }
@@ -68,7 +68,7 @@ public abstract class AbstractDepositValidator implements DepositValidator {
         }
     }
 
-    private InvalidDepositException formatValidationError(ValidateOk result) {
+    private InvalidDepositException formatValidationError(ValidateOkDto result) {
         var violations = result.getRuleViolations().stream()
             .map(r -> String.format("- [%s] %s", r.getRule(), r.getViolation()))
             .collect(Collectors.joining("\n"));
@@ -79,7 +79,7 @@ public abstract class AbstractDepositValidator implements DepositValidator {
         );
     }
 
-    protected abstract ValidateCommand.PackageTypeEnum getPackageType();
+    protected abstract ValidateCommandDto.PackageTypeEnum getPackageType();
 
     protected Path getBagDir(Path path) throws InvalidDepositException {
         try (var list = Files.list(path)) {

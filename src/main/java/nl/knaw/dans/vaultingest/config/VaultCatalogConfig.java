@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.config;
 
+import io.dropwizard.client.JerseyClientConfiguration;
 import lombok.Getter;
 
 import javax.validation.Valid;
@@ -26,4 +27,8 @@ public class VaultCatalogConfig {
     @Valid
     @NotNull
     private URL url;
+
+    @Valid
+    @NotNull
+    private JerseyClientConfiguration httpClient;
 }

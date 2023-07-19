@@ -47,6 +47,8 @@ ingestFlow:
 
 vaultCatalog:
   url: https://vault.dans.knaw.nl/catalog
+  httpClient:
+    userAgent: dd-vault-ingest-flow
 
 #
 # See https://www.dropwizard.io/en/latest/manual/configuration.html#logging
