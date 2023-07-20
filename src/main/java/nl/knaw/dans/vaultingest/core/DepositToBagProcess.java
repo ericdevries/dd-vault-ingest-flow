@@ -100,10 +100,7 @@ public class DepositToBagProcess {
         }
 
         var registeredDeposit = vaultCatalogService.registerDeposit(deposit);
-
-        if (registeredDeposit != null) {
-            deposit.setObjectVersion(registeredDeposit.getObjectVersion());
-        }
+        deposit.setObjectVersion(registeredDeposit.getObjectVersion());
 
         // send rda bag to vault
         try {

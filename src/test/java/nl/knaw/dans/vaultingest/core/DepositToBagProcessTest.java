@@ -28,6 +28,7 @@ import nl.knaw.dans.vaultingest.core.utilities.NullBagOutputWriter;
 import nl.knaw.dans.vaultingest.core.utilities.TestDepositManager;
 import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
+import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogDeposit;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,6 +47,9 @@ class DepositToBagProcessTest {
         var output = new InMemoryOutputWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
+
+        Mockito.when(vaultCatalogService.registerDeposit(Mockito.any()))
+            .thenReturn(VaultCatalogDeposit.builder().objectVersion(1L).build());
 
         var deposit = getBasicDeposit();
         var depositManager = TestDepositManager.ofDeposit(deposit);
@@ -79,6 +83,9 @@ class DepositToBagProcessTest {
         var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
+        Mockito.when(vaultCatalogService.registerDeposit(Mockito.any()))
+            .thenReturn(VaultCatalogDeposit.builder().objectVersion(1L).build());
+
         var depositManager = Mockito.spy(TestDepositManager.ofDeposit(null));
         Mockito.doThrow(new RuntimeException("error")).when(depositManager).loadDeposit(Mockito.any());
 
@@ -106,6 +113,9 @@ class DepositToBagProcessTest {
         var output = new InMemoryOutputWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
+
+        Mockito.when(vaultCatalogService.registerDeposit(Mockito.any()))
+            .thenReturn(VaultCatalogDeposit.builder().objectVersion(1L).build());
 
         Mockito.doThrow(new InvalidDepositException("Invalid deposit!"))
             .when(depositValidator).validate(Mockito.any());
@@ -136,6 +146,9 @@ class DepositToBagProcessTest {
         var output = new InMemoryOutputWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
+
+        Mockito.when(vaultCatalogService.registerDeposit(Mockito.any()))
+            .thenReturn(VaultCatalogDeposit.builder().objectVersion(1L).build());
 
         Mockito.when(vaultCatalogService.findDeposit(Mockito.any()))
             .thenReturn(Optional.empty());
@@ -175,6 +188,9 @@ class DepositToBagProcessTest {
             new IdMinter()
         );
 
+        Mockito.when(vaultCatalogService.registerDeposit(Mockito.any()))
+            .thenReturn(VaultCatalogDeposit.builder().objectVersion(1L).build());
+
         var deposit = getBasicDeposit();
         depositToBagProcess.processDeposit(deposit);
 
@@ -210,6 +226,9 @@ class DepositToBagProcessTest {
         var depositManager = Mockito.mock(DepositManager.class);
         var depositValidator = Mockito.mock(DepositValidator.class);
 
+        Mockito.when(vaultCatalogService.registerDeposit(Mockito.any()))
+            .thenReturn(VaultCatalogDeposit.builder().objectVersion(1L).build());
+
         var depositToBagProcess = new DepositToBagProcess(
             () -> rdaBagWriter,
             d -> new NullBagOutputWriter(),
@@ -229,6 +248,9 @@ class DepositToBagProcessTest {
         var deposit = getBasicDepositAsUpdate();
         var rdaBagWriter = getWriter();
         var vaultCatalogService = Mockito.mock(VaultCatalogRepository.class);
+
+        Mockito.when(vaultCatalogService.registerDeposit(Mockito.any()))
+            .thenReturn(VaultCatalogDeposit.builder().objectVersion(1L).build());
 
         Mockito.doReturn(Optional.empty())
             .when(vaultCatalogService).findDeposit(Mockito.any());

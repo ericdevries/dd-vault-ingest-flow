@@ -38,7 +38,7 @@ public class ZipBagOutputWriterFactory implements BagOutputWriterFactory {
         Objects.requireNonNull(bagId);
         Objects.requireNonNull(objectVersion);
 
-        // strip anything before the colon (if present), and also the colon itself
+        // strip anything before all colons (if present), and also the colon itself
         bagId = bagId.toLowerCase().replaceAll(".*:", "");
 
         return String.format("vaas-%s-v%s.zip", bagId, objectVersion);

@@ -65,10 +65,6 @@ public abstract class AbstractDepositValidator implements DepositValidator {
                 }
             }
         }
-        catch (ProcessingException e) {
-            log.error("Unable to connect to validator service on URL {}", serviceUri);
-            throw e;
-        }
         catch (IOException e) {
             log.error("Unable to create multipart form data object", e);
         }
