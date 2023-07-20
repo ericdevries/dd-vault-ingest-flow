@@ -20,19 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class DepositOutbox implements Outbox {
     private final Path outboxPath;
+    private boolean initialized = false;
 
-    public DepositOutbox(Path outboxPath) throws IOException {
+    public DepositOutbox(Path outboxPath) {
         this.outboxPath = outboxPath.toAbsolutePath();
-
-        // create outbox directory if it does not exist
-        log.info("Creating directories in outbox; path = {}", outboxPath);
-        Files.createDirectories(this.outboxPath.resolve(OutboxPath.PROCESSED.getValue()));
-        Files.createDirectories(this.outboxPath.resolve(OutboxPath.FAILED.getValue()));
-        Files.createDirectories(this.outboxPath.resolve(OutboxPath.REJECTED.getValue()));
     }
 
     @Override
@@ -45,23 +43,72 @@ public class DepositOutbox implements Outbox {
         moveDepositPath(path, state);
     }
 
-    void moveDepositPath(Path path, Deposit.State state) throws IOException {
-        switch (state) {
-            case FAILED:
-                // move to failed
-                Files.move(path, outboxPath.resolve(OutboxPath.FAILED.getValue()).resolve(path.getFileName()));
-                break;
-            case REJECTED:
-                // move to rejected
-                Files.move(path, outboxPath.resolve(OutboxPath.REJECTED.getValue()).resolve(path.getFileName()));
-                break;
-            case ACCEPTED:
-                // move to accepted
-                Files.move(path, outboxPath.resolve(OutboxPath.PROCESSED.getValue()).resolve(path.getFileName()));
-                break;
-            default:
-                throw new IllegalArgumentException("Unexpected state: " + state + "; only FAILED, REJECTED and ACCEPTED are allowed");
+    @Override
+    public Outbox withBatchDirectory(Path subPath) {
+        return new DepositOutbox(outboxPath.resolve(subPath));
+    }
+
+    @Override
+    public void init(boolean allowNonEmpty) throws IOException {
+        // create outbox directory if it does not exist
+        log.info("Creating directories in outbox; path = {}", outboxPath);
+
+        var paths = new Path[] {
+            this.outboxPath.resolve(OutboxPath.PROCESSED.getValue()),
+            this.outboxPath.resolve(OutboxPath.FAILED.getValue()),
+            this.outboxPath.resolve(OutboxPath.REJECTED.getValue())
+        };
+
+        for (var path : paths) {
+            Files.createDirectories(path);
         }
+
+        boolean dontAllowContentInDirectories = !allowNonEmpty;
+
+        if (dontAllowContentInDirectories) {
+            var nonEmptyPaths = Stream.of(paths).filter(path -> {
+                    try {
+                        return !directoryIsEmpty(path);
+                    }
+                    catch (Throwable e) {
+                        throw new IllegalStateException(String.format(
+                            "Failed to check if outbox %s is empty", path), e);
+                    }
+                })
+                .collect(Collectors.toList());
+
+            if (nonEmptyPaths.size() > 0) {
+                throw new IllegalStateException(String.format(
+                    "Outbox %s is not empty; paths containing files/directories are %s", outboxPath, nonEmptyPaths)
+                );
+            }
+        }
+
+        initialized = true;
+    }
+
+    private boolean directoryIsEmpty(Path path) throws IOException {
+        try (var fileList = Files.list(path)) {
+            return fileList.findAny().isEmpty();
+        }
+    }
+
+    private void moveDepositPath(Path path, Deposit.State state) throws IOException {
+        if (!initialized) {
+            throw new IllegalStateException(String.format("Outbox %s not initialized; call init() first", this.outboxPath));
+        }
+
+        var outboxMapping = Map.of(
+            Deposit.State.FAILED, OutboxPath.FAILED,
+            Deposit.State.REJECTED, OutboxPath.REJECTED,
+            Deposit.State.ACCEPTED, OutboxPath.PROCESSED
+        );
+
+        if (!outboxMapping.containsKey(state)) {
+            throw new IllegalArgumentException("Unexpected state: " + state + "; only FAILED, REJECTED and ACCEPTED are allowed");
+        }
+
+        Files.move(path, outboxPath.resolve(outboxMapping.get(state).getValue()).resolve(path.getFileName()));
     }
 
     private enum OutboxPath {
@@ -71,13 +118,13 @@ public class DepositOutbox implements Outbox {
         FAILED("failed"),
         ;
 
-        private final Path value;
+        private final String value;
 
         OutboxPath(String value) {
-            this.value = Path.of(value);
+            this.value = value;
         }
 
-        public Path getValue() {
+        public String getValue() {
             return value;
         }
     }

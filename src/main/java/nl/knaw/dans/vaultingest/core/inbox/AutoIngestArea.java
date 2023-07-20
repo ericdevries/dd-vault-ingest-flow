@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 
+import java.io.IOException;
 import java.util.concurrent.Executor;
 
 @Slf4j
@@ -32,8 +33,7 @@ public class AutoIngestArea {
         Executor executor,
         IngestAreaWatcher ingestAreaWatcher,
         DepositToBagProcess depositToBagProcess,
-        Outbox outbox
-    ) {
+        Outbox outbox) {
         this.executor = executor;
         this.ingestAreaWatcher = ingestAreaWatcher;
         this.depositToBagProcess = depositToBagProcess;
@@ -41,13 +41,19 @@ public class AutoIngestArea {
     }
 
     public void start() {
-        ingestAreaWatcher.start((path) -> {
-            log.info("New item in inbox; path = {}", path);
+        try {
+            outbox.init(true);
 
-            executor.execute(() -> {
-                depositToBagProcess.process(path, outbox);
+            ingestAreaWatcher.start((path) -> {
+                log.info("New item in inbox; path = {}", path);
+
+                executor.execute(() -> depositToBagProcess.process(path, outbox));
             });
-        });
+        }
+        catch (IOException e) {
+            log.error("Error while starting the ingest area watcher for outbox {}", outbox, e);
+            throw new IllegalStateException("Error while starting the ingest area watcher for outbox " + outbox, e);
+        }
     }
 
 }

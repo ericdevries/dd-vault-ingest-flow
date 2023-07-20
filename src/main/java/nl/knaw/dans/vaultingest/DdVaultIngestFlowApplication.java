@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultcatalog.client.ApiClient;
 import nl.knaw.dans.vaultcatalog.client.OcflObjectVersionApi;
 import nl.knaw.dans.vaultingest.client.DepositValidator;
+import nl.knaw.dans.vaultingest.client.MigrationDepositValidator;
 import nl.knaw.dans.vaultingest.client.VaultCatalogClient;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
@@ -31,8 +32,10 @@ import nl.knaw.dans.vaultingest.core.deposit.CsvLanguageResolver;
 import nl.knaw.dans.vaultingest.core.deposit.DepositManager;
 import nl.knaw.dans.vaultingest.core.deposit.DepositOutbox;
 import nl.knaw.dans.vaultingest.core.deposit.FileCountryResolver;
+import nl.knaw.dans.vaultingest.core.deposit.MigrationDepositManager;
 import nl.knaw.dans.vaultingest.core.inbox.AutoIngestArea;
 import nl.knaw.dans.vaultingest.core.inbox.IngestAreaDirectoryWatcher;
+import nl.knaw.dans.vaultingest.core.inbox.MigrationIngestArea;
 import nl.knaw.dans.vaultingest.core.rdabag.DefaultRdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.output.ZipBagOutputWriterFactory;
 import nl.knaw.dans.vaultingest.core.xml.XmlReader;
@@ -75,7 +78,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
         );
         var xmlReader = new XmlReader();
         var depositValidator = new DepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
-        var depositFactory = new DepositManager(xmlReader);
+        var depositManager = new DepositManager(xmlReader);
 
         var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(
             environment.getObjectMapper(),
@@ -87,14 +90,15 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
 
         var ocflObjectVersionApi = createOcflObjectVersionApi(configuration, environment);
         var vaultCatalogRepository = new VaultCatalogClient(ocflObjectVersionApi);
+        var idMinter = new IdMinter();
 
         var depositToBagProcess = new DepositToBagProcess(
             rdaBagWriterFactory,
             outputWriterFactory,
             vaultCatalogRepository,
-            depositFactory,
             depositValidator,
-            new IdMinter()
+            idMinter,
+            depositManager
         );
 
         var taskQueue = configuration.getIngestFlow().getTaskQueue().build(environment);
@@ -110,6 +114,25 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             ingestAreaDirectoryWatcher,
             depositToBagProcess,
             autoIngestOutbox
+        );
+
+        var migrationDepositValidator = new MigrationDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
+        var migrationDepositManager = new MigrationDepositManager(xmlReader);
+
+        var migrationDepositToBagProcess = new DepositToBagProcess(
+            rdaBagWriterFactory,
+            outputWriterFactory,
+            vaultCatalogRepository,
+            migrationDepositValidator,
+            idMinter,
+            migrationDepositManager
+        );
+
+        var migrationIngestArea = new MigrationIngestArea(
+            taskQueue,
+            migrationDepositToBagProcess,
+            configuration.getIngestFlow().getMigration().getInbox(),
+            new DepositOutbox(configuration.getIngestFlow().getMigration().getOutbox())
         );
 
         inboxListener.start();
