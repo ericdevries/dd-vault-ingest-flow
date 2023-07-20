@@ -30,15 +30,17 @@ public class ZipBagOutputWriterFactory implements BagOutputWriterFactory {
 
     @Override
     public BagOutputWriter createBagOutputWriter(Deposit deposit) throws IOException {
-        var doi = Objects.requireNonNull(deposit.getDoi(), "Deposit DOI is null");
-        // TODO version should be coming from the deposit, or should it?
-        // this is to be determined by Jan and Linda
-        var output = outputDir.resolve(outputFilename(doi, "1.0"));
+        var output = outputDir.resolve(outputFilename(deposit.getBagId(), deposit.getObjectVersion()));
         return new ZipBagOutputWriter(output);
     }
 
-    private Path outputFilename(String doi, String version) {
-        doi = doi.replaceAll("[^a-zA-Z0-9]", "-");
-        return Path.of(String.format("%s-v%s.zip", doi, version).toLowerCase());
+    String outputFilename(String bagId, Long objectVersion) {
+        Objects.requireNonNull(bagId);
+        Objects.requireNonNull(objectVersion);
+
+        // strip anything before all colons (if present), and also the colon itself
+        bagId = bagId.toLowerCase().replaceAll(".*:", "");
+
+        return String.format("vaas-%s-v%s.zip", bagId, objectVersion);
     }
 }

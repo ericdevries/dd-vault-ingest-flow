@@ -98,6 +98,9 @@ public class DepositToBagProcess {
             deposit.setNbn(idMinter.mintUrnNbn());
         }
 
+        var registeredDeposit = vaultCatalogService.registerDeposit(deposit);
+        deposit.setObjectVersion(registeredDeposit.getObjectVersion());
+
         // send rda bag to vault
         try {
             try (var writer = bagOutputWriterFactory.createBagOutputWriter(deposit)) {
@@ -110,7 +113,6 @@ public class DepositToBagProcess {
             throw new IllegalStateException("Error writing bag: " + e.getMessage(), e);
         }
 
-        vaultCatalogService.registerDeposit(deposit);
     }
 
     void handleFailedDeposit(Path path, Outbox outbox, Deposit.State state, Throwable error) {

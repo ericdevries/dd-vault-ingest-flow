@@ -139,11 +139,11 @@ class DepositOutboxTest {
         }
     }
 
-    private class DepositWithPathAndState extends Deposit {
+    private static class DepositWithPathAndState extends Deposit {
         private final Deposit.State state;
 
         DepositWithPathAndState(Path path, State state) {
-            super("random_id", null, null, null, path, null, null, false, null);
+            super("random_id", null, null, null, path, null, null, false, null, null);
             this.state = state;
         }
 

@@ -41,6 +41,7 @@ public class Deposit {
     private final DepositBag bag;
     private final boolean migration;
     private String nbn;
+    private Long objectVersion;
 
     public Path getPath() {
         return path;
@@ -147,6 +148,14 @@ public class Deposit {
 
     public InputStream inputStreamForMetadataFile(Path path) {
         return bag.inputStreamForMetadataFile(path);
+    }
+
+    public Long getObjectVersion() {
+        return objectVersion;
+    }
+
+    public void setObjectVersion(Long objectVersion) {
+        this.objectVersion = objectVersion;
     }
 
     public enum State {

@@ -22,7 +22,7 @@ import java.util.Optional;
 
 public interface VaultCatalogRepository {
 
-    void registerDeposit(Deposit deposit) throws IOException;
+    VaultCatalogDeposit registerDeposit(Deposit deposit) throws IOException;
 
     Optional<VaultCatalogDeposit> findDeposit(String swordToken) throws IOException;
 }
