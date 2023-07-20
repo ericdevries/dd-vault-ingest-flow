@@ -37,7 +37,7 @@ public class VaultCatalogClient implements VaultCatalogRepository {
     }
 
     @Override
-    public void registerDeposit(Deposit deposit) throws IOException {
+    public VaultCatalogDeposit registerDeposit(Deposit deposit) throws IOException {
         var bagId = deposit.getBagId();
 
         // find latest version
@@ -54,9 +54,17 @@ public class VaultCatalogClient implements VaultCatalogRepository {
                 .dataSupplier(deposit.getDepositorId())
                 .swordToken(deposit.getSwordToken());
 
-            var response = ocflObjectVersionApi.createOcflObjectVersion(bagId, highestVersion + 1, parameters);
+            var newVersion = highestVersion + 1;
+            var response = ocflObjectVersionApi.createOcflObjectVersion(bagId, (int)newVersion, parameters);
 
             log.debug("Registered deposit, response: {}", response);
+
+            return VaultCatalogDeposit.builder()
+                .objectVersion(newVersion)
+                .bagId(bagId)
+                .nbn(response.getNbn())
+                .dataSupplier(response.getDataSupplier())
+                .build();
         }
         catch (ApiException e) {
             log.error("Error while registering deposit: {}", e.getMessage(), e);
@@ -96,11 +104,11 @@ public class VaultCatalogClient implements VaultCatalogRepository {
         }
     }
 
-    int findHighestVersion(String bagId) {
+    long findHighestVersion(String bagId) {
         try {
             var versions = ocflObjectVersionApi.getOcflObjectsByBagId(bagId);
 
-            // find highest version
+            // find the highest version
             // note that in the vault ingest flow, currently there should never be an existing version
             // so the highestVersion variable should always be 0
             return versions.stream()

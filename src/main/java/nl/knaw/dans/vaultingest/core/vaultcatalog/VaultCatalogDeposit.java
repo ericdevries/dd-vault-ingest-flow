@@ -21,6 +21,8 @@ import lombok.Value;
 @Value
 @Builder
 public class VaultCatalogDeposit {
+    String bagId;
+    Long objectVersion;
     String dataSupplier;
     String nbn;
 }

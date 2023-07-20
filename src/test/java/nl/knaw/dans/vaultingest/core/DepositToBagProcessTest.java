@@ -32,7 +32,6 @@ import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -215,7 +214,10 @@ class DepositToBagProcessTest {
             () -> rdaBagWriter,
             d -> new NullBagOutputWriter(),
             vaultCatalogService,
-            depositManager, depositValidator, new IdMinter());
+            depositManager,
+            depositValidator,
+            new IdMinter()
+        );
 
         depositToBagProcess.processDeposit(deposit);
 
