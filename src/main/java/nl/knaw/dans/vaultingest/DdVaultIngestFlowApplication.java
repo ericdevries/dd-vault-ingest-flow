@@ -23,8 +23,8 @@ import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultcatalog.client.ApiClient;
 import nl.knaw.dans.vaultcatalog.client.OcflObjectVersionApi;
-import nl.knaw.dans.vaultingest.client.DepositValidator;
-import nl.knaw.dans.vaultingest.client.MigrationDepositValidator;
+import nl.knaw.dans.vaultingest.client.BagValidator;
+import nl.knaw.dans.vaultingest.client.MigrationBagValidator;
 import nl.knaw.dans.vaultingest.client.VaultCatalogClient;
 import nl.knaw.dans.vaultingest.core.DepositToBagProcess;
 import nl.knaw.dans.vaultingest.core.IdMinter;
@@ -77,7 +77,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             configuration.getIngestFlow().getSpatialCoverageCountryTermsPath()
         );
         var xmlReader = new XmlReader();
-        var depositValidator = new DepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
+        var depositValidator = new BagValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
         var depositManager = new DepositManager(xmlReader);
 
         var rdaBagWriterFactory = new DefaultRdaBagWriterFactory(
@@ -116,7 +116,7 @@ public class DdVaultIngestFlowApplication extends Application<DdVaultIngestFlowC
             autoIngestOutbox
         );
 
-        var migrationDepositValidator = new MigrationDepositValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
+        var migrationDepositValidator = new MigrationBagValidator(dansBagValidatorClient, configuration.getValidateDansBag().getValidateUrl());
         var migrationDepositManager = new MigrationDepositManager(xmlReader);
 
         var migrationDepositToBagProcess = new DepositToBagProcess(

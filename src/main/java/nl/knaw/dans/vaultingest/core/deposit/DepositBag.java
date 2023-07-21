@@ -16,18 +16,19 @@
 package nl.knaw.dans.vaultingest.core.deposit;
 
 import gov.loc.repository.bagit.domain.Bag;
+import gov.loc.repository.bagit.domain.Manifest;
+import gov.loc.repository.bagit.hash.SupportedAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,11 +45,18 @@ public class DepositBag {
         }
     }
 
+    public Set<SupportedAlgorithm> getPayloadManifestAlgorithms() {
+        return bag.getPayLoadManifests().stream()
+            .map(Manifest::getAlgorithm)
+            .collect(Collectors.toSet());
+    }
+
     public InputStream inputStreamForMetadataFile(Path path) {
         try {
-            return new BufferedInputStream(new FileInputStream(bag.getRootDir().resolve(path).toFile()));
+            var target = bag.getRootDir().resolve(path);
+            return new BufferedInputStream(Files.newInputStream(target));
         }
-        catch (FileNotFoundException e) {
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -56,5 +64,9 @@ public class DepositBag {
     public List<String> getMetadataValue(String key) {
         var value = bag.getMetadata().get(key);
         return value != null ? value : List.of();
+    }
+
+    public Path getBagDir() {
+        return bag.getRootDir();
     }
 }

@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.core.validator;
+package nl.knaw.dans.vaultingest.client;
 
-import java.nio.file.Path;
+import nl.knaw.dans.validatedansbag.api.ValidateCommandDto;
 
-public interface DepositValidator {
-    void validate(Path depositDir) throws InvalidDepositException;
+import javax.ws.rs.client.Client;
+import java.net.URI;
+
+public class MigrationBagValidator extends AbstractBagValidator {
+
+    public MigrationBagValidator(Client httpClient, URI serviceUri) {
+        super(httpClient, serviceUri);
+    }
+
+    @Override
+    protected ValidateCommandDto.PackageTypeEnum getPackageType() {
+        return ValidateCommandDto.PackageTypeEnum.MIGRATION;
+    }
+
 }

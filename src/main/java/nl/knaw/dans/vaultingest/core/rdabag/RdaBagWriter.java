@@ -15,28 +15,30 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag;
 
+import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
+import gov.loc.repository.bagit.hash.SupportedAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.vaultingest.core.datacite.DataciteConverter;
 import nl.knaw.dans.vaultingest.core.datacite.DataciteSerializer;
 import nl.knaw.dans.vaultingest.core.deposit.Deposit;
 import nl.knaw.dans.vaultingest.core.deposit.DepositFile;
-import nl.knaw.dans.vaultingest.core.deposit.ManifestAlgorithm;
 import nl.knaw.dans.vaultingest.core.oaiore.OaiOreConverter;
 import nl.knaw.dans.vaultingest.core.oaiore.OaiOreSerializer;
 import nl.knaw.dans.vaultingest.core.pidmapping.PidMappingConverter;
 import nl.knaw.dans.vaultingest.core.pidmapping.PidMappingSerializer;
 import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.output.MultiDigestInputStream;
-import org.apache.commons.io.output.NullOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,8 +52,8 @@ public class RdaBagWriter {
     private final PidMappingConverter pidMappingConverter;
     private final OaiOreConverter oaiOreConverter;
 
-    private final Map<Path, Map<ManifestAlgorithm, String>> checksums;
-    private final List<ManifestAlgorithm> requiredAlgorithms = List.of(ManifestAlgorithm.SHA1, ManifestAlgorithm.MD5);
+    private final Map<Path, Map<SupportedAlgorithm, String>> checksums;
+    private Set<SupportedAlgorithm> requiredAlgorithms;
 
     RdaBagWriter(
         DataciteSerializer dataciteSerializer,
@@ -72,6 +74,8 @@ public class RdaBagWriter {
     }
 
     public void write(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
+        this.requiredAlgorithms = getAlgorithms(deposit);
+
         log.info("Writing payload files");
         writePayloadFiles(deposit, outputWriter);
 
@@ -95,9 +99,11 @@ public class RdaBagWriter {
             writeMetadataFile(deposit, metadataFile, outputWriter);
         }
 
+        log.info("Writing manifest-*.txt files");
         writeManifests(deposit, outputWriter);
 
         // must be last, because all other files must have been written to
+        log.info("Writing tagmanifest-*.txt files");
         writeTagManifest(deposit, outputWriter);
     }
 
@@ -105,12 +111,10 @@ public class RdaBagWriter {
         for (var file : deposit.getPayloadFiles()) {
             var targetPath = file.getPath();
             var existingChecksums = file.getChecksums();
-            var checksumsToCalculate = requiredAlgorithms.stream()
-                .filter(algorithm -> !existingChecksums.containsKey(algorithm))
-                .collect(Collectors.toList());
-
             var allChecksums = new HashMap<>(existingChecksums);
+            var checksumsToCalculate = getAlgorithmsToCalculate(existingChecksums.keySet());
             log.debug("Checksums already present: {}", existingChecksums);
+            log.debug("Checksums to calculate: {}", checksumsToCalculate);
 
             try (var inputStream = file.openInputStream();
                 var digestInputStream = new MultiDigestInputStream(inputStream, checksumsToCalculate)) {
@@ -123,6 +127,9 @@ public class RdaBagWriter {
 
                 allChecksums.putAll(digestInputStream.getChecksums());
             }
+            catch (NoSuchAlgorithmException e) {
+                throw new IllegalStateException("Algorithm not supported", e);
+            }
 
             checksums.put(targetPath, allChecksums);
         }
@@ -131,11 +138,13 @@ public class RdaBagWriter {
     private void writeTagManifest(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
         // get the metadata, which is everything EXCEPT the data/** and tagmanifest-* files
         // but the deposit does not know about these files, only this class knows
-        for (var algorithm : requiredAlgorithms) {
+        var algorithms = getAlgorithms(deposit);
+
+        for (var algorithm : algorithms) {
             var outputString = new StringBuilder();
             var payloadPaths = deposit.getPayloadFiles().stream().map(DepositFile::getPath).collect(Collectors.toSet());
 
-            for (var entry : checksums.entrySet()) {
+            for (var entry : new TreeMap<>(checksums).entrySet()) {
                 if (payloadPaths.contains(entry.getKey()) || entry.getKey().startsWith("tagmanifest-")) {
                     continue;
                 }
@@ -146,35 +155,36 @@ public class RdaBagWriter {
                 outputString.append(String.format("%s  %s\n", checksum, path));
             }
 
-            var outputFile = String.format("tagmanifest-%s.txt", algorithm.getName());
+            var outputFile = String.format("tagmanifest-%s.txt", algorithm.getBagitName());
             outputWriter.writeBagItem(new ByteArrayInputStream(outputString.toString().getBytes()), Path.of(outputFile));
         }
 
     }
 
     private void writeManifests(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
-        // iterate all files in rda bag and get checksum sha1
-        var checksumMap = new HashMap<DepositFile, Map<ManifestAlgorithm, String>>();
+        var checksumMap = new TreeMap<>(
+            deposit.getPayloadFiles()
+                .stream()
+                .map(DepositFile::getPath)
+                .map(item -> Map.entry(item, checksums.get(item)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
 
-        for (var file : deposit.getPayloadFiles()) {
-            var output = (OutputStream) NullOutputStream.NULL_OUTPUT_STREAM;
+        var algorithms = getAlgorithms(deposit);
 
-            try (var input = new MultiDigestInputStream(file.openInputStream(), requiredAlgorithms)) {
-                input.transferTo(output);
-                checksumMap.put(file, input.getChecksums());
-            }
-        }
-
-        for (var algorithm : requiredAlgorithms) {
-            var outputFile = String.format("manifest-%s.txt", algorithm.getName());
+        for (var algorithm : algorithms) {
+            var outputFile = String.format("manifest-%s.txt", algorithm.getBagitName());
+            log.debug("Writing {} ", outputFile);
             var outputString = new StringBuilder();
 
             for (var file : deposit.getPayloadFiles()) {
-                var checksum = checksumMap.get(file).get(algorithm);
+                var checksum = checksumMap.get(file.getPath()).get(algorithm);
                 outputString.append(String.format("%s  %s\n", checksum, file.getPath()));
             }
 
-            checksummedWriteToOutput(outputString.toString(), Path.of(outputFile), outputWriter);
+            var content = outputString.toString();
+            log.trace("Contents for {}: \n{}", outputFile, content);
+            checksummedWriteToOutput(content, Path.of(outputFile), outputWriter);
         }
     }
 
@@ -231,11 +241,36 @@ public class RdaBagWriter {
     private void checksummedWriteToOutput(InputStream inputStream, Path path, BagOutputWriter outputWriter) throws IOException {
         try (var input = new MultiDigestInputStream(inputStream, requiredAlgorithms)) {
             outputWriter.writeBagItem(input, path);
-            checksums.put(path, input.getChecksums());
+            var result = input.getChecksums();
+            log.trace("Checksums for {}: {}", path, result);
+            checksums.put(path, result);
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Algorithm not supported", e);
         }
     }
 
     private void checksummedWriteToOutput(String string, Path path, BagOutputWriter outputWriter) throws IOException {
         checksummedWriteToOutput(new ByteArrayInputStream(string.getBytes()), path, outputWriter);
+    }
+
+    Set<SupportedAlgorithm> getAlgorithms(Deposit deposit) {
+        var algorithms = new HashSet<>(deposit.getPayloadManifestAlgorithms());
+
+        // if there is only 1 algorithm, and it is MD5, then we also need SHA1
+        if (algorithms.size() == 1 && algorithms.contains(StandardSupportedAlgorithms.MD5)) {
+            algorithms.add(StandardSupportedAlgorithms.SHA1);
+        }
+
+        log.trace("Algorithms for deposit {}: {}", deposit.getId(), algorithms);
+        return algorithms;
+    }
+
+    Set<SupportedAlgorithm> getAlgorithmsToCalculate(Set<SupportedAlgorithm> existingChecksums) {
+        if (existingChecksums.size() == 1 && existingChecksums.contains(StandardSupportedAlgorithms.MD5)) {
+            return Set.of(StandardSupportedAlgorithms.SHA1);
+        }
+
+        return Set.of();
     }
 }

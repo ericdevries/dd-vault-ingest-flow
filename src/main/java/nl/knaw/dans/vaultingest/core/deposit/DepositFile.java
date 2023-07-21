@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
+import gov.loc.repository.bagit.hash.SupportedAlgorithm;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,7 +37,7 @@ public class DepositFile {
     private final Node filesXmlNode;
     private final Node ddmNode;
     private final Path physicalPath;
-    private final Map<ManifestAlgorithm, String> checksums;
+    private final Map<SupportedAlgorithm, String> checksums;
 
     public Node getDdmNode() {
         return ddmNode;
@@ -80,7 +81,7 @@ public class DepositFile {
         return Path.of(getFilePathAttribute());//.substring("data/".length()));
     }
 
-    public Map<ManifestAlgorithm, String> getChecksums() {
+    public Map<SupportedAlgorithm, String> getChecksums() {
         return Collections.unmodifiableMap(checksums);
     }
 }

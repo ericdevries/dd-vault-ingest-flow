@@ -13,17 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.vaultingest.client;
-
-import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
+package nl.knaw.dans.vaultingest.core.validator;
 
 import java.nio.file.Path;
 
-@Slf4j
-public class VoidDepositValidator implements DepositValidator {
-    @Override
-    public void validate(Path depositDir) {
-        log.info("Validating bag on path {}, and it will succeed", depositDir);
-    }
+public interface BagValidator {
+    void validate(Path depositDir) throws InvalidDepositException;
 }

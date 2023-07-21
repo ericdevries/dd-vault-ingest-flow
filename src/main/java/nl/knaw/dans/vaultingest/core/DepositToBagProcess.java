@@ -22,12 +22,13 @@ import nl.knaw.dans.vaultingest.core.deposit.Outbox;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriter;
 import nl.knaw.dans.vaultingest.core.rdabag.RdaBagWriterFactory;
 import nl.knaw.dans.vaultingest.core.rdabag.output.BagOutputWriterFactory;
-import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
+import nl.knaw.dans.vaultingest.core.validator.BagValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import nl.knaw.dans.vaultingest.core.vaultcatalog.VaultCatalogRepository;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Slf4j
@@ -36,7 +37,7 @@ public class DepositToBagProcess {
     private final RdaBagWriter rdaBagWriter;
     private final BagOutputWriterFactory bagOutputWriterFactory;
     private final VaultCatalogRepository vaultCatalogService;
-    private final DepositValidator depositValidator;
+    private final BagValidator bagValidator;
     private final IdMinter idMinter;
     private final DepositManager depositManager;
 
@@ -44,21 +45,23 @@ public class DepositToBagProcess {
         RdaBagWriterFactory rdaBagWriterFactory,
         BagOutputWriterFactory bagOutputWriterFactory,
         VaultCatalogRepository vaultCatalogService,
-        DepositValidator depositValidator,
+        BagValidator bagValidator,
         IdMinter idMinter,
         DepositManager depositManager) {
         this.rdaBagWriter = rdaBagWriterFactory.createRdaBagWriter();
         this.bagOutputWriterFactory = bagOutputWriterFactory;
         this.vaultCatalogService = vaultCatalogService;
-        this.depositValidator = depositValidator;
+        this.bagValidator = bagValidator;
         this.idMinter = idMinter;
         this.depositManager = depositManager;
     }
 
     public void process(Path path, Outbox outbox) {
         try {
-            log.info("Validating deposit on path {}", path);
-            depositValidator.validate(path);
+            var bagDir = getBagDir(path);
+
+            log.info("Validating deposit on path {}", bagDir);
+            bagValidator.validate(bagDir);
 
             log.info("Loading deposit on path {}", path);
             var deposit = depositManager.loadDeposit(path);
@@ -133,6 +136,17 @@ public class DepositToBagProcess {
             catch (IOException ioException) {
                 log.error("Failed to move deposit to outbox, nothing left to do", ioException);
             }
+        }
+    }
+
+    private Path getBagDir(Path path) throws InvalidDepositException {
+        try (var list = Files.list(path)) {
+            return list.filter(Files::isDirectory)
+                .findFirst()
+                .orElse(null);
+        }
+        catch (IOException e) {
+            return null;
         }
     }
 }
