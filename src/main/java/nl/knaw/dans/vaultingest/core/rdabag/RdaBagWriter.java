@@ -258,7 +258,7 @@ public class RdaBagWriter {
         var algorithms = new HashSet<>(deposit.getPayloadManifestAlgorithms());
 
         // if there is only 1 algorithm, and it is MD5, then we also need SHA1
-        if (algorithms.size() == 1 && algorithms.contains(StandardSupportedAlgorithms.MD5)) {
+        if (algorithms.size() <= 1 && algorithms.contains(StandardSupportedAlgorithms.MD5)) {
             algorithms.add(StandardSupportedAlgorithms.SHA1);
         }
 
