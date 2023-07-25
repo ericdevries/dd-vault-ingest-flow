@@ -267,7 +267,7 @@ public class RdaBagWriter {
     }
 
     Set<SupportedAlgorithm> getAlgorithmsToCalculate(Set<SupportedAlgorithm> existingChecksums) {
-        if (existingChecksums.size() == 1 && existingChecksums.contains(StandardSupportedAlgorithms.MD5)) {
+        if (existingChecksums.size() <= 1 && existingChecksums.contains(StandardSupportedAlgorithms.MD5)) {
             return Set.of(StandardSupportedAlgorithms.SHA1);
         }
 
