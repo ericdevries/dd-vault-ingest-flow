@@ -100,7 +100,7 @@ public class RdaBagWriter {
         }
 
         log.info("Writing manifest-*.txt files");
-        writeManifests(deposit, outputWriter);
+        writePayloadManifests(deposit, outputWriter);
 
         // must be last, because all other files must have been written to
         log.info("Writing tagmanifest-*.txt files");
@@ -161,7 +161,7 @@ public class RdaBagWriter {
 
     }
 
-    private void writeManifests(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
+    private void writePayloadManifests(Deposit deposit, BagOutputWriter outputWriter) throws IOException {
         var checksumMap = new TreeMap<>(
             deposit.getPayloadFiles()
                 .stream()
