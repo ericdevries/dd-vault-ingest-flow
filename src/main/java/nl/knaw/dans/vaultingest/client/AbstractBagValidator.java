@@ -18,34 +18,33 @@ package nl.knaw.dans.vaultingest.client;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.validatedansbag.api.ValidateCommandDto;
 import nl.knaw.dans.validatedansbag.api.ValidateOkDto;
-import nl.knaw.dans.vaultingest.core.validator.DepositValidator;
+import nl.knaw.dans.vaultingest.core.validator.BagValidator;
 import nl.knaw.dans.vaultingest.core.validator.InvalidDepositException;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class AbstractDepositValidator implements DepositValidator {
+public abstract class AbstractBagValidator implements BagValidator {
     private final Client httpClient;
     private final URI serviceUri;
 
-    public AbstractDepositValidator(Client httpClient, URI serviceUri) {
+    public AbstractBagValidator(Client httpClient, URI serviceUri) {
         this.httpClient = httpClient;
         this.serviceUri = serviceUri;
     }
 
     @Override
-    public void validate(Path depositDir) throws InvalidDepositException {
-        var bagDir = getBagDir(depositDir);
+    public void validate(Path bagDir) throws InvalidDepositException {
+        if (bagDir == null) {
+            throw new InvalidDepositException("Bag directory cannot be null");
+        }
 
         var command = new ValidateCommandDto()
             .bagLocation(bagDir.toString())
@@ -60,7 +59,8 @@ public abstract class AbstractDepositValidator implements DepositValidator {
                 .request()
                 .post(Entity.entity(multipart, multipart.getMediaType()))) {
 
-                if (response.getStatus() != 200) {
+                log.debug("Validate bag response: {}", response);
+                if (response.getStatus() == 200) {
                     throw formatValidationError(response.readEntity(ValidateOkDto.class));
                 }
             }
@@ -83,14 +83,4 @@ public abstract class AbstractDepositValidator implements DepositValidator {
 
     protected abstract ValidateCommandDto.PackageTypeEnum getPackageType();
 
-    protected Path getBagDir(Path path) throws InvalidDepositException {
-        try (var list = Files.list(path)) {
-            return list.filter(Files::isDirectory)
-                .findFirst()
-                .orElseThrow();
-        }
-        catch (IOException e) {
-            throw new InvalidDepositException("Unable to find bag directory", e);
-        }
-    }
 }

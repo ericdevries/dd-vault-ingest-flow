@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.vaultingest.core.deposit;
 
+import gov.loc.repository.bagit.hash.SupportedAlgorithm;
 import lombok.Builder;
 import lombok.ToString;
 import nl.knaw.dans.vaultingest.core.xml.XPathEvaluator;
@@ -27,6 +28,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Builder
@@ -57,6 +59,10 @@ public class Deposit {
 
     public DepositBag getBag() {
         return bag;
+    }
+
+    public Set<SupportedAlgorithm> getPayloadManifestAlgorithms() {
+        return getBag().getPayloadManifestAlgorithms();
     }
 
     public Document getDdm() {
@@ -148,6 +154,10 @@ public class Deposit {
 
     public InputStream inputStreamForMetadataFile(Path path) {
         return bag.inputStreamForMetadataFile(path);
+    }
+
+    public Path getBagDir() {
+        return bag.getBagDir();
     }
 
     public Long getObjectVersion() {

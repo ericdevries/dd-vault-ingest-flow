@@ -20,15 +20,14 @@ import nl.knaw.dans.validatedansbag.api.ValidateCommandDto;
 import javax.ws.rs.client.Client;
 import java.net.URI;
 
-public class MigrationDepositValidator extends AbstractDepositValidator {
+public class BagValidator extends AbstractBagValidator {
 
-    public MigrationDepositValidator(Client httpClient, URI serviceUri) {
+    public BagValidator(Client httpClient, URI serviceUri) {
         super(httpClient, serviceUri);
     }
 
     @Override
     protected ValidateCommandDto.PackageTypeEnum getPackageType() {
-        return ValidateCommandDto.PackageTypeEnum.MIGRATION;
+        return ValidateCommandDto.PackageTypeEnum.DEPOSIT;
     }
-
 }

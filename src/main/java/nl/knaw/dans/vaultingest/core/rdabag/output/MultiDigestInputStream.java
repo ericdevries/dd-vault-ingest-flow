@@ -15,26 +15,28 @@
  */
 package nl.knaw.dans.vaultingest.core.rdabag.output;
 
-import nl.knaw.dans.vaultingest.core.deposit.ManifestAlgorithm;
+import gov.loc.repository.bagit.hash.SupportedAlgorithm;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MultiDigestInputStream extends InputStream {
     private final InputStream inputStream;
-    private final Map<ManifestAlgorithm, DigestInputStream> digestInputStreams;
+    private final Map<SupportedAlgorithm, DigestInputStream> digestInputStreams;
 
-    public MultiDigestInputStream(InputStream inputStream, Collection<ManifestAlgorithm> algorithms) {
+    public MultiDigestInputStream(InputStream inputStream, Collection<SupportedAlgorithm> algorithms) throws NoSuchAlgorithmException {
         this.digestInputStreams = new HashMap<>();
 
         var input = inputStream;
 
         for (var alg : algorithms) {
-            var digestInputStream = new DigestInputStream(input, alg.getMessageDigestInstance());
+            var digestInputStream = new DigestInputStream(input, MessageDigest.getInstance(alg.getMessageDigestName()));
             digestInputStreams.put(alg, digestInputStream);
             input = digestInputStream;
         }
@@ -42,8 +44,8 @@ public class MultiDigestInputStream extends InputStream {
         this.inputStream = input;
     }
 
-    public Map<ManifestAlgorithm, String> getChecksums() {
-        var result = new HashMap<ManifestAlgorithm, String>();
+    public Map<SupportedAlgorithm, String> getChecksums() {
+        var result = new HashMap<SupportedAlgorithm, String>();
 
         for (var entry : digestInputStreams.entrySet()) {
             result.put(entry.getKey(), bytesToHex(entry.getValue().getMessageDigest().digest()));

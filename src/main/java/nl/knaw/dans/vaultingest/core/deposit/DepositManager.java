@@ -16,6 +16,7 @@
 package nl.knaw.dans.vaultingest.core.deposit;
 
 import gov.loc.repository.bagit.domain.Bag;
+import gov.loc.repository.bagit.hash.SupportedAlgorithm;
 import gov.loc.repository.bagit.reader.BagReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,24 +160,18 @@ public class DepositManager {
         return result;
     }
 
-    private Map<Path, Map<ManifestAlgorithm, String>> getPrecomputedChecksums(Path bagDir, Bag bag) {
-        var manifests = new HashMap<Path, Map<ManifestAlgorithm, String>>();
+    private Map<Path, Map<SupportedAlgorithm, String>> getPrecomputedChecksums(Path bagDir, Bag bag) {
+        var manifests = new HashMap<Path, Map<SupportedAlgorithm, String>>();
 
         for (var manifest : bag.getPayLoadManifests()) {
-            try {
-                var alg = ManifestAlgorithm.from(manifest.getAlgorithm().getMessageDigestName());
+            var alg = manifest.getAlgorithm();
 
-                for (var entry : manifest.getFileToChecksumMap().entrySet()) {
-                    var relativePath = bagDir.relativize(entry.getKey());
-                    var checksum = entry.getValue();
+            for (var entry : manifest.getFileToChecksumMap().entrySet()) {
+                var relativePath = bagDir.relativize(entry.getKey());
+                var checksum = entry.getValue();
 
-                    manifests.computeIfAbsent(relativePath, k -> new HashMap<>())
-                        .put(alg, checksum);
-                }
-            }
-            catch (NoSuchAlgorithmException e) {
-                log.warn("Bag contains a checksum algorithm that is not supported: algorithm={}",
-                    manifest.getAlgorithm().getMessageDigestName(), e);
+                manifests.computeIfAbsent(relativePath, k -> new HashMap<>())
+                    .put(alg, checksum);
             }
         }
 
