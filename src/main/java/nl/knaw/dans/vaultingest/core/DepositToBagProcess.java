@@ -116,7 +116,6 @@ public class DepositToBagProcess {
         catch (Exception e) {
             throw new IllegalStateException("Error writing bag: " + e.getMessage(), e);
         }
-
     }
 
     void handleFailedDeposit(Path path, Outbox outbox, Deposit.State state, Throwable error) {
