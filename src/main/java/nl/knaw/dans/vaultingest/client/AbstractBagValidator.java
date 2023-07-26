@@ -61,7 +61,11 @@ public abstract class AbstractBagValidator implements BagValidator {
 
                 log.debug("Validate bag response: {}", response);
                 if (response.getStatus() == 200) {
-                    throw formatValidationError(response.readEntity(ValidateOkDto.class));
+                    var entity = response.readEntity(ValidateOkDto.class);
+
+                    if (Boolean.FALSE.equals(entity.getIsCompliant())) {
+                        throw formatValidationError(entity);
+                    }
                 }
             }
         }

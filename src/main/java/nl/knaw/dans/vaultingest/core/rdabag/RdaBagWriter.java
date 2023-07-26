@@ -53,6 +53,7 @@ public class RdaBagWriter {
     private final OaiOreConverter oaiOreConverter;
 
     private final Map<Path, Map<SupportedAlgorithm, String>> checksums;
+    private final ManifestConverter manifestConverter;
     private Set<SupportedAlgorithm> requiredAlgorithms;
 
     RdaBagWriter(
@@ -69,6 +70,7 @@ public class RdaBagWriter {
         this.dataciteConverter = dataciteConverter;
         this.pidMappingConverter = pidMappingConverter;
         this.oaiOreConverter = oaiOreConverter;
+        this.manifestConverter = new ManifestConverter();
 
         this.checksums = new HashMap<>();
     }
@@ -141,22 +143,23 @@ public class RdaBagWriter {
         var algorithms = getAlgorithms(deposit);
 
         for (var algorithm : algorithms) {
-            var outputString = new StringBuilder();
+            var mappings = new TreeMap<Path, String>();
             var payloadPaths = deposit.getPayloadFiles().stream().map(DepositFile::getPath).collect(Collectors.toSet());
 
-            for (var entry : new TreeMap<>(checksums).entrySet()) {
-                if (payloadPaths.contains(entry.getKey()) || entry.getKey().startsWith("tagmanifest-")) {
+            for (var entry : checksums.entrySet()) {
+               if (payloadPaths.contains(entry.getKey()) || entry.getKey().startsWith("tagmanifest-")) {
                     continue;
                 }
 
                 var path = entry.getKey();
                 var checksum = entry.getValue().get(algorithm);
 
-                outputString.append(String.format("%s  %s\n", checksum, path));
+                mappings.put(path, checksum);
             }
 
+            var outputString = manifestConverter.convert(deposit.getBagDir(), mappings);
             var outputFile = String.format("tagmanifest-%s.txt", algorithm.getBagitName());
-            outputWriter.writeBagItem(new ByteArrayInputStream(outputString.toString().getBytes()), Path.of(outputFile));
+            outputWriter.writeBagItem(new ByteArrayInputStream(outputString.getBytes()), Path.of(outputFile));
         }
 
     }
@@ -177,9 +180,11 @@ public class RdaBagWriter {
             log.debug("Writing {} ", outputFile);
             var outputString = new StringBuilder();
 
-            for (var file : deposit.getPayloadFiles()) {
-                var checksum = checksumMap.get(file.getPath()).get(algorithm);
-                outputString.append(String.format("%s  %s\n", checksum, file.getPath()));
+            for (var entry : checksumMap.entrySet()) {
+                var path = entry.getKey();
+                var checksum = entry.getValue().get(algorithm);
+
+                outputString.append(String.format("%s  %s\n", checksum, path));
             }
 
             var content = outputString.toString();
